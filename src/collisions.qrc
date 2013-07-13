@@ -1,0 +1,36 @@
+<!--
+    Collisions - a real-time simulation program of colliding particles.
+    Copyright (C) 2011 - 2013  G. Endignoux
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.txt
+-->
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="Cancel.png">../icons/png/Cancel.png</file>
+        <file alias="Delete.png">../icons/png/Delete.png</file>
+        <file alias="Document.png">../icons/png/Document.png</file>
+        <file alias="Edit.png">../icons/png/Edit.png</file>
+        <file alias="Folder.png">../icons/png/Folder.png</file>
+        <file alias="Harddisk.png">../icons/png/Harddisk.png</file>
+        <file alias="Image.png">../icons/png/Image.png</file>
+        <file alias="Left.png">../icons/png/Left.png</file>
+        <file alias="Pause.png">../icons/png/Pause.png</file>
+        <file alias="Play.png">../icons/png/Play.png</file>
+        <file alias="Refresh.png">../icons/png/Refresh.png</file>
+        <file alias="Right.png">../icons/png/Right.png</file>
+        <file alias="Save As.png">../icons/png/Save As.png</file>
+        <file alias="Save.png">../icons/png/Save.png</file>
+        <file alias="Up.png">../icons/png/Up.png</file>
+    </qresource>
+</RCC>
