@@ -29,7 +29,7 @@ There is an edit mode to modify these projects and a simulation mode to run them
 
 ## Performance
 
-An efficient algorithm has been designed to model collisions and is able to simulate one thousand particles at a rate of several thousands of collisions per second (CPU 1,66 GHz).
+An efficient algorithm has been designed to model collisions and is able to simulate one thousand particles at a rate of several thousands of collisions per second (CPU 1.66 GHz).
 
 
 ## Licence
