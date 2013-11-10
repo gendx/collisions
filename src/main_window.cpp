@@ -41,6 +41,10 @@ MainWindow::MainWindow() :
 
     mSeparatorAction->setSeparator(true);
 
+    mFileToolbar->setIconSize(QSize(16, 16));
+    mEditToolbar->setIconSize(QSize(16, 16));
+    mSimulToolbar->setIconSize(QSize(16, 16));
+
     mFileToolbar->addAction(mNewAction);
     mFileToolbar->addAction(mOpenAction);
     mFileToolbar->addAction(mSaveAction);
@@ -99,26 +103,26 @@ void MainWindow::createActions()
     QString folder(":/icons/");
 
     mFileMenu = this->menuBar()->addMenu("&Fichier");
-    mNewAction = mFileMenu->addAction(QIcon(folder + "Document.png"), "&Nouveau projet");
-    mOpenAction = mFileMenu->addAction(QIcon(folder + "Folder.png"), "&Ouvrir...");
-    mSaveAction = mFileMenu->addAction(QIcon(folder + "Save.png"), "&Enregistrer");
-    mSaveasAction = mFileMenu->addAction(QIcon(folder + "Save As.png"), "Enregistrer &sous...");
-    mSaveallAction = mFileMenu->addAction(QIcon(folder + "Harddisk.png"), "&Tout enregistrer");
-    mCloseAction = mFileMenu->addAction(QIcon(folder + "Cancel.png"), "&Fermer");
-    mCloseallAction = mFileMenu->addAction(QIcon(folder + "Delete.png"), "Tout fermer");
+    mNewAction = mFileMenu->addAction(QIcon(folder + "new.png"), "&Nouveau projet");
+    mOpenAction = mFileMenu->addAction(QIcon(folder + "open.png"), "&Ouvrir...");
+    mSaveAction = mFileMenu->addAction(QIcon(folder + "save.png"), "&Enregistrer");
+    mSaveasAction = mFileMenu->addAction(QIcon(folder + "save_as.png"), "Enregistrer &sous...");
+    mSaveallAction = mFileMenu->addAction(QIcon(folder + "save_all.png"), "&Tout enregistrer");
+    mCloseAction = mFileMenu->addAction(QIcon(folder + "close.png"), "&Fermer");
+    mCloseallAction = mFileMenu->addAction(QIcon(folder + "close_all.png"), "Tout fermer");
     mEditMenu = this->menuBar()->addMenu("&Edition");
-    mEditModeAction = mEditMenu->addAction(QIcon(folder + "Edit.png"), QString::fromUtf8("Mode &édition"));
-    mExportConfigAction = mEditMenu->addAction(QIcon(folder + "Up.png"), QString::fromUtf8("E&xporter la configuration"));
+    mEditModeAction = mEditMenu->addAction(QIcon(folder + "edit.png"), QString::fromUtf8("Mode &édition"));
+    mExportConfigAction = mEditMenu->addAction(QIcon(folder + "export.png"), QString::fromUtf8("E&xporter la configuration"));
     mSimulMenu = this->menuBar()->addMenu("&Simulation");
-    mSimulModeAction = mSimulMenu->addAction(QIcon(folder + "Image.png"), "Mode &simulation");
-    mPlayAction = mSimulMenu->addAction(QIcon(folder + "Play.png"), "&Lancer");
-    mRestartAction = mSimulMenu->addAction(QIcon(folder + "Refresh.png"), QString::fromUtf8("&Redémarrer"));
+    mSimulModeAction = mSimulMenu->addAction(QIcon(folder + "run.png"), "Mode &simulation");
+    mPlayAction = mSimulMenu->addAction(QIcon(folder + "play.png"), QString::fromUtf8("&Démarrer"));
+    mRestartAction = mSimulMenu->addAction(QIcon(folder + "restart.png"), QString::fromUtf8("&Redémarrer"));
     mWindowMenu = this->menuBar()->addMenu(QString::fromUtf8("Fe&nêtre"));
     mTileAction = new QAction(QString::fromUtf8("Réorganiser"), this);
     mCascadeAction = new QAction("Cascade", this);
     mTabAction = new QAction("Tab", this);
-    mPreviousAction = new QAction(QIcon(folder + "Left.png"), QString::fromUtf8("Précédent"), this);
-    mNextAction = new QAction(QIcon(folder + "Right.png"), "Suivant", this);
+    mPreviousAction = new QAction(QIcon(folder + "left.png"), QString::fromUtf8("Précédent"), this);
+    mNextAction = new QAction(QIcon(folder + "right.png"), "Suivant", this);
     mSeparatorAction = new QAction(this);
 }
 
@@ -249,9 +253,9 @@ void MainWindow::play()
     Document* active = activeDocument();
     if (active)
     {
-        mPlayAction->setText(active->playing() ? "&Lancer" : "&Pause");
+        mPlayAction->setText(active->playing() ? QString::fromUtf8("&Démarrer") : "&Pause");
         QString folder(":/icons/");
-        mPlayAction->setIcon(QIcon(folder + (active->playing() ? "Play.png" : "Pause.png")));
+        mPlayAction->setIcon(QIcon(folder + (active->playing() ? "play.png" : "pause.png")));
 
         active->play();
     }
@@ -345,9 +349,9 @@ void MainWindow::updateActions()
     mPreviousAction->setEnabled(hasDocument);
     mSeparatorAction->setVisible(hasDocument);
 
-    mPlayAction->setText((doc && doc->playing()) ? "&Pause" : "&Lancer");
+    mPlayAction->setText((doc && doc->playing()) ? "&Pause" : QString::fromUtf8("&Démarrer"));
     QString folder(":/icons/");
-    mPlayAction->setIcon(QIcon(folder + ((doc && doc->playing()) ? "Pause.png" : "Play.png")));
+    mPlayAction->setIcon(QIcon(folder + ((doc && doc->playing()) ? "pause.png" : "play.png")));
 
     bool ready = (doc && doc->ready());
     mSaveAction->setEnabled(ready);

@@ -17,20 +17,20 @@
 -->
 <RCC>
     <qresource prefix="/icons">
-        <file alias="Cancel.png">../icons/png/Cancel.png</file>
-        <file alias="Delete.png">../icons/png/Delete.png</file>
-        <file alias="Document.png">../icons/png/Document.png</file>
-        <file alias="Edit.png">../icons/png/Edit.png</file>
-        <file alias="Folder.png">../icons/png/Folder.png</file>
-        <file alias="Harddisk.png">../icons/png/Harddisk.png</file>
-        <file alias="Image.png">../icons/png/Image.png</file>
-        <file alias="Left.png">../icons/png/Left.png</file>
-        <file alias="Pause.png">../icons/png/Pause.png</file>
-        <file alias="Play.png">../icons/png/Play.png</file>
-        <file alias="Refresh.png">../icons/png/Refresh.png</file>
-        <file alias="Right.png">../icons/png/Right.png</file>
-        <file alias="Save As.png">../icons/png/Save As.png</file>
-        <file alias="Save.png">../icons/png/Save.png</file>
-        <file alias="Up.png">../icons/png/Up.png</file>
+        <file alias="close.png">../icons/icons/page_white_cross.png</file>
+        <file alias="close_all.png">../icons/icons/cross.png</file>
+        <file alias="edit.png">../icons/icons/pencil.png</file>
+        <file alias="export.png">../icons/icons/page_white_go.png</file>
+        <file alias="left.png">../icons/icons/resultset_previous.png</file>
+        <file alias="open.png">../icons/icons/folder_page_white.png</file>
+        <file alias="pause.png">../icons/icons/control_pause.png</file>
+        <file alias="play.png">../icons/icons/control_play.png</file>
+        <file alias="restart.png">../icons/icons/arrow_rotate_clockwise.png</file>
+        <file alias="right.png">../icons/icons/resultset_next.png</file>
+        <file alias="run.png">../icons/icons/application_go.png</file>
+        <file alias="save.png">../icons/icons/disk.png</file>
+        <file alias="save_all.png">../icons/icons/disk_multiple.png</file>
+        <file alias="save_as.png">../icons/icons/disk_edit.png</file>
+        <file alias="new.png">../icons/icons/page_white.png</file>
     </qresource>
 </RCC>
