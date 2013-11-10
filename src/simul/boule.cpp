@@ -79,10 +79,8 @@ void Boule::setPopulation(const Time& now, unsigned int population, std::list<bo
 
             if (mutation.mType == ConfigReaction::proba)
             {
-                static boost::mt19937& generateur = Solveur::generateur();
-                boost::variate_generator<boost::mt19937&, boost::exponential_distribution<> > aleatoire(generateur, boost::exponential_distribution<>(1.0 / time));
-
-                time = aleatoire();
+                boost::random::exponential_distribution<> distrib(1.0 / time);
+                time = distrib(Solveur::generateur);
             }
 
             if (time > 0)
@@ -296,10 +294,8 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
         {
             if (reaction.mType == ConfigReaction::proba)
             {
-                static boost::mt19937& generateur = Solveur::generateur();
-                static boost::variate_generator<boost::mt19937&, boost::uniform_01<> > aleatoire(generateur, boost::uniform_01<>());
-
-                if (aleatoire() > reaction.mSeuil)
+                boost::random::uniform_01<> distrib;
+                if (distrib(Solveur::generateur) > reaction.mSeuil)
                     break;
             }
 

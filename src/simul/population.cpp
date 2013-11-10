@@ -25,23 +25,19 @@
 
 void Population::create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<boost::shared_ptr<Piston> >& pistons, std::multimap<Time, boost::shared_ptr<Event> >& events, const Time& now, double sizeArea)
 {
-    static boost::mt19937& generateur = Solveur::generateur();
-
-    Coord<boost::variate_generator<boost::mt19937&, boost::uniform_real<> > >
-        aleatoire(boost::variate_generator<boost::mt19937&, boost::uniform_real<> >(generateur, boost::uniform_real<>(mConfig.mPolygone.left(), mConfig.mPolygone.right())),
-                  boost::variate_generator<boost::mt19937&, boost::uniform_real<> >(generateur, boost::uniform_real<>(mConfig.mPolygone.top(), mConfig.mPolygone.bottom())));
-
-    boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > aleaVitesse(generateur, boost::normal_distribution<>(0, mConfig.mVitesse));
+    boost::random::uniform_real_distribution<> distribX(mConfig.mPolygone.left(), mConfig.mPolygone.right());
+    boost::random::uniform_real_distribution<> distribY(mConfig.mPolygone.top(), mConfig.mPolygone.bottom());
+    boost::random::normal_distribution<> distribVitesse(0, mConfig.mVitesse);
 
     for (unsigned int i = 0 ; i < mConfig.mTaille ; ++i)
     {
         Coord<double> pos;
 
         do
-            pos = Coord<double>((aleatoire.x)(), (aleatoire.y)());
+            pos = Coord<double>(distribX(Solveur::generateur), distribY(Solveur::generateur));
         while (this->invalid(pos, config, populations, pistons));
 
-        std::list<boost::shared_ptr<Boule> >::iterator it = mBoules.insert(mBoules.end(), boost::shared_ptr<Boule>(new Boule(pos, Coord<double>(aleaVitesse(), aleaVitesse()), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles)));
+        std::list<boost::shared_ptr<Boule> >::iterator it = mBoules.insert(mBoules.end(), boost::shared_ptr<Boule>(new Boule(pos, Coord<double>(distribVitesse(Solveur::generateur), distribVitesse(Solveur::generateur)), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles)));
         mBoules.back()->setPopulation(now, index, it, events, config.configMutations());
         std::pair<unsigned int, unsigned int> countEtudes;
         mBoules.back()->updateCollisions(events, mapMobiles, now, sizeArea, config.gravity(), countEtudes);

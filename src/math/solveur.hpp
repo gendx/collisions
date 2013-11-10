@@ -38,13 +38,16 @@ public:
     static double fstQuartique(double a, double b, double c, double d, double e);
 
     // Générateur de nombres aléatoires.
-    static boost::mt19937& generateur();
+    static boost::random::mt19937& generateur;
 
 private:
     // Fonctions utiles.
     static double racinecubique(double x);
     static double racinecubiquecomplex(std::complex<double> z);
     static void min(double& a, const std::complex<double>& b, double _a, double _b, double _c, double _d);
+
+    // Générateur de nombres aléatoires.
+    static boost::random::mt19937& makeGenerateur();
 };
 
 #endif // SOLVEUR_HPP
