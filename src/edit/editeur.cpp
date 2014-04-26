@@ -18,6 +18,8 @@
 
 #include "editeur.hpp"
 
+#include <QPainter>
+
 // Constructeur.
 Editeur::Editeur(Graph* graph) :
     mGraph(graph),

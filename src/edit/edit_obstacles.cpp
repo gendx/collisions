@@ -18,6 +18,8 @@
 
 #include "edit_obstacles.hpp"
 
+#include <QMessageBox>
+
 // Constructeur.
 EditObstacles::EditObstacles(EditPolygone* editPolygone) :
     EditWithPolygone(editPolygone),

@@ -19,6 +19,7 @@
 #ifndef EDIT_OBSTACLES_HPP
 #define EDIT_OBSTACLES_HPP
 
+#include <QListView>
 #include "edit_withpolygone.hpp"
 
 // Widget pour éditer les obstacles.

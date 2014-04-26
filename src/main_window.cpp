@@ -18,6 +18,15 @@
 
 #include "main_window.hpp"
 
+#include <QAction>
+#include <QMdiArea>
+#include <QToolBar>
+#include <QMenuBar>
+#include <QStatusBar>
+#include <QCloseEvent>
+#include <QFileDialog>
+#include <QMessageBox>
+
 // Constructeur.
 MainWindow::MainWindow() :
     mMdi(new QMdiArea),

@@ -19,7 +19,7 @@
 #ifndef GRAPH_ZONE_HPP
 #define GRAPH_ZONE_HPP
 
-#include <QtGui>
+#include <QWidget>
 #include "coord.hpp"
 
 class Document;

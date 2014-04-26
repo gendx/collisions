@@ -18,6 +18,8 @@
 
 #include "double_delegate.hpp"
 
+#include <QLineEdit>
+
 // Constructeurs.
 DoubleDelegate::DoubleDelegate() :
     mHasMin(false)

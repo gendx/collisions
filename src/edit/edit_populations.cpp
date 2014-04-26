@@ -18,6 +18,8 @@
 
 #include "edit_populations.hpp"
 
+#include <QHeaderView>
+
 EditPopulations::EditPopulations(EditPolygone* editPolygone) :
     EditWithPolygone(editPolygone),
     mTableView(new QTableView),

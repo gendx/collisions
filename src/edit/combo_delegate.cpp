@@ -18,6 +18,8 @@
 
 #include "combo_delegate.hpp"
 
+#include <QComboBox>
+
 // Constructeur.
 ComboDelegate::ComboDelegate(const QStringList& names) :
     mNames(names)

@@ -18,6 +18,8 @@
 
 #include "edit_pistons.hpp"
 
+#include <QHeaderView>
+
 // Constructeur.
 EditPistons::EditPistons(EditPolygone* editPolygone) :
     EditWithPolygone(editPolygone),

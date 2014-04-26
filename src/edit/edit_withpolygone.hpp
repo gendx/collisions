@@ -19,6 +19,7 @@
 #ifndef EDIT_WITHPOLYGONE_HPP
 #define EDIT_WITHPOLYGONE_HPP
 
+#include <QPushButton>
 #include "edit_polygone.hpp"
 
 // Classe abstraite pour les widgets d'édition liés à des polygones.

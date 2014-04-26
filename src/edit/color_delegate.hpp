@@ -19,7 +19,9 @@
 #ifndef COLOR_DELEGATE_HPP
 #define COLOR_DELEGATE_HPP
 
-#include <QtGui>
+#include <QLineEdit>
+#include <QRegExpValidator>
+#include <QItemDelegate>
 
 // Widget permetant d'éditer une couleur.
 class ColorEditor : public QWidget

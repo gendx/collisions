@@ -18,6 +18,8 @@
 
 #include "spinbox_delegate.hpp"
 
+#include <QSpinBox>
+
 // Constructeurs.
 SpinBoxDelegate::SpinBoxDelegate(unsigned int max) :
     mMax(max)

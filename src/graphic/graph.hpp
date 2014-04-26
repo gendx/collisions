@@ -19,6 +19,9 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
+#include <QGridLayout>
+#include <QLabel>
+#include <QSlider>
 #include "graph_zone.hpp"
 #include "configuration.hpp"
 #include "draw_polygone.hpp"

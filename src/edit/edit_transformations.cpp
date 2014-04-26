@@ -18,6 +18,8 @@
 
 #include "edit_transformations.hpp"
 
+#include <QHeaderView>
+
 EditTransformations::EditTransformations() :
     mLayout(new QGridLayout(this)),
     mAddReaction(new QPushButton("ajouter")),

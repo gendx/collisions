@@ -18,6 +18,7 @@
 
 #include "edit_divers.hpp"
 
+#include <QLineEdit>
 #include "coord.tpl"
 
 // Constructeur.

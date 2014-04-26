@@ -18,6 +18,8 @@
 
 #include "graph_zone.hpp"
 
+#include <QAction>
+#include <QWheelEvent>
 #include "graph.hpp"
 #include "document.hpp"
 

@@ -19,7 +19,7 @@
 #ifndef SPINBOX_DELEGATE_HPP
 #define SPINBOX_DELEGATE_HPP
 
-#include <QtGui>
+#include <QItemDelegate>
 
 // Delegate associé à un QSpinBox pour éditer des nombres entiers.
 class SpinBoxDelegate : public QItemDelegate

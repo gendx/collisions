@@ -19,6 +19,8 @@
 #ifndef EDITEUR_HPP
 #define EDITEUR_HPP
 
+#include <QComboBox>
+#include <QStackedWidget>
 #include "edit_polygone.hpp"
 #include "edit_obstacles.hpp"
 #include "edit_populations.hpp"

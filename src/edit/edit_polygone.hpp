@@ -19,6 +19,9 @@
 #ifndef EDIT_POLYGONE_HPP
 #define EDIT_POLYGONE_HPP
 
+#include <QStandardItem>
+#include <QTableView>
+#include <QCheckBox>
 #include "graph.hpp"
 #include "double_delegate.hpp"
 

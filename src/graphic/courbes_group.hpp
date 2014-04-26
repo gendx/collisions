@@ -19,7 +19,9 @@
 #ifndef COURBES_GROUP_HPP
 #define COURBES_GROUP_HPP
 
-#include <QtGui>
+#include <QVBoxLayout>
+#include <QSplitter>
+#include <QScrollBar>
 #include "widgetcourbe.hpp"
 #include "widgetprofil.hpp"
 

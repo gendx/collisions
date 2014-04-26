@@ -16,8 +16,8 @@
     along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.txt
 */
 
-#include <iostream>
-
+#include <QApplication>
+#include <QMessageBox>
 #include "main_window.hpp"
 
 int main(int argc, char *argv[])

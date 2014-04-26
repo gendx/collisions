@@ -18,6 +18,8 @@
 
 #include "simulateur.hpp"
 
+#include <QPainter>
+#include <QCoreApplication>
 #include "coord_io.tpl"
 
 // Constructeur.

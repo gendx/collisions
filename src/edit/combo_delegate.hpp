@@ -19,7 +19,7 @@
 #ifndef COMBO_DELEGATE_HPP
 #define COMBO_DELEGATE_HPP
 
-#include <QtGui>
+#include <QItemDelegate>
 
 // Delegate associé à un QComboBox.
 class ComboDelegate : public QItemDelegate

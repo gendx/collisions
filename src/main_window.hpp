@@ -19,7 +19,9 @@
 #ifndef MAIN_WINDOW_HPP
 #define MAIN_WINDOW_HPP
 
-#include <QtGui>
+#include <QMainWindow>
+#include <QMdiSubWindow>
+#include <QSignalMapper>
 #include "document.hpp"
 
 // Fenêtre principale du programme.

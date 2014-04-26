@@ -19,6 +19,7 @@
 #ifndef EDIT_DIVERS_HPP
 #define EDIT_DIVERS_HPP
 
+#include <QFormLayout>
 #include "double_delegate.hpp"
 #include "coord.hpp"
 

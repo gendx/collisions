@@ -18,6 +18,8 @@
 
 #include "courbes_group.hpp"
 
+#include <QWheelEvent>
+
 // Constructeur.
 CourbesGroup::CourbesGroup(Time lifespan) :
     mLayout(new QVBoxLayout),

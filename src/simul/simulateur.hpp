@@ -19,6 +19,9 @@
 #ifndef SIMULATEUR_HPP
 #define SIMULATEUR_HPP
 
+#include <QLabel>
+#include <QSlider>
+#include <QTime>
 #include "population.hpp"
 #include "boule.hpp"
 #include "piston.hpp"

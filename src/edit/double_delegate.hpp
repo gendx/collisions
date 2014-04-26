@@ -19,7 +19,7 @@
 #ifndef DOUBLE_DELEGATE_HPP
 #define DOUBLE_DELEGATE_HPP
 
-#include <QtGui>
+#include <QItemDelegate>
 
 // Delegate associé à un QLineEdit pour éditer des nombres réels.
 class DoubleDelegate : public QItemDelegate

@@ -19,7 +19,9 @@
 #ifndef DRAW_POLYGONE_HPP
 #define DRAW_POLYGONE_HPP
 
-#include <QtGui>
+#include <QColor>
+#include <QSet>
+#include <QPainter>
 #include "polygone.hpp"
 
 // Classe contenant les données d'un polygone à dessiner.

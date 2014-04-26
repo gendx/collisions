@@ -19,6 +19,7 @@
 #ifndef DOCUMENT_HPP
 #define DOCUMENT_HPP
 
+#include <QFileInfo>
 #include "graph.hpp"
 #include "configuration.hpp"
 #include "simulateur.hpp"

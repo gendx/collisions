@@ -25,8 +25,6 @@
 #include "solveur.hpp"
 #include "map_ligne.hpp"
 
-#include <QtGui>
-
 // Constructeur.
 Boule::Boule(const Coord<double>& position, const Coord<double>& vitesse, const QColor& color, double masse, double rayon, const Time& now, double sizeArea, QMap<int, MapLigne>& mapMobiles) :
     Mobile(position, vitesse, color, masse),

@@ -18,6 +18,10 @@
 
 #include "document.hpp"
 
+#include <QCloseEvent>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QPainter>
 #include "configuration.hpp"
 
 // Constructeur.

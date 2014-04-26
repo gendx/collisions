@@ -18,6 +18,9 @@
 
 #include "edit_polygone.hpp"
 
+#include <QHeaderView>
+#include <QKeyEvent>
+
 // Constructeur.
 EditPolygone::EditPolygone() :
     mHasHover(false),
