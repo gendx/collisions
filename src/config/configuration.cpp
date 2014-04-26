@@ -77,4 +77,5 @@ void Configuration::reset()
     mConfigFcourbes.clear();
     mConfigProfils.clear();
     mConfigReactions.clear();
+    mConfigMutations.clear();
 }
