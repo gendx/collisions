@@ -41,7 +41,7 @@ void ConfigCible::addValue(unsigned int valType, const QList<Population>& popula
     if (mType != _population || mIndex >= populations.size())
         return;
 
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = populations[mIndex].boules().begin() ; it != populations[mIndex].boules().end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = populations[mIndex].boules().begin() ; it != populations[mIndex].boules().end() ; ++it)
     {
         const Boule& boule = **it;
         if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
@@ -61,7 +61,7 @@ void ConfigCible::addValue(unsigned int valType, const QList<Population>& popula
 }
 
 
-double ConfigCible::value(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, const QList<boost::shared_ptr<Piston> >& pistons, unsigned int& nbre)
+double ConfigCible::value(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, const QList<std::shared_ptr<Piston> >& pistons, unsigned int& nbre)
 {
     if (mType == _piston)
     {
@@ -109,7 +109,7 @@ double ConfigCible::value(unsigned int valType, const Population& population, co
 
     double valeur = 0;
 
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = population.boules().begin() ; it != population.boules().end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = population.boules().begin() ; it != population.boules().end() ; ++it)
     //for (unsigned int i = 0 ; i < population.boules().size() ; ++i)
     {
         const Boule& boule = **it;

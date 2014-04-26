@@ -19,7 +19,7 @@
 #include "courbe.hpp"
 
 // Calcule et ajoute une valeur à la courbe.
-void Courbe::push(Time time, unsigned int valType, bool mean, const QList<Population>& populations, const QList<boost::shared_ptr<Piston> >& pistons)
+void Courbe::push(Time time, unsigned int valType, bool mean, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
 {
     unsigned int nbre = 0;
     double valeur = 0;

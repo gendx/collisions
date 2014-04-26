@@ -18,9 +18,6 @@
 TEMPLATE = app
 INCLUDEPATH += . config/ edit/ graphic/ math/ simul/
 
-# /!\ Update this for your platform /!\
-INCLUDEPATH += /your/path/to/boost/
-
 # Input
 HEADERS += \
     config/config_cible.hpp \
@@ -123,4 +120,6 @@ SOURCES += \
 
 RESOURCES += \
     collisions.qrc
+
+QMAKE_CXXFLAGS += --std=c++11
 

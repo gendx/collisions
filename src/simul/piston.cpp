@@ -115,19 +115,19 @@ Time Piston::newArea(double sizeArea, const Coord<double>& gravity) const
 
 
 // Effectue la collision avec le mobile.
-void Piston::doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     mobile->doCollision(now, this, toRefresh, events, configMutations, configReactions, populations, countEtudes);
 }
 
 // Collision avec une boule.
-void Piston::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     boule->doCollision(now, this, toRefresh, events, configMutations, configReactions, populations, countEtudes);
 }
 
 // Collision avec un piston.
-void Piston::doCollision(const Time&/* now*/, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, boost::shared_ptr<Event> >&/* events*/, const QList<ConfigMutation>&/* configMutations*/, const QList<ConfigReaction>&/* configReactions*/, QList<Population>&/* populations*/, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::doCollision(const Time&/* now*/, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >&/* events*/, const QList<ConfigMutation>&/* configMutations*/, const QList<ConfigReaction>&/* configReactions*/, QList<Population>&/* populations*/, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     // Vitesses initiales.
     double vitesse1 = mVitesse.y;
@@ -178,7 +178,7 @@ void Piston::changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int,
 
 
 // Cherche des collisions avec des mobiles.
-void Piston::updateCollisionsMobiles(std::multimap<Time, boost::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     // Vérifie les mobiles des zones voisines.
     for (int j = mArea1 - 1 ; j <= mArea1 + 1 ; ++j)

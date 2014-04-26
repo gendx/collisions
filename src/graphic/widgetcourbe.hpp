@@ -32,7 +32,7 @@ public:
     WidgetCourbe(Time lifespan, const ConfigWidgetCourbe& config);
 
     // Calcule et ajoute des valeurs aux courbes.
-    void push(Time time, const QList<Population>& populations, const QList<boost::shared_ptr<Piston> >& pistons);
+    void push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons);
     // Redessine la QPixmap.
     void update();
 

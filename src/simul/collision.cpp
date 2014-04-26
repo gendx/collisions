@@ -151,7 +151,7 @@ bool Collision::operator==(const Collision& collision) const
 
 
 // Effectue la collision : calcul du changement de trajectoire et mise à jour des prochaines collisions.
-void Collision::doCollision(const Time& now, double sizeArea, std::set<Mobile*>& toRefresh, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes)
+void Collision::doCollision(const Time& now, double sizeArea, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     mMobile1->setLastCollision(now, *this);
 

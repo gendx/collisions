@@ -124,14 +124,14 @@ private:
     // Configuration et objets de la simulation.
     const Configuration& mConfig;
     QList<Population> mPopulations;
-    QList<boost::shared_ptr<Boule> > mBoules;
-    QList<boost::shared_ptr<Piston> > mPistons;
+    QList<std::shared_ptr<Boule> > mBoules;
+    QList<std::shared_ptr<Piston> > mPistons;
     QMap<int, MapLigne> mMapMobiles;
 
     // Evénements à simuler.
-    std::multimap<Time, boost::shared_ptr<Event> > mEvents;
+    std::multimap<Time, std::shared_ptr<Event> > mEvents;
     std::set<Mobile*> mToRefresh;
-    QList<std::multimap<Time, boost::shared_ptr<Event> >::iterator> mDrawingsRefresh;
+    QList<std::multimap<Time, std::shared_ptr<Event> >::iterator> mDrawingsRefresh;
 };
 
 #endif // SIMULATEUR_HPP

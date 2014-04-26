@@ -57,7 +57,7 @@ void WidgetCourbe::resizeEvent(QResizeEvent*/* event*/)
 
 
 // Calcule et ajoute des valeurs aux courbes.
-void WidgetCourbe::push(Time time, const QList<Population>& populations, const QList<boost::shared_ptr<Piston> >& pistons)
+void WidgetCourbe::push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
 {
     for (int i = 0 ; i < mConfig.mCourbes.size() ; ++i)
         mCourbes[i].push(time, mConfig.mType, mConfig.mMean, populations, pistons);

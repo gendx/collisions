@@ -68,20 +68,20 @@ void CourbesGroup::clear()
 // Ajout d'une courbe.
 void CourbesGroup::addCourbe(const ConfigWidgetCourbe& courbe)
 {
-    mCourbes.push_back(boost::shared_ptr<WidgetCourbe>(new WidgetCourbe(mLifespan, courbe)));
+    mCourbes.push_back(std::shared_ptr<WidgetCourbe>(new WidgetCourbe(mLifespan, courbe)));
     mSplitter->addWidget(mCourbes.back().get());
 }
 
 // Ajout d'un profil.
 void CourbesGroup::addProfil(const ConfigProfil& profil)
 {
-    mProfils.push_back(boost::shared_ptr<WidgetProfil>(new WidgetProfil(mLifespan, profil)));
+    mProfils.push_back(std::shared_ptr<WidgetProfil>(new WidgetProfil(mLifespan, profil)));
     mSplitter->addWidget(mProfils.back().get());
 }
 
 
 // Ajout de valeurs aux courbes.
-void CourbesGroup::push(Time time, const QList<Population>& populations, const QList<boost::shared_ptr<Piston> >& pistons)
+void CourbesGroup::push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
 {
     for (int i = 0 ; i < mCourbes.size() ; ++i)
         mCourbes[i]->push(time, populations, pistons);

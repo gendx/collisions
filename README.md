@@ -6,14 +6,10 @@ Collisions is a real-time simulation program of colliding particles.
 ## Installation
 
 In order to build this software, you will need to install :
-* Qt4, available at [qt-project](http://qt-project.org/downloads),
-* [boost](http://www.boost.org/) C++ libraries, *headers* version.
+* Qt4, available at [qt-project](http://qt-project.org/downloads). Qt5 was not tested yet, but it should be compatible.
+* A C++ compiler supporting the C++11 standard (for *shared_ptr* and *random* libraries). The last version of GCC should be all right.
 
-Then, modify the file "collisions.pro" to set the path to boost headers :
-
-    INCLUDEPATH += /your/path/to/boost/
-
-You can now compile this software using Qt. It was tested with "Qt Creator" IDE.
+Compilation was tested on "Qt Creator" IDE, with GCC 4.8.
 
 
 ## Usage

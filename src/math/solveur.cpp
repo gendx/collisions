@@ -22,11 +22,11 @@
 #include <ctime>
 
 // Générateur de nombres aléatoires.
-boost::random::mt19937& Solveur::generateur = Solveur::makeGenerateur();
+std::mt19937& Solveur::generateur = Solveur::makeGenerateur();
 
-boost::random::mt19937& Solveur::makeGenerateur()
+std::mt19937& Solveur::makeGenerateur()
 {
-    static boost::random::mt19937 generateur;
+    static std::mt19937 generateur;
     generateur.seed(std::time(0));
     return generateur;
 }

@@ -49,7 +49,7 @@ void Boule::avance(const Time& time, const Coord<double>& gravity)
 
 
 // Effectue une mutation pour cette boule.
-void Boule::changePopulation(const Time& now, QList<Population>& populations, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations)
+void Boule::changePopulation(const Time& now, QList<Population>& populations, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations)
 {
     for (int i = 0 ; i < configMutations.size() ; ++i)
     {
@@ -63,7 +63,7 @@ void Boule::changePopulation(const Time& now, QList<Population>& populations, st
 }
 
 // Définit la population de cette boule et prépare la prochaine mutation.
-void Boule::setPopulation(const Time& now, unsigned int population, std::list<boost::shared_ptr<Boule> >::iterator iterator, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations)
+void Boule::setPopulation(const Time& now, unsigned int population, std::list<std::shared_ptr<Boule> >::iterator iterator, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations)
 {
     mPopulation = population;
     mPopIt = iterator;
@@ -79,12 +79,12 @@ void Boule::setPopulation(const Time& now, unsigned int population, std::list<bo
 
             if (mutation.mType == ConfigReaction::proba)
             {
-                boost::random::exponential_distribution<> distrib(1.0 / time);
+                std::exponential_distribution<> distrib(1.0 / time);
                 time = distrib(Solveur::generateur);
             }
 
             if (time > 0)
-                mEventIt = events.insert(std::make_pair(now + Time(time), boost::shared_ptr<Event>(new BouleEvent(this))));
+                mEventIt = events.insert(std::make_pair(now + Time(time), std::shared_ptr<Event>(new BouleEvent(this))));
             break;
         }
     }
@@ -241,13 +241,13 @@ Time Boule::newArea(double sizeArea, const Coord<double>& gravity) const
 
 
 // Effectue la collision avec le mobile.
-void Boule::doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     mobile->doCollision(now, this, toRefresh, events, configMutations, configReactions, populations, countEtudes);
 }
 
 // Collision avec une boule.
-void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     // Différence de position.
     Coord<double> dPosition = boule->mPosition - mPosition;
@@ -294,8 +294,8 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
         {
             if (reaction.mType == ConfigReaction::proba)
             {
-                boost::random::uniform_01<> distrib;
-                if (distrib(Solveur::generateur) > reaction.mSeuil)
+                std::bernoulli_distribution distrib(reaction.mSeuil);
+                if (!distrib(Solveur::generateur))
                     break;
             }
 
@@ -316,7 +316,7 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
 }
 
 // Collision avec un piston.
-void Boule::doCollision(const Time& now, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, boost::shared_ptr<Event> >&/* events*/, const QList<ConfigMutation>&/* configMutations*/, const QList<ConfigReaction>&/* configReactions*/, QList<Population>&/* populations*/, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(const Time& now, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >&/* events*/, const QList<ConfigMutation>&/* configMutations*/, const QList<ConfigReaction>&/* configReactions*/, QList<Population>&/* populations*/, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     // Vitesses initiales.
     double vitesse1 = mVitesse.y;
@@ -436,7 +436,7 @@ void Boule::setArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, Map
 
 
 // Cherche des collisions avec des mobiles.
-void Boule::updateCollisionsMobiles(std::multimap<Time, boost::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     // Ensemble des segments trouvés dans les zones voisines.
     std::set<Segment> segments;
@@ -488,13 +488,13 @@ void Boule::detachArea(QMap<int, MapLigne>& mapMobiles)
 
 
 // Change la boule de population.
-void Boule::swap(const Time& now, unsigned int population, QList<Population>& populations, std::multimap<Time, boost::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, bool eraseEvent)
+void Boule::swap(const Time& now, unsigned int population, QList<Population>& populations, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, bool eraseEvent)
 {
     if (population == mPopulation)
         return;
 
     // Supprime la boule de la population.
-    boost::shared_ptr<Boule> value = *mPopIt;
+    std::shared_ptr<Boule> value = *mPopIt;
     populations[mPopulation].boules().erase(mPopIt);
 
     // Ajoute la boule à la population.

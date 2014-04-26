@@ -97,7 +97,7 @@ void Simulateur::doRestart()
     // Création des pistons.
     for (int i = 0 ; i < mConfig.configPistons().size() ; ++i)
     {
-        mPistons.push_back(boost::shared_ptr<Piston>(new Piston(mConfig.configPistons()[i], mSizeArea, mMapMobiles)));
+        mPistons.push_back(std::shared_ptr<Piston>(new Piston(mConfig.configPistons()[i], mSizeArea, mMapMobiles)));
         mPistons.back()->updateCollisions(mEvents, mMapMobiles, mNow, mSizeArea, mConfig.gravity(), mCountEtudes);
     }
 
@@ -140,13 +140,13 @@ bool Simulateur::playNext()
 
     //*
     bool isDraw = false;
-    for (std::multimap<Time, boost::shared_ptr<Event> >::iterator it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it)
+    for (std::multimap<Time, std::shared_ptr<Event> >::iterator it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it)
         if (it->second->perform(*this, isDraw))
             mDrawingsRefresh.push_back(it);
     /*/
     unsigned int count = 0;
     unsigned int countChocs = 0;
-    for (std::multimap<Time, boost::shared_ptr<Event> >::iterator it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it, ++count)
+    for (std::multimap<Time, std::shared_ptr<Event> >::iterator it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it, ++count)
     {
         ++countChocs;
         if (it->second->perform(*this))
@@ -194,7 +194,7 @@ void Simulateur::draw(QPainter& painter, double width)
     // Dessin des populations.
     for (int i = 0 ; i < mPopulations.size() ; ++i)
     {
-        for (std::list<boost::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (std::list<std::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
         {
             const Boule* boule = it->get();
 
@@ -256,17 +256,17 @@ bool Simulateur::performBouleEvent(Boule* boule)
 // Ajoute un événement.
 void Simulateur::addDrawEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepDraw, boost::shared_ptr<Event>(new DrawEvent)));
+    mEvents.insert(std::make_pair(mNow + mStepDraw, std::shared_ptr<Event>(new DrawEvent)));
 }
 
 void Simulateur::addValueEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepValues, boost::shared_ptr<Event>(new ValueEvent)));
+    mEvents.insert(std::make_pair(mNow + mStepValues, std::shared_ptr<Event>(new ValueEvent)));
 }
 
 void Simulateur::addCourbeEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepCourbes, boost::shared_ptr<Event>(new CourbeEvent)));
+    mEvents.insert(std::make_pair(mNow + mStepCourbes, std::shared_ptr<Event>(new CourbeEvent)));
 }
 
 
@@ -379,7 +379,7 @@ void Simulateur::refreshCollisions()
 // Met à jour les événements de dessin (supprime ceux qui viennent d'être effectués).
 void Simulateur::refreshDrawings()
 {
-    for (QList<std::multimap<Time, boost::shared_ptr<Event> >::iterator>::iterator it = mDrawingsRefresh.begin() ; it != mDrawingsRefresh.end() ; ++it)
+    for (QList<std::multimap<Time, std::shared_ptr<Event> >::iterator>::iterator it = mDrawingsRefresh.begin() ; it != mDrawingsRefresh.end() ; ++it)
     {
         (*it)->second->addEvent(*this);
         mEvents.erase(*it);
@@ -396,7 +396,7 @@ void Simulateur::avance(const Time& time)
 
     // Avance les populations de boules.
     for (int i = 0 ; i < mPopulations.size() ; ++i)
-        for (std::list<boost::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (std::list<std::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
             (*it)->avance(diff, mConfig.gravity());
 
     // Avance les populations de pistons.
@@ -417,7 +417,7 @@ void Simulateur::rehashArea()
     mMapMobiles.clear();
 
     for (unsigned int i = 0 ; i < mPopulations.size() ; ++i)
-        for (std::list<boost::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (std::list<std::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
             (*it)->setArea(mSizeArea, mToRefresh, mMapMobiles);
 
     this->refreshCollisions();
@@ -428,7 +428,7 @@ bool Simulateur::check() const
 {
     for (int i = 0 ; i < mPopulations.size() ; ++i)
     {
-        for (std::list<boost::shared_ptr<Boule> >::const_iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (std::list<std::shared_ptr<Boule> >::const_iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
         {
             const Boule& boule = **it;
             const Coord<double>& pos = boule.position();
@@ -444,7 +444,7 @@ bool Simulateur::check() const
             // Chevauchements entre boules.
             for (int x = 0 ; x < mPopulations.size() && x <= i ; ++x)
             {
-                for (std::list<boost::shared_ptr<Boule> >::const_iterator iter = mPopulations[i].boules().begin() ; iter != mPopulations[i].boules().end() ; ++iter)
+                for (std::list<std::shared_ptr<Boule> >::const_iterator iter = mPopulations[i].boules().begin() ; iter != mPopulations[i].boules().end() ; ++iter)
                 {
                     if (it == iter)
                         break;

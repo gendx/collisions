@@ -20,7 +20,7 @@
 #define POPULATION_HPP
 
 #include <QMap>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <list>
 #include "boule.hpp"
 #include "polygone.hpp"
@@ -35,10 +35,10 @@ public:
     Population();
     Population(const ConfigPopulation& config);
 
-    void create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<boost::shared_ptr<Piston> >& pistons, std::multimap<Time, boost::shared_ptr<Event> >& events, const Time& now, double sizeArea);
+    void create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<std::shared_ptr<Piston> >& pistons, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea);
 
-    inline std::list<boost::shared_ptr<Boule> >& boules();
-    inline const std::list<boost::shared_ptr<Boule> >& boules() const;
+    inline std::list<std::shared_ptr<Boule> >& boules();
+    inline const std::list<std::shared_ptr<Boule> >& boules() const;
     double meanFreeRide() const;
     double meanFreeTime() const;
     double meanFromOrigin() const;
@@ -57,10 +57,10 @@ public:
     inline QColor color() const;
 
 private:
-    bool invalid(const Coord<double>& pos, const Configuration& config, QList<Population>& populations, QList<boost::shared_ptr<Piston> >& pistons);
+    bool invalid(const Coord<double>& pos, const Configuration& config, QList<Population>& populations, QList<std::shared_ptr<Piston> >& pistons);
 
     ConfigPopulation mConfig;
-    std::list<boost::shared_ptr<Boule> > mBoules;
+    std::list<std::shared_ptr<Boule> > mBoules;
 };
 
 inline Population::Population() :
@@ -68,9 +68,9 @@ inline Population::Population() :
 inline Population::Population(const ConfigPopulation& config) :
     mConfig(config) {}
 
-inline std::list<boost::shared_ptr<Boule> >& Population::boules()
+inline std::list<std::shared_ptr<Boule> >& Population::boules()
     {return mBoules;}
-inline const std::list<boost::shared_ptr<Boule> >& Population::boules() const
+inline const std::list<std::shared_ptr<Boule> >& Population::boules() const
     {return mBoules;}
 inline double Population::meanVitesse() const
     {return this->totalVitesse() / mConfig.mTaille;}

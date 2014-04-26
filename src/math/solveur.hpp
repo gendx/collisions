@@ -20,7 +20,7 @@
 #define SOLVEUR_HPP
 
 #include <complex>
-#include <boost/random.hpp>
+#include <random>
 
 // Classe pour résoudre des équations polynomiales de degré inférieur ou égal à 4.
 class Solveur
@@ -38,7 +38,7 @@ public:
     static double fstQuartique(double a, double b, double c, double d, double e);
 
     // Générateur de nombres aléatoires.
-    static boost::random::mt19937& generateur;
+    static std::mt19937& generateur;
 
 private:
     // Fonctions utiles.
@@ -47,7 +47,7 @@ private:
     static void min(double& a, const std::complex<double>& b, double _a, double _b, double _c, double _d);
 
     // Générateur de nombres aléatoires.
-    static boost::random::mt19937& makeGenerateur();
+    static std::mt19937& makeGenerateur();
 };
 
 #endif // SOLVEUR_HPP

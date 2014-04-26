@@ -34,7 +34,7 @@ std::ostream& operator<<(std::ostream& flux, const Mobile& mobile)
 }
 
 // Comparaison pour utiliser un std::set.
-bool operator<(const std::multimap<Time, boost::shared_ptr<Event> >::iterator& it1, const std::multimap<Time, boost::shared_ptr<Event> >::iterator& it2)
+bool operator<(const std::multimap<Time, std::shared_ptr<Event> >::iterator& it1, const std::multimap<Time, std::shared_ptr<Event> >::iterator& it2)
 {
     return it1->second.get() < it2->second.get();
 }
@@ -112,7 +112,7 @@ void Mobile::setLastCollision(const Time& now, const Collision& collision)
 {
     if (mLastTime != now)
         mLastCollisions.clear();
-    mLastCollisions.append(boost::shared_ptr<Collision>(new Collision(collision)));
+    mLastCollisions.append(std::shared_ptr<Collision>(new Collision(collision)));
     mLastTime = now;
 }
 
@@ -136,7 +136,7 @@ bool Mobile::checkLastCollision(const Collision& collision, const Time& time) co
 
 
 // Cherche la prochaine collision de ce mobile et met à jour la table des événements.
-void Mobile::updateCollisions(std::multimap<Time, boost::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::updateCollisions(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     mTargetTime = Time();
     this->detach(events);
@@ -148,7 +148,7 @@ void Mobile::updateCollisions(std::multimap<Time, boost::shared_ptr<Event> >& ev
 // Détache le mobile de la collision (appelé en cas de changement de trajectoire).
 void Mobile::detach(const Collision& collision)
 {
-    for (std::set<std::multimap<Time, boost::shared_ptr<Event> >::iterator>::iterator it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
+    for (std::set<std::multimap<Time, std::shared_ptr<Event> >::iterator>::iterator it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
     {
         if (*reinterpret_cast<Collision*>((*it)->second.get()) == collision)
         {
@@ -169,7 +169,7 @@ void Mobile::updateRefresh(std::set<Mobile*>& toRefresh)
 
 
 // Teste la collision avec l'autre mobile.
-void Mobile::testeCollision(Mobile* mobile, std::multimap<Time, boost::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::testeCollision(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     Collision collision(this, mobile);
     Time time = collision.time(now, sizeArea, gravity, countEtudes);
@@ -197,7 +197,7 @@ void Mobile::testeCollision(Mobile* mobile, std::multimap<Time, boost::shared_pt
 }
 
 // Teste la collision.
-void Mobile::testeCollision(const Collision& collision, std::multimap<Time, boost::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::testeCollision(const Collision& collision, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
 {
     Time time = collision.time(now, sizeArea, gravity, countEtudes);
     if (time < now || time.isNever())
@@ -210,17 +210,17 @@ void Mobile::testeCollision(const Collision& collision, std::multimap<Time, boos
         this->detach(events);
     }
     if (time == mTargetTime)
-        mNextCollisions.insert(events.insert(std::make_pair(mTargetTime, boost::shared_ptr<Event>(new Collision(collision)))));
+        mNextCollisions.insert(events.insert(std::make_pair(mTargetTime, std::shared_ptr<Event>(new Collision(collision)))));
 }
 
 
 // Supprime le mobile de la liste des événements.
-void Mobile::detach(std::multimap<Time, boost::shared_ptr<Event> >& events)
+void Mobile::detach(std::multimap<Time, std::shared_ptr<Event> >& events)
 {
     // Supprime les prochaines collisions (cibles) de la liste des événements et des mobiles concernés.
-    for (std::set<std::multimap<Time, boost::shared_ptr<Event> >::iterator>::iterator it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
+    for (std::set<std::multimap<Time, std::shared_ptr<Event> >::iterator>::iterator it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
     {
-        boost::shared_ptr<Event> copy = (*it)->second;
+        std::shared_ptr<Event> copy = (*it)->second;
         events.erase(*it);
         reinterpret_cast<Collision*>(copy.get())->detach(this);
     }
@@ -233,7 +233,7 @@ void Mobile::detach(std::multimap<Time, boost::shared_ptr<Event> >& events)
 }
 
 // Ajoute un mobile à la liste des cibles.
-bool Mobile::addTarget(Mobile* mobile, std::multimap<Time, boost::shared_ptr<Event> >& events, bool addCollision)
+bool Mobile::addTarget(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event> >& events, bool addCollision)
 {
     // Crée le double lien.
     mTargets.insert(mobile);
@@ -242,7 +242,7 @@ bool Mobile::addTarget(Mobile* mobile, std::multimap<Time, boost::shared_ptr<Eve
     // Ajoute la collision à la liste des événements si nécessaire.
     if (addCollision && mobile->mTargets.find(this) != mobile->mTargets.end())
     {
-        std::multimap<Time, boost::shared_ptr<Event> >::iterator it = events.insert(std::make_pair(mTargetTime, boost::shared_ptr<Event>(new Collision(this, mobile))));
+        std::multimap<Time, std::shared_ptr<Event> >::iterator it = events.insert(std::make_pair(mTargetTime, std::shared_ptr<Event>(new Collision(this, mobile))));
         mNextCollisions.insert(it);
         mobile->mNextCollisions.insert(it);
         return true;

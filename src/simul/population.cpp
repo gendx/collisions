@@ -23,11 +23,11 @@
 #include "coord_io.tpl"
 #include "piston.hpp"
 
-void Population::create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<boost::shared_ptr<Piston> >& pistons, std::multimap<Time, boost::shared_ptr<Event> >& events, const Time& now, double sizeArea)
+void Population::create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<std::shared_ptr<Piston> >& pistons, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea)
 {
-    boost::random::uniform_real_distribution<> distribX(mConfig.mPolygone.left(), mConfig.mPolygone.right());
-    boost::random::uniform_real_distribution<> distribY(mConfig.mPolygone.top(), mConfig.mPolygone.bottom());
-    boost::random::normal_distribution<> distribVitesse(0, mConfig.mVitesse);
+    std::uniform_real_distribution<> distribX(mConfig.mPolygone.left(), mConfig.mPolygone.right());
+    std::uniform_real_distribution<> distribY(mConfig.mPolygone.top(), mConfig.mPolygone.bottom());
+    std::normal_distribution<> distribVitesse(0, mConfig.mVitesse);
 
     for (unsigned int i = 0 ; i < mConfig.mTaille ; ++i)
     {
@@ -37,14 +37,14 @@ void Population::create(const Configuration& config, QList<Population>& populati
             pos = Coord<double>(distribX(Solveur::generateur), distribY(Solveur::generateur));
         while (this->invalid(pos, config, populations, pistons));
 
-        std::list<boost::shared_ptr<Boule> >::iterator it = mBoules.insert(mBoules.end(), boost::shared_ptr<Boule>(new Boule(pos, Coord<double>(distribVitesse(Solveur::generateur), distribVitesse(Solveur::generateur)), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles)));
+        std::list<std::shared_ptr<Boule> >::iterator it = mBoules.insert(mBoules.end(), std::shared_ptr<Boule>(new Boule(pos, Coord<double>(distribVitesse(Solveur::generateur), distribVitesse(Solveur::generateur)), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles)));
         mBoules.back()->setPopulation(now, index, it, events, config.configMutations());
         std::pair<unsigned int, unsigned int> countEtudes;
         mBoules.back()->updateCollisions(events, mapMobiles, now, sizeArea, config.gravity(), countEtudes);
     }
 }
 
-bool Population::invalid(const Coord<double>& pos, const Configuration& config, QList<Population>& populations, QList<boost::shared_ptr<Piston> >& pistons)
+bool Population::invalid(const Coord<double>& pos, const Configuration& config, QList<Population>& populations, QList<std::shared_ptr<Piston> >& pistons)
 {
     if ((mConfig.mPolygone.intersect(pos, mConfig.mRayon) || !mConfig.mPolygone.inside(pos))
         || (config.contour().sommets().intersect(pos, mConfig.mRayon) || !config.contour().sommets().inside(pos)))
@@ -58,12 +58,12 @@ bool Population::invalid(const Coord<double>& pos, const Configuration& config, 
         if ((pistons[j]->position().y - pos.y) <= mConfig.mRayon && (pos.y - pistons[j]->position().y) <= mConfig.mRayon + pistons[j]->epaisseur())
             return true;
 
-    for (std::list<boost::shared_ptr<Boule> >::iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
         if (((*it)->position() - pos).length() <= 2 * mConfig.mRayon)
             return true;
 
     for (int j = 0 ; j < populations.size() ; ++j)
-        for (std::list<boost::shared_ptr<Boule> >::iterator it = populations[j].mBoules.begin() ; it != populations[j].mBoules.end() ; ++it)
+        for (std::list<std::shared_ptr<Boule> >::iterator it = populations[j].mBoules.begin() ; it != populations[j].mBoules.end() ; ++it)
             if (((*it)->position() - pos).length() <= mConfig.mRayon + populations[j].mConfig.mRayon)
                 return true;
 
@@ -74,7 +74,7 @@ double Population::meanFreeRide() const
 {
     double result = 0;
     unsigned int nbre = 0;
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
     {
         if ((*it)->validFree())
         {
@@ -92,7 +92,7 @@ double Population::meanFreeTime() const
 {
     double result = 0;
     unsigned int nbre = 0;
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
     {
         if ((*it)->validFree())
         {
@@ -109,7 +109,7 @@ double Population::meanFreeTime() const
 double Population::meanFromOrigin() const
 {
     double result = 0;
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
         result += (*it)->fromOrigin().length();
     return result / mBoules.size();
 }
@@ -117,7 +117,7 @@ double Population::meanFromOrigin() const
 double Population::squareFromOrigin() const
 {
     double result = 0;
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
         result += (*it)->fromOrigin().squareLength();
     return result / mBoules.size();
 }
@@ -125,7 +125,7 @@ double Population::squareFromOrigin() const
 double Population::totalVitesse() const
 {
     double result = 0;
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
         result += (*it)->vitesse().length();
     return result;
 }
@@ -133,7 +133,7 @@ double Population::totalVitesse() const
 double Population::totalVit2() const
 {
     double result = 0;
-    for (std::list<boost::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (std::list<std::shared_ptr<Boule> >::const_iterator it = mBoules.begin() ; it != mBoules.end() ; ++it)
         result += (*it)->vitesse().squareLength();
     return result;
 }

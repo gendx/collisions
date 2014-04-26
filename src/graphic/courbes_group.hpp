@@ -38,7 +38,7 @@ public:
     void addProfil(const ConfigProfil& profil);
 
     // Ajout de valeurs aux courbes.
-    void push(Time time, const QList<Population>& populations, const QList<boost::shared_ptr<Piston> >& pistons);
+    void push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons);
     void update();
 
 private slots:
@@ -55,8 +55,8 @@ private:
     QScrollBar* mScrollBar;
 
     // Valeurs des courbes.
-    QList<boost::shared_ptr<WidgetCourbe> > mCourbes;
-    QList<boost::shared_ptr<WidgetProfil> > mProfils;
+    QList<std::shared_ptr<WidgetCourbe> > mCourbes;
+    QList<std::shared_ptr<WidgetProfil> > mProfils;
     Time mBegin;
     Time mEnd;
     Time mLifespan;
