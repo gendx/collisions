@@ -59,7 +59,7 @@ Mobile::Mobile(const Coord<double>& position, const Coord<double>& vitesse, cons
 void Mobile::showTargets() const
 {
     std::cout << "mTargets[" << *this << "].size() = " << mTargets.size() << std::endl;
-    for (std::set<Mobile*>::iterator it = mTargets.begin() ; it != mTargets.end() ; ++it)
+    for (auto it = mTargets.begin() ; it != mTargets.end() ; ++it)
         std::cout << "\ttarget : " << **it << std::endl;
 }
 
@@ -148,7 +148,7 @@ void Mobile::updateCollisions(std::multimap<Time, std::shared_ptr<Event> >& even
 // Détache le mobile de la collision (appelé en cas de changement de trajectoire).
 void Mobile::detach(const Collision& collision)
 {
-    for (std::set<std::multimap<Time, std::shared_ptr<Event> >::iterator>::iterator it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
+    for (auto it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
     {
         if (*reinterpret_cast<Collision*>((*it)->second.get()) == collision)
         {
@@ -163,7 +163,7 @@ void Mobile::detach(const Collision& collision)
 void Mobile::updateRefresh(std::set<Mobile*>& toRefresh)
 {
     toRefresh.insert(this);
-    for (std::set<Mobile*>::iterator it = mAttached.begin() ; it != mAttached.end() ; ++it)
+    for (auto it = mAttached.begin() ; it != mAttached.end() ; ++it)
         toRefresh.insert(*it);
 }
 
@@ -218,7 +218,7 @@ void Mobile::testeCollision(const Collision& collision, std::multimap<Time, std:
 void Mobile::detach(std::multimap<Time, std::shared_ptr<Event> >& events)
 {
     // Supprime les prochaines collisions (cibles) de la liste des événements et des mobiles concernés.
-    for (std::set<std::multimap<Time, std::shared_ptr<Event> >::iterator>::iterator it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
+    for (auto it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
     {
         std::shared_ptr<Event> copy = (*it)->second;
         events.erase(*it);
@@ -227,7 +227,7 @@ void Mobile::detach(std::multimap<Time, std::shared_ptr<Event> >& events)
     mNextCollisions.clear();
 
     // Détache ce mobile de ses cibles.
-    for (std::set<Mobile*>::iterator it = mTargets.begin() ; it != mTargets.end() ; ++it)
+    for (auto it = mTargets.begin() ; it != mTargets.end() ; ++it)
         (*it)->mAttached.erase(this);
     mTargets.clear();
 }
@@ -242,7 +242,7 @@ bool Mobile::addTarget(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event
     // Ajoute la collision à la liste des événements si nécessaire.
     if (addCollision && mobile->mTargets.find(this) != mobile->mTargets.end())
     {
-        std::multimap<Time, std::shared_ptr<Event> >::iterator it = events.insert(std::make_pair(mTargetTime, std::shared_ptr<Event>(new Collision(this, mobile))));
+        auto it = events.insert(std::make_pair(mTargetTime, std::shared_ptr<Event>(new Collision(this, mobile))));
         mNextCollisions.insert(it);
         mobile->mNextCollisions.insert(it);
         return true;

@@ -459,7 +459,7 @@ void Boule::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >
 
             // Ajoute les segments à l'ensemble.
             std::set<Segment> sgts = mapMobiles[j].segments().value(i);
-            for (std::set<Segment>::iterator it = sgts.begin() ; it != sgts.end() ; ++it)
+            for (auto it = sgts.begin() ; it != sgts.end() ; ++it)
                 segments.insert(*it);
         }
 
@@ -471,7 +471,7 @@ void Boule::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >
     }
 
     // Vérifie les segments listés.
-    for (std::set<Segment>::iterator it = segments.begin() ; it != segments.end() ; ++it)
+    for (auto it = segments.begin() ; it != segments.end() ; ++it)
         this->testeCollision(Collision(this, *it), events, now, sizeArea, gravity, countEtudes);
 
     // Vérifie un changement de zone.

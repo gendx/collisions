@@ -87,7 +87,7 @@ void WidgetProfil::update()
         {
             Time time = mProfil.valeurs()[i].first;
 
-            QMap<int, double>::const_iterator found = mProfil.valeurs()[i].second.find(j);
+            auto found = mProfil.valeurs()[i].second.find(j);
 
             // Choix de la couleur.
             QColor color = Qt::white;

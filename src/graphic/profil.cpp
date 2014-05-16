@@ -30,7 +30,7 @@ void Profil::push(Time time, const QList<Population>& populations)
         mConfig.mCibles[i].addValue(mConfig.mType, populations, mConfig.mPolygone, valeurs, nbres, mConfig.mSlice);
 
     if (mConfig.mMean)
-        for (QMap<int, double>::iterator it = valeurs.begin() ; it != valeurs.end() ; ++it)
+        for (auto it = valeurs.begin() ; it != valeurs.end() ; ++it)
             it.value() /= nbres[it.key()];
     this->push(time, valeurs);
 }
@@ -74,7 +74,7 @@ double Profil::max() const
 
     double max = std::numeric_limits<double>::quiet_NaN();
     for (int i = 0 ; i < mValeurs.size() ; ++i)
-        for (QMap<int, double>::const_iterator it = mValeurs[i].second.begin() ; it != mValeurs[i].second.end() ; ++it)
+        for (auto it = mValeurs[i].second.begin() ; it != mValeurs[i].second.end() ; ++it)
             if (it.value() > max || (!(max == max)))
                 max = it.value();
 
@@ -90,7 +90,7 @@ int Profil::maxSlice() const
     float max = std::numeric_limits<float>::quiet_NaN();
     for (int i = 0 ; i < mValeurs.size() ; ++i)
     {
-        QMap<int, double>::const_iterator it = mValeurs[i].second.end();
+        auto it = mValeurs[i].second.end();
         --it;
         if (it.key() > max || (!(max == max)))
             max = it.key();
@@ -106,7 +106,7 @@ int Profil::minSlice() const
     float min = std::numeric_limits<float>::quiet_NaN();
     for (int i = 0 ; i < mValeurs.size() ; ++i)
     {
-        QMap<int, double>::const_iterator it = mValeurs[i].second.begin();
+        auto it = mValeurs[i].second.begin();
         if (it.key() < min || (!(min == min)))
             min = it.key();
     }

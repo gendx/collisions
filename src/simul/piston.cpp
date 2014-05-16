@@ -186,7 +186,7 @@ void Piston::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> 
         // Vérifie les boules.
         QMultiMap<int, Boule*>& boules = mapMobiles[j].boules();
 
-        for (QMultiMap<int, Boule*>::iterator it = boules.begin() ; it != boules.end() ; ++it)
+        for (auto it = boules.begin() ; it != boules.end() ; ++it)
             this->testeCollision(*it, events, now, sizeArea, gravity, countEtudes);
 
         // Vérifie les pistons.
@@ -203,7 +203,7 @@ void Piston::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> 
         // Vérifie les boules.
         QMultiMap<int, Boule*>& boules = mapMobiles[j].boules();
 
-        for (QMultiMap<int, Boule*>::iterator it = boules.begin() ; it != boules.end() ; ++it)
+        for (auto it = boules.begin() ; it != boules.end() ; ++it)
             this->testeCollision(*it, events, now, sizeArea, gravity, countEtudes);
 
         // Vérifie les pistons.

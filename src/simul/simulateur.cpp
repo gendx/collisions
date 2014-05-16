@@ -142,13 +142,13 @@ bool Simulateur::playNext()
 
     //*
     bool isDraw = false;
-    for (std::multimap<Time, std::shared_ptr<Event> >::iterator it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it)
+    for (auto it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it)
         if (it->second->perform(*this, isDraw))
             mDrawingsRefresh.push_back(it);
     /*/
     unsigned int count = 0;
     unsigned int countChocs = 0;
-    for (std::multimap<Time, std::shared_ptr<Event> >::iterator it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it, ++count)
+    for (auto it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it, ++count)
     {
         ++countChocs;
         if (it->second->perform(*this))
@@ -196,7 +196,7 @@ void Simulateur::draw(QPainter& painter, double width)
     // Dessin des populations.
     for (int i = 0 ; i < mPopulations.size() ; ++i)
     {
-        for (std::list<std::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
         {
             const Boule* boule = it->get();
 
@@ -373,7 +373,7 @@ void Simulateur::emitStatusText(unsigned int msec, unsigned int frames, unsigned
 // Met à jour les collisions en partant des mobiles concernés par la(les) dernière(s) effectuée(s).
 void Simulateur::refreshCollisions()
 {
-    for (std::set<Mobile*>::iterator it = mToRefresh.begin() ; it != mToRefresh.end() ; ++it)
+    for (auto it = mToRefresh.begin() ; it != mToRefresh.end() ; ++it)
         (*it)->updateCollisions(mEvents, mMapMobiles, mNow, mSizeArea, mConfig.gravity(), mCountEtudes);
     mToRefresh.clear();
 }
@@ -381,7 +381,7 @@ void Simulateur::refreshCollisions()
 // Met à jour les événements de dessin (supprime ceux qui viennent d'être effectués).
 void Simulateur::refreshDrawings()
 {
-    for (QList<std::multimap<Time, std::shared_ptr<Event> >::iterator>::iterator it = mDrawingsRefresh.begin() ; it != mDrawingsRefresh.end() ; ++it)
+    for (auto it = mDrawingsRefresh.begin() ; it != mDrawingsRefresh.end() ; ++it)
     {
         (*it)->second->addEvent(*this);
         mEvents.erase(*it);
@@ -398,7 +398,7 @@ void Simulateur::avance(const Time& time)
 
     // Avance les populations de boules.
     for (int i = 0 ; i < mPopulations.size() ; ++i)
-        for (std::list<std::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
             (*it)->avance(diff, mConfig.gravity());
 
     // Avance les populations de pistons.
@@ -419,7 +419,7 @@ void Simulateur::rehashArea()
     mMapMobiles.clear();
 
     for (unsigned int i = 0 ; i < mPopulations.size() ; ++i)
-        for (std::list<std::shared_ptr<Boule> >::iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
             (*it)->setArea(mSizeArea, mToRefresh, mMapMobiles);
 
     this->refreshCollisions();
@@ -430,7 +430,7 @@ bool Simulateur::check() const
 {
     for (int i = 0 ; i < mPopulations.size() ; ++i)
     {
-        for (std::list<std::shared_ptr<Boule> >::const_iterator it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
         {
             const Boule& boule = **it;
             const Coord<double>& pos = boule.position();
@@ -446,7 +446,7 @@ bool Simulateur::check() const
             // Chevauchements entre boules.
             for (int x = 0 ; x < mPopulations.size() && x <= i ; ++x)
             {
-                for (std::list<std::shared_ptr<Boule> >::const_iterator iter = mPopulations[i].boules().begin() ; iter != mPopulations[i].boules().end() ; ++iter)
+                for (auto iter = mPopulations[i].boules().begin() ; iter != mPopulations[i].boules().end() ; ++iter)
                 {
                     if (it == iter)
                         break;

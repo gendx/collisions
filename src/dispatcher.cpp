@@ -93,7 +93,7 @@ bool Dispatcher::waitCloseAll()
     else
     {
         // On traite directement la requête.
-        for (QSet<Document*>::iterator it = obj.mSetPlay.begin() ; it != obj.mSetPlay.end() ; ++it)
+        for (auto it = obj.mSetPlay.begin() ; it != obj.mSetPlay.end() ; ++it)
             (*it)->mPlaying = false;
         obj.mSetPlay.clear();
     }
@@ -111,7 +111,7 @@ bool Dispatcher::waitClose()
     else
     {
         // On traite directement la requête.
-        for (QSet<Document*>::iterator it = obj.mSetPlay.begin() ; it != obj.mSetPlay.end() ; ++it)
+        for (auto it = obj.mSetPlay.begin() ; it != obj.mSetPlay.end() ; ++it)
             (*it)->mPlaying = false;
         obj.mSetPlay.clear();
     }
@@ -132,12 +132,12 @@ void Dispatcher::run()
     while (!(mWaitClose || (mSetPlay.isEmpty() && mWaitPlay.isEmpty() && mWaitRestart.isEmpty() && mWaitCloseDoc.empty())))
     {
         // Redémarre les simulations souhaitées.
-        for (QSet<Document*>::iterator it = mWaitRestart.begin() ; it != mWaitRestart.end() ; ++it)
+        for (auto it = mWaitRestart.begin() ; it != mWaitRestart.end() ; ++it)
             (*it)->mSimulateur->doRestart();
         mWaitRestart.clear();
 
         // Met à jour la liste des simulations en cours.
-        for (QMap<Document*, bool>::iterator it = mWaitPlay.begin() ; it != mWaitPlay.end() ; ++it)
+        for (auto it = mWaitPlay.begin() ; it != mWaitPlay.end() ; ++it)
         {
             if (it.value())
                 mSetPlay.insert(it.key());
@@ -148,7 +148,7 @@ void Dispatcher::run()
         mWaitPlay.clear();
 
         // Ferme les documents souhaités.
-        for (QSet<Document*>::iterator it = mWaitCloseDoc.begin() ; it != mWaitCloseDoc.end() ; ++it)
+        for (auto it = mWaitCloseDoc.begin() ; it != mWaitCloseDoc.end() ; ++it)
         {
             (*it)->mPlaying = false;
             mSetPlay.remove(*it);
@@ -168,7 +168,7 @@ void Dispatcher::run()
 
         // Avance chaque simulation jusqu'au prochain dessin.
         mSimulStep = true;
-        for (QSet<Document*>::iterator it = mSetPlay.begin() ; it != mSetPlay.end() ; ++it)
+        for (auto it = mSetPlay.begin() ; it != mSetPlay.end() ; ++it)
             (*it)->mSimulateur->playToNextDraw();
         mSimulStep = false;
     }
@@ -176,7 +176,7 @@ void Dispatcher::run()
     // Ferme la fenêtre principale.
     if (mWaitClose)
     {
-        for (QSet<Document*>::iterator it = mSetPlay.begin() ; it != mSetPlay.end() ; ++it)
+        for (auto it = mSetPlay.begin() ; it != mSetPlay.end() ; ++it)
             (*it)->mPlaying = false;
         mSetPlay.clear();
 
