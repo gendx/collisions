@@ -23,7 +23,7 @@
 
 // Constructeur.
 EditDivers::EditDivers() :
-    mLayout(new QFormLayout),
+    mLayout(new QFormLayout(this)),
     mXGrav(new QLineEdit),
     mYGrav(new QLineEdit)
 {
@@ -34,8 +34,6 @@ EditDivers::EditDivers() :
     // Remplissage du layout.
     mLayout->addRow(QString::fromUtf8("gravité x"), mXGrav);
     mLayout->addRow(QString::fromUtf8("gravité y"), mYGrav);
-
-    this->setLayout(mLayout);
 }
 
 

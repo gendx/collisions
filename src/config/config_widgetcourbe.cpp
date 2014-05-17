@@ -18,11 +18,13 @@
 
 #include "config_widgetcourbe.hpp"
 
+// Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigWidgetCourbe& config)
 {
     return stream << config.mType << config.mMean << config.mCourbes;
 }
 
+// Lecture d'un fichier de configuration.
 QDataStream& operator>>(QDataStream& stream, ConfigWidgetCourbe& config)
 {
     return stream >> config.mType >> config.mMean >> config.mCourbes;

@@ -25,25 +25,30 @@
 #include "population.hpp"
 #include "piston.hpp"
 
+// Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigCible& config)
 {
     return stream << config.mType << config.mIndex << config.mPolygone;
 }
 
+// Lecture d'un fichier de configuration.
 QDataStream& operator>>(QDataStream& stream, ConfigCible& config)
 {
     return stream >> config.mType >> config.mIndex >> config.mPolygone;
 }
 
 
+// Ajoute une tranche pour un profil.
 void ConfigCible::addValue(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, QMap<int, double>& values, QMap<int, unsigned int>& nbres, double slice)
 {
     if (mType != _population || mIndex >= populations.size())
         return;
 
+    // Parcourt la population choisie.
     for (auto it = populations[mIndex].boules().begin() ; it != populations[mIndex].boules().end() ; ++it)
     {
         const Boule& boule = **it;
+        // Mesure seulement les boules dans la zone choisie.
         if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
         {
             if (values.contains(floor(boule.position().y / slice)))
@@ -61,6 +66,7 @@ void ConfigCible::addValue(unsigned int valType, const QList<Population>& popula
 }
 
 
+// Calcule la valeur associée à l'ensemble concerné.
 double ConfigCible::value(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, const QList<std::shared_ptr<Piston> >& pistons, unsigned int& nbre)
 {
     if (mType == _piston)
@@ -80,6 +86,7 @@ double ConfigCible::value(unsigned int valType, const QList<Population>& populat
     return std::numeric_limits<double>::quiet_NaN();
 }
 
+// Mesure une valeur sur un piston.
 double ConfigCible::value(unsigned int valType, const Piston& piston)
 {
     if (valType == ConfigWidgetCourbe::posX)
@@ -102,6 +109,7 @@ double ConfigCible::value(unsigned int valType, const Piston& piston)
     return std::numeric_limits<double>::quiet_NaN();
 }
 
+// Mesure une valeur sur une population.
 double ConfigCible::value(unsigned int valType, const Population& population, const Polygone& polygone, unsigned int& nbre)
 {
     if (valType == ConfigWidgetCourbe::none)
@@ -109,10 +117,11 @@ double ConfigCible::value(unsigned int valType, const Population& population, co
 
     double valeur = 0;
 
+    // Parcourt la population.
     for (auto it = population.boules().begin() ; it != population.boules().end() ; ++it)
-    //for (unsigned int i = 0 ; i < population.boules().size() ; ++i)
     {
         const Boule& boule = **it;
+        // Mesure seulement les boules dans la zone choisie.
         if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
         {
             valeur += this->value(valType, boule);
@@ -123,6 +132,7 @@ double ConfigCible::value(unsigned int valType, const Population& population, co
     return valeur;
 }
 
+// Mesure une valeur (de type courbe) sur une boule.
 double ConfigCible::value(unsigned int valType, const Boule& boule)
 {
     if (valType == ConfigWidgetCourbe::posX)
@@ -153,6 +163,7 @@ double ConfigCible::value(unsigned int valType, const Boule& boule)
     return std::numeric_limits<double>::quiet_NaN();
 }
 
+// Mesure une valeur (de type profil) sur une boule.
 double ConfigCible::profilValue(unsigned int valType, const Boule& boule)
 {
     if (valType == ConfigProfil::energy)

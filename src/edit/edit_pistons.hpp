@@ -41,7 +41,7 @@ public slots:
     void select();
 
 private slots:
-    // Ajout d'un piston.
+    // Ajoute un piston.
     void add();
     // Supprime le piston sélectionné.
     void remove();

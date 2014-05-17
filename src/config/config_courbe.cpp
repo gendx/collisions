@@ -18,11 +18,13 @@
 
 #include "config_courbe.hpp"
 
+// Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigCourbe& config)
 {
     return stream << config.mCibles << config.mColor << config.mPolygone;
 }
 
+// Lecture d'un fichier de configuration.
 QDataStream& operator>>(QDataStream& stream, ConfigCourbe& config)
 {
     return stream >> config.mCibles >> config.mColor >> config.mPolygone;

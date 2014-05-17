@@ -23,24 +23,31 @@
 #include "spinbox_delegate.hpp"
 #include "color_delegate.hpp"
 
+// Widget pour éditer les populations de particules.
 class EditPopulations : public EditWithPolygone
 {
     Q_OBJECT
 
 public:
+    // Constructeur.
     EditPopulations(EditPolygone* editPolygone);
 
+    // Accesseurs.
     void setPopulations(QList<ConfigPopulation> populations);
     QList<ConfigPopulation> config() const;
 
 public slots:
+    // Met à jour le polygone selon la sélection.
     void selectPolygone();
 
 private slots:
+    // Ajoute une population.
     void add();
+    // Supprime la population sélectionnée.
     void remove();
 
 private:
+    // Active la synchronisation avec la sélection.
     void connectSelection(bool connect);
 
     QTableView* mTableView;

@@ -22,7 +22,7 @@
 
 // Constructeur.
 CourbesGroup::CourbesGroup(Time lifespan) :
-    mLayout(new QVBoxLayout),
+    mLayout(new QVBoxLayout(this)),
     mSplitter(new QSplitter(Qt::Vertical)),
     mScrollBar(new QScrollBar(Qt::Horizontal)),
     mLifespan(lifespan)
@@ -38,14 +38,13 @@ CourbesGroup::CourbesGroup(Time lifespan) :
     mLayout->setContentsMargins(QMargins());
     mLayout->addWidget(mScrollBar);
     mLayout->addWidget(mSplitter);
-    this->setLayout(mLayout);
 
     // Connexion des signaux et slots.
     QObject::connect(mScrollBar, SIGNAL(valueChanged(int)), this, SLOT(scroll(int)));
 }
 
 
-// Suppression de toutes les courbes.
+// Supprime toutes les courbes.
 void CourbesGroup::clear()
 {
     mCourbes.clear();
@@ -67,14 +66,14 @@ void CourbesGroup::clear()
     mLayout->addWidget(mSplitter);
 }
 
-// Ajout d'une courbe.
+// Ajoute une courbe.
 void CourbesGroup::addCourbe(const ConfigWidgetCourbe& courbe)
 {
     mCourbes.push_back(std::make_shared<WidgetCourbe>(mLifespan, courbe));
     mSplitter->addWidget(mCourbes.back().get());
 }
 
-// Ajout d'un profil.
+// Ajoute un profil.
 void CourbesGroup::addProfil(const ConfigProfil& profil)
 {
     mProfils.push_back(std::make_shared<WidgetProfil>(mLifespan, profil));
@@ -82,7 +81,7 @@ void CourbesGroup::addProfil(const ConfigProfil& profil)
 }
 
 
-// Ajout de valeurs aux courbes.
+// Ajoute des valeurs aux courbes.
 void CourbesGroup::push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
 {
     for (int i = 0 ; i < mCourbes.size() ; ++i)

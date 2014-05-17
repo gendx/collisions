@@ -18,11 +18,13 @@
 
 #include "config_population.hpp"
 
+// Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigPopulation& config)
 {
     return stream << config.mTaille << config.mRayon << config.mMasse << config.mColor << config.mPolygone << config.mVitesse;
 }
 
+// Lecture d'un fichier de configuration.
 QDataStream& operator>>(QDataStream& stream, ConfigPopulation& config)
 {
     return stream >> config.mTaille >> config.mRayon >> config.mMasse >> config.mColor >> config.mPolygone >> config.mVitesse;

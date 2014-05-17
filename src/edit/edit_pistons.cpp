@@ -58,11 +58,11 @@ void EditPistons::setPistons(QList<ConfigPiston> pistons)
 {
     this->connectSelection(false);
 
-    // Suppression des pistons.
+    // Supprime les pistons.
     mModel->removeRows(0, mModel->rowCount());
     mIndex = -1;
 
-    // Ajout des pistons.
+    // Ajoute les pistons.
     for (int i = 0 ; i < pistons.size() ; ++i)
     {
         ++mIndex;
@@ -114,7 +114,7 @@ void EditPistons::connectSelection(bool connect)
         QObject::disconnect(mTableView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), this, SLOT(select()));
 }
 
-// Ajout d'un piston.
+// Ajoute un piston.
 void EditPistons::add()
 {
     ++mIndex;

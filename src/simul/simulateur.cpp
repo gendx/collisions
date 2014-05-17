@@ -27,9 +27,7 @@ Simulateur::Simulateur(const Configuration& config) :
     mLayout(new QGridLayout(this)),
     mGroupCourbes(new CourbesGroup(500)),
     mLabelVitesse(new QLabel("vitesse :")),
-    mSliderVitesse(new QSlider(Qt::Horizontal)),/*
-    mLabelArea(new QLabel("area (20) :")),
-    mSliderArea(new QSlider(Qt::Horizontal)),//*/
+    mSliderVitesse(new QSlider(Qt::Horizontal)),
     mLabelValues(new QLabel(QString::fromUtf8("valeurs :"))),
     mSliderValues(new QSlider(Qt::Horizontal)),
     mLabelCourbes(new QLabel(QString::fromUtf8("courbes :"))),
@@ -42,16 +40,13 @@ Simulateur::Simulateur(const Configuration& config) :
 {
     // Création de l'interface graphique.
     mSliderVitesse->setRange(-1000, 250);
-    //mSliderArea->setRange(20, 200);
     mSliderValues->setRange(-500, 500);
     mSliderCourbes->setRange(-750, 250);
 
     mLayout->setMargin(0);
     mLayout->addWidget(mGroupCourbes, 0, 0, 1, 2);
     mLayout->addWidget(mLabelVitesse, 1, 0);
-    mLayout->addWidget(mSliderVitesse, 1, 1);/*
-    mLayout->addWidget(mLabelArea, 2, 0);
-    mLayout->addWidget(mSliderArea, 2, 1);//*/
+    mLayout->addWidget(mSliderVitesse, 1, 1);
     mLayout->addWidget(mLabelValues, 2, 0);
     mLayout->addWidget(mSliderValues, 2, 1);
     mLayout->addWidget(mLabelCourbes, 3, 0);
@@ -59,13 +54,11 @@ Simulateur::Simulateur(const Configuration& config) :
 
     // Connexion des signaux et slots.
     QObject::connect(mSliderVitesse, SIGNAL(valueChanged(int)), this, SLOT(setVitesse(int)));
-    //QObject::connect(mSliderArea, SIGNAL(valueChanged(int)), this, SLOT(setArea(int)));
     QObject::connect(mSliderValues, SIGNAL(valueChanged(int)), this, SLOT(setValues(int)));
     QObject::connect(mSliderCourbes, SIGNAL(valueChanged(int)), this, SLOT(setCourbes(int)));
 
     // Initialisation.
     mSliderVitesse->setValue(-500);
-    //mSliderArea->setValue(20);
     mSliderValues->setValue(0);
     mSliderCourbes->setValue(-250);
 
@@ -278,16 +271,6 @@ void Simulateur::setVitesse(int value)
     mStepDraw = pow(10, value / 250.0);
 }
 
-/*
-// Change la taille des zones.
-void Simulateur::setArea(int)
-{
-    if (mPlaying)
-        mWaitArea = true;
-    else
-        this->rehashArea();
-}//*/
-
 // Change la fréquence de sondage de valeurs.
 void Simulateur::setValues(int value)
 {
@@ -410,21 +393,6 @@ void Simulateur::avance(const Time& time)
 
 
 /*
-// Change la taille des zones (non opérationel).
-void Simulateur::rehashArea()
-{
-    mSizeArea = mSliderArea->value();
-    mLabelArea->setText(QString("area (") + QString::number(mSliderArea->value()) + ") :");
-
-    mMapMobiles.clear();
-
-    for (unsigned int i = 0 ; i < mPopulations.size() ; ++i)
-        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
-            (*it)->setArea(mSizeArea, mToRefresh, mMapMobiles);
-
-    this->refreshCollisions();
-}
-
 // Vérifie que la simulation est cohérente (pas de chevauchements).
 bool Simulateur::check() const
 {

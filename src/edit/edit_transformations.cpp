@@ -20,6 +20,7 @@
 
 #include <QHeaderView>
 
+// Constructeur.
 EditTransformations::EditTransformations() :
     mLayout(new QGridLayout(this)),
     mAddReaction(new QPushButton("ajouter")),
@@ -37,6 +38,7 @@ EditTransformations::EditTransformations() :
     mComboReactions(new ComboDelegate(mReactionsList)),
     mComboMutations(new ComboDelegate(mMutationsList))
 {
+    // Création de l'interface graphique.
     mLayout->setMargin(0);
     mLayout->addWidget(mReactionsView, 0, 0, 1, 2);
     mLayout->addWidget(mAddReaction, 1, 0);
@@ -45,9 +47,11 @@ EditTransformations::EditTransformations() :
     mLayout->addWidget(mAddMutation, 3, 0);
     mLayout->addWidget(mRemoveMutation, 3, 1);
 
+    // Création du modèle MVC (réactions).
     mModelReactions->setColumnCount(6);
     mModelReactions->setHorizontalHeaderLabels(QStringList() << QString::fromUtf8("critère") << "seuil" << "pop src 1" << "pop src 2" << "pop dst 1" << "pop dst 2");
 
+    // Propriétés de la table (réactions).
     mReactionsView->setModel(mModelReactions);
     mReactionsView->setItemDelegateForColumn(0, mComboReactions);
     mReactionsView->setItemDelegateForColumn(1, mDoubleDelegate);
@@ -59,9 +63,11 @@ EditTransformations::EditTransformations() :
     mReactionsView->setSelectionBehavior(QAbstractItemView::SelectRows);
     mReactionsView->setSelectionMode(QAbstractItemView::SingleSelection);
 
+    // Création du modèle MVC (mutations).
     mModelMutations->setColumnCount(4);
     mModelMutations->setHorizontalHeaderLabels(QStringList() << QString::fromUtf8("critère") << "seuil" << "pop. source" << "pop. destination");
 
+    // Propriétés de la table (mutations).
     mMutationsView->setModel(mModelMutations);
     mMutationsView->setItemDelegateForColumn(0, mComboMutations);
     mMutationsView->setItemDelegateForColumn(1, mDoubleDelegate);
@@ -72,6 +78,7 @@ EditTransformations::EditTransformations() :
     mMutationsView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 
+    // Connexion des signaux et slots.
     QObject::connect(mAddReaction, SIGNAL(clicked()), this, SLOT(addReaction()));
     QObject::connect(mRemoveReaction, SIGNAL(clicked()), this, SLOT(removeReaction()));
     QObject::connect(mAddMutation, SIGNAL(clicked()), this, SLOT(addMutation()));
@@ -84,11 +91,14 @@ EditTransformations::EditTransformations() :
 }
 
 
+// Accesseurs.
 void EditTransformations::setReactions(QList<ConfigReaction> reactions)
 {
+    // Supprime les réactions.
     mModelReactions->removeRows(0, mModelReactions->rowCount());
     mIndexReactions = -1;
 
+    // Ajoute les réactions.
     for (int i = 0 ; i < reactions.size() ; ++i)
     {
         ++mIndexReactions;
@@ -101,9 +111,11 @@ void EditTransformations::setReactions(QList<ConfigReaction> reactions)
 
 void EditTransformations::setMutations(QList<ConfigMutation> mutations)
 {
+    // Supprime les mutations.
     mModelMutations->removeRows(0, mModelMutations->rowCount());
     mIndexMutations = -1;
 
+    // Ajoute les mutations.
     for (int i = 0 ; i < mutations.size() ; ++i)
     {
         ++mIndexMutations;
@@ -118,6 +130,7 @@ QList<ConfigReaction> EditTransformations::configReactions() const
 {
     QList<ConfigReaction> result;
 
+    // Récupération des données dans le modèle MVC.
     for (int i = 0 ; i < mModelReactions->rowCount() ; ++i)
     {
         unsigned int critere = mModelReactions->data(mModelReactions->index(i, 0, QModelIndex()), Qt::UserRole).toUInt();
@@ -143,6 +156,7 @@ QList<ConfigMutation> EditTransformations::configMutations() const
 {
     QList<ConfigMutation> result;
 
+    // Récupération des données dans le modèle MVC.
     for (int i = 0 ; i < mModelMutations->rowCount() ; ++i)
     {
         unsigned int critere = mModelMutations->data(mModelMutations->index(i, 0, QModelIndex()), Qt::UserRole).toUInt();
@@ -161,6 +175,7 @@ QList<ConfigMutation> EditTransformations::configMutations() const
 }
 
 
+// Met à jour l'index sélectionné.
 void EditTransformations::selectReactions()
 {
     QModelIndexList selection = mReactionsView->selectionModel()->selectedIndexes();
@@ -170,6 +185,7 @@ void EditTransformations::selectReactions()
         mIndexReactions = selection[0].row();
 }
 
+// Met à jour l'index sélectionné.
 void EditTransformations::selectMutations()
 {
     QModelIndexList selection = mMutationsView->selectionModel()->selectedIndexes();
@@ -180,6 +196,7 @@ void EditTransformations::selectMutations()
 }
 
 
+// Active la synchronisation avec la sélection.
 void EditTransformations::connectSelectionReactions(bool connect)
 {
     if (connect)
@@ -197,6 +214,7 @@ void EditTransformations::connectSelectionMutations(bool connect)
 }
 
 
+// Ajoute une réaction.
 void EditTransformations::addReaction()
 {
     this->connectSelectionReactions(false);
@@ -211,6 +229,7 @@ void EditTransformations::addReaction()
     this->connectSelectionReactions(true);
 }
 
+// Supprime la réaction sélectionnée.
 void EditTransformations::removeReaction()
 {
     if (mIndexReactions == -1)
@@ -227,6 +246,7 @@ void EditTransformations::removeReaction()
     this->connectSelectionReactions(true);
 }
 
+// Ajoute une mutation.
 void EditTransformations::addMutation()
 {
     this->connectSelectionMutations(false);
@@ -241,6 +261,7 @@ void EditTransformations::addMutation()
     this->connectSelectionMutations(true);
 }
 
+// Supprime la mutation sélectionnée.
 void EditTransformations::removeMutation()
 {
     if (mIndexMutations == -1)

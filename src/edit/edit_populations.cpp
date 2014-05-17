@@ -20,6 +20,7 @@
 
 #include <QHeaderView>
 
+// Constructeur.
 EditPopulations::EditPopulations(EditPolygone* editPolygone) :
     EditWithPolygone(editPolygone),
     mTableView(new QTableView),
@@ -28,15 +29,19 @@ EditPopulations::EditPopulations(EditPolygone* editPolygone) :
     mPositiveDelegate(new DoubleDelegate(0)),
     mColorDelegate(new ColorDelegate)
 {
+    // Création du modèle MVC.
     mModel->setColumnCount(5);
     mModel->setHorizontalHeaderLabels(QStringList() << "nombre" << "rayon" << "masse" << "vitesse" << "couleur");
 
+    // Propriétés de la table.
     mTableView->setModel(mModel);
+    // Delegates.
     mTableView->setItemDelegateForColumn(0, mSpinboxDelegate);
     mTableView->setItemDelegateForColumn(1, mNotnullDelegate);
     mTableView->setItemDelegateForColumn(2, mNotnullDelegate);
     mTableView->setItemDelegateForColumn(3, mPositiveDelegate);
     mTableView->setItemDelegateForColumn(4, mColorDelegate);
+    // Divers.
     mTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     mTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     mTableView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -48,14 +53,17 @@ EditPopulations::EditPopulations(EditPolygone* editPolygone) :
 }
 
 
+// Accesseurs.
 void EditPopulations::setPopulations(QList<ConfigPopulation> populations)
 {
     this->connectSelection(false);
 
+    // Supprime les populations.
     mModel->removeRows(0, mModel->rowCount());
     mPolygones.clear();
     mIndex = 0;
 
+    // Ajoute les populations.
     for (int i = 0 ; i < populations.size() ; ++i)
     {
         this->addPolygone();
@@ -75,6 +83,7 @@ QList<ConfigPopulation> EditPopulations::config() const
 {
     QList<ConfigPopulation> result;
 
+    // Récupération des données dans le modèle MVC.
     for (int i = 0 ; i < mPolygones.size() ; ++i)
     {
         unsigned int nombre = mModel->data(mModel->index(i, 0, QModelIndex()), Qt::EditRole).toUInt();
@@ -89,6 +98,7 @@ QList<ConfigPopulation> EditPopulations::config() const
 }
 
 
+// Met à jour le polygone selon la sélection.
 void EditPopulations::selectPolygone()
 {
     QModelIndexList selection = mTableView->selectionModel()->selectedIndexes();
@@ -100,6 +110,7 @@ void EditPopulations::selectPolygone()
 }
 
 
+// Active la synchronisation avec la sélection.
 void EditPopulations::connectSelection(bool connect)
 {
     if (connect)
@@ -108,6 +119,7 @@ void EditPopulations::connectSelection(bool connect)
         QObject::disconnect(mTableView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), this, SLOT(selectPolygone()));
 }
 
+// Ajoute une population.
 void EditPopulations::add()
 {
     this->addPolygone();
@@ -117,12 +129,14 @@ void EditPopulations::add()
     mModel->setData(mModel->index(mIndex, 4, QModelIndex()), Qt::black, Qt::DecorationRole);
     mModel->setData(mModel->index(mIndex, 4, QModelIndex()), QColor(Qt::black).name(), Qt::UserRole);
 
+    // Sélectionne la nouvelle population.
     mTableView->selectRow(mIndex);
     this->setPolygone();
 
     this->connectSelection(true);
 }
 
+// Supprime la population sélectionnée.
 void EditPopulations::remove()
 {
     if (mIndex == -1)
@@ -130,6 +144,7 @@ void EditPopulations::remove()
 
     this->connectSelection(false);
 
+    // Suppression.
     this->removePolygone();
     mTableView->selectionModel()->select(mModel->index(mIndex, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
     this->setPolygone();

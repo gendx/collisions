@@ -94,8 +94,6 @@ private:
     void avance(const Time& time);
 
     /*
-    // Change la taille des zones (non opérationel).
-    void rehashArea();
     // Vérifie que la simulation est cohérente (pas de chevauchements).
     bool check() const;
     //*/
@@ -104,9 +102,7 @@ private:
     QGridLayout* mLayout;
     CourbesGroup* mGroupCourbes;
     QLabel* mLabelVitesse;
-    QSlider* mSliderVitesse;/*
-    QLabel* mLabelArea;
-    QSlider* mSliderArea;//*/
+    QSlider* mSliderVitesse;
     QLabel* mLabelValues;
     QSlider* mSliderValues;
     QLabel* mLabelCourbes;

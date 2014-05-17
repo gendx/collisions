@@ -18,11 +18,13 @@
 
 #include "config_profil.hpp"
 
+// Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigProfil& config)
 {
     return stream << config.mType << config.mMean << config.mSlice << config.mCibles << config.mPolygone;
 }
 
+// Lecture d'un fichier de configuration.
 QDataStream& operator>>(QDataStream& stream, ConfigProfil& config)
 {
     return stream >> config.mType >> config.mMean >> config.mSlice >> config.mCibles >> config.mPolygone;

@@ -43,14 +43,14 @@ public slots:
     void selectPolygone();
 
 private slots:
-    // Ajout d'un obstacle.
+    // Ajoute un obstacle.
     void add();
     // Supprime l'obstacle sélectionné.
     void remove();
 
 private:
-    // Ajout d'un obtacle à la liste.
-    void addCore();
+    // Ajoute un obtacle à la liste.
+    void addObstacle();
     // Active la synchronisation du polygone avec la sélection.
     void connectSelection(bool connect);
 

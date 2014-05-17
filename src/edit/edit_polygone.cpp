@@ -63,7 +63,7 @@ void EditPolygone::setPolygone(Polygone polygone)
     mPoints = polygone.sommets();
     mModel->removeColumns(0, mModel->columnCount());
 
-    // Ajout de chaque point au modèle.
+    // Ajoute chaque point au modèle.
     for (int i = 0 ; i < mPoints.size() ; ++i)
         mModel->appendColumn(QList<QStandardItem*>() << new QStandardItem(QString::number(mPoints[i].x)) << new QStandardItem(QString::number(mPoints[i].y)));
 

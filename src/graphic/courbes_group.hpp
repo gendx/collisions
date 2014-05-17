@@ -39,7 +39,7 @@ public:
     void addCourbe(const ConfigWidgetCourbe& courbe);
     void addProfil(const ConfigProfil& profil);
 
-    // Ajout de valeurs aux courbes.
+    // Ajoute des valeurs aux courbes.
     void push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons);
     void update();
 

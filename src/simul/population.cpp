@@ -23,20 +23,24 @@
 #include "coord_io.tpl"
 #include "piston.hpp"
 
+// Génère une population de boules selon la configuration.
 void Population::create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<std::shared_ptr<Piston> >& pistons, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea)
 {
+    // Distributions aléatoires en position (uniforme) et en vitesse (normale sur chaque axe).
     std::uniform_real_distribution<> distribX(mConfig.mPolygone.left(), mConfig.mPolygone.right());
     std::uniform_real_distribution<> distribY(mConfig.mPolygone.top(), mConfig.mPolygone.bottom());
     std::normal_distribution<> distribVitesse(0, mConfig.mVitesse);
 
     for (unsigned int i = 0 ; i < mConfig.mTaille ; ++i)
     {
+        // Crée une position valable.
         Coord<double> pos;
 
         do
             pos = Coord<double>(distribX(Solveur::generateur), distribY(Solveur::generateur));
         while (this->invalid(pos, config, populations, pistons));
 
+        // Ajoute une boule.
         auto it = mBoules.insert(mBoules.end(), std::make_shared<Boule>(pos, Coord<double>(distribVitesse(Solveur::generateur), distribVitesse(Solveur::generateur)), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles));
         mBoules.back()->setPopulation(now, index, it, events, config.configMutations());
         std::pair<unsigned int, unsigned int> countEtudes;
@@ -44,24 +48,33 @@ void Population::create(const Configuration& config, QList<Population>& populati
     }
 }
 
+// Vérifie les contraintes d'intersection entre les différents objets.
 bool Population::invalid(const Coord<double>& pos, const Configuration& config, QList<Population>& populations, QList<std::shared_ptr<Piston> >& pistons)
 {
+    // Vérifie que la boule est bien dans la zone autorisée.
     if ((mConfig.mPolygone.intersect(pos, mConfig.mRayon) || !mConfig.mPolygone.inside(pos))
-        || (config.contour().sommets().intersect(pos, mConfig.mRayon) || !config.contour().sommets().inside(pos)))
+        || (config.contour().sommets().intersect(pos, mConfig.mRayon)
+        || !config.contour().sommets().inside(pos)))
         return true;
 
+    // Vérifie les intersections avec les obstacles.
     for (int j = 0 ; j < config.obstacles().size() ; ++j)
-        if (config.obstacles()[j].sommets().intersect(pos, mConfig.mRayon) || config.obstacles()[j].sommets().inside(pos))
+        if (config.obstacles()[j].sommets().intersect(pos, mConfig.mRayon)
+         || config.obstacles()[j].sommets().inside(pos))
             return true;
 
+    // Vérifie les intersections avec les pistons.
     for (int j = 0 ; j < pistons.size() ; ++j)
-        if ((pistons[j]->position().y - pos.y) <= mConfig.mRayon && (pos.y - pistons[j]->position().y) <= mConfig.mRayon + pistons[j]->epaisseur())
+        if ((pistons[j]->position().y - pos.y) <= mConfig.mRayon
+         && (pos.y - pistons[j]->position().y) <= mConfig.mRayon + pistons[j]->epaisseur())
             return true;
 
+    // Vérifie les intersections avec les autres boules de cette population.
     for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
         if (((*it)->position() - pos).length() <= 2 * mConfig.mRayon)
             return true;
 
+    // Vérifie les intersections avec les boules des autres populations.
     for (int j = 0 ; j < populations.size() ; ++j)
         for (auto it = populations[j].mBoules.begin() ; it != populations[j].mBoules.end() ; ++it)
             if (((*it)->position() - pos).length() <= mConfig.mRayon + populations[j].mConfig.mRayon)
@@ -70,6 +83,7 @@ bool Population::invalid(const Coord<double>& pos, const Configuration& config, 
     return false;
 }
 
+// Calcule le libre parcours moyen.
 double Population::meanFreeRide() const
 {
     double result = 0;
@@ -88,6 +102,7 @@ double Population::meanFreeRide() const
     return std::numeric_limits<double>::quiet_NaN();
 }
 
+// Calcule le temps moyen de libre parcours.
 double Population::meanFreeTime() const
 {
     double result = 0;
@@ -106,6 +121,7 @@ double Population::meanFreeTime() const
     return std::numeric_limits<double>::quiet_NaN();
 }
 
+// Calcule la distance moyenne parcourue depuis le début.
 double Population::meanFromOrigin() const
 {
     double result = 0;
@@ -114,6 +130,7 @@ double Population::meanFromOrigin() const
     return result / mBoules.size();
 }
 
+// Calcule la moyenne du carré de la distance parcourue depuis le début.
 double Population::squareFromOrigin() const
 {
     double result = 0;
@@ -122,6 +139,7 @@ double Population::squareFromOrigin() const
     return result / mBoules.size();
 }
 
+// Calcule la somme des vitesses.
 double Population::totalVitesse() const
 {
     double result = 0;
@@ -130,6 +148,7 @@ double Population::totalVitesse() const
     return result;
 }
 
+// Calcule la somme des carrés des vitesses.
 double Population::totalVit2() const
 {
     double result = 0;

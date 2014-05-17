@@ -18,11 +18,13 @@
 
 #include "config_reaction.hpp"
 
+// Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigReaction& config)
 {
     return stream << config.mPop1 << config.mPop2 << config.mType << config.mSeuil << config.m_Pop1 << config.m_Pop2;
 }
 
+// Lecture d'un fichier de configuration.
 QDataStream& operator>>(QDataStream& stream, ConfigReaction& config)
 {
     return stream >> config.mPop1 >> config.mPop2 >> config.mType >> config.mSeuil >> config.m_Pop1 >> config.m_Pop2;

@@ -51,7 +51,7 @@ public:
     friend QDataStream& operator>>(QDataStream& stream, ConfigCible& config);
 
 private:
-    // Calcule une valeur pour le mobile concerné.
+    // Mesure une valeur sur un mobile.
     double value(unsigned int valType, const Piston& piston);
     double value(unsigned int valType, const Population& population, const Polygone& polygone, unsigned int& nbre);
     double value(unsigned int valType, const Boule& boule);

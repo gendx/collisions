@@ -18,11 +18,13 @@
 
 #include "config_mutation.hpp"
 
+// Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigMutation& config)
 {
     return stream << config.mPop1 << config.mPop2 << config.mTau;
 }
 
+// Lecture d'un fichier de configuration.
 QDataStream& operator>>(QDataStream& stream, ConfigMutation& config)
 {
     return stream >> config.mPop1 >> config.mPop2 >> config.mTau;

@@ -31,7 +31,7 @@ EditObstacles::EditObstacles(EditPolygone* editPolygone) :
 
     this->connectSelection(true);
 
-    // Ajout du contour.
+    // Ajoute le contour.
     QStandardItem* item = new QStandardItem("contour");
     item->setEditable(false);
     mModel->appendRow(QList<QStandardItem*>() << item);
@@ -61,11 +61,11 @@ void EditObstacles::setObstacles(QList<Obstacle> obstacles)
     for (int i = 0 ; i < obstacles.size() ; ++i)
     {
         this->addPolygone();
-        this->addCore();
+        this->addObstacle();
         mPolygones[mIndex] = obstacles[i].sommets();
     }
 
-    // Sélection de l'obstacle en cours.
+    // Sélectionne l'obstacle en cours.
     mListView->selectionModel()->select(mModel->index(mIndex, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
     if (mIndex > 0)
         mListView->selectionModel()->select(mModel->index(0, 0, QModelIndex()), QItemSelectionModel::Deselect);
@@ -111,7 +111,7 @@ void EditObstacles::connectSelection(bool connect)
         QObject::disconnect(mListView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), this, SLOT(selectPolygone()));
 }
 
-// Ajout d'un obstacle.
+// Ajoute un obstacle.
 void EditObstacles::add()
 {
     unsigned int old = mIndex;
@@ -119,9 +119,9 @@ void EditObstacles::add()
 
     this->connectSelection(false);
 
-    this->addCore();
+    this->addObstacle();
 
-    // Sélection du nouvel obstacle.
+    // Sélectionne le nouvel obstacle.
     mListView->selectionModel()->select(mModel->index(mIndex, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
     mListView->selectionModel()->select(mModel->index(old, 0, QModelIndex()), QItemSelectionModel::Deselect);
     this->setPolygone();
@@ -129,8 +129,8 @@ void EditObstacles::add()
     this->connectSelection(true);
 }
 
-// Ajout d'un obtacle à la liste.
-void EditObstacles::addCore()
+// Ajoute un obtacle à la liste.
+void EditObstacles::addObstacle()
 {
     static unsigned int i = 0;
 

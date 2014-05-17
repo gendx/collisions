@@ -23,37 +23,45 @@
 #include "spinbox_delegate.hpp"
 #include "combo_delegate.hpp"
 
+// Widget pour éditer les transformations de particules.
 class EditTransformations : public QWidget
 {
     Q_OBJECT
 
 public:
+    // Constructeur.
     EditTransformations();
 
+    // Accesseurs.
     void setReactions(QList<ConfigReaction> reactions);
     void setMutations(QList<ConfigMutation> mutations);
     QList<ConfigReaction> configReactions() const;
     QList<ConfigMutation> configMutations() const;
 
 private slots:
+    // Met à jour l'index sélectionné.
     void selectMutations();
     void selectReactions();
+    // Ajout/suppression.
     void addReaction();
     void removeReaction();
     void addMutation();
     void removeMutation();
 
 private:
+    // Active la synchronisation avec la sélection.
     void connectSelectionMutations(bool connect);
     void connectSelectionReactions(bool connect);
 
     QGridLayout* mLayout;
 
+    // Réaction entre deux particules.
     QPushButton* mAddReaction;
     QPushButton* mRemoveReaction;
     QStandardItemModel* mModelReactions;
     QTableView* mReactionsView;
 
+    // Mutation d'une particule.
     QPushButton* mAddMutation;
     QPushButton* mRemoveMutation;
     QStandardItemModel* mModelMutations;
@@ -64,6 +72,7 @@ private:
     int mIndexMutations;
     QStringList mMutationsList;
 
+    // Delegates.
     SpinBoxDelegate* mSpinboxDelegate;
     DoubleDelegate* mDoubleDelegate;
     ComboDelegate* mComboReactions;

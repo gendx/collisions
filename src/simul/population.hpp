@@ -29,28 +29,34 @@
 #include "config_population.hpp"
 #include "solveur.hpp"
 
+// Population de boules partageant les mêmes caractéristiques (couleur, masse, taille).
 class Population
 {
 public:
-    Population();
-    Population(const ConfigPopulation& config);
+    // Constructeurs.
+    inline Population();
+    inline Population(const ConfigPopulation& config);
 
+    // Génère une population de boules selon la configuration.
     void create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<std::shared_ptr<Piston> >& pistons, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea);
 
+    // Accesseurs.
     inline std::list<std::shared_ptr<Boule> >& boules();
     inline const std::list<std::shared_ptr<Boule> >& boules() const;
+
+    // Calcule des statistiques sur cette population.
     double meanFreeRide() const;
     double meanFreeTime() const;
     double meanFromOrigin() const;
     double squareFromOrigin() const;
+    double totalVitesse() const;
+    double totalVit2() const;
     inline double meanVitesse() const;
     inline double meanVit2() const;
     inline double meanEnergy() const;
     inline double meanPressure() const;
-    double totalVitesse() const;
-    double totalVit2() const;
     inline double totalEnergy() const;
-    ///inline double totalPressure() const;
+    //inline double totalPressure() const;
     /*
     QMap<int, double> profilPressure(double slice) const;
     QMap<int, double> profilTemperature(double slice) const;//*/
@@ -63,15 +69,19 @@ private:
     std::list<std::shared_ptr<Boule> > mBoules;
 };
 
+// Constructeurs.
 inline Population::Population() :
     mConfig() {}
 inline Population::Population(const ConfigPopulation& config) :
     mConfig(config) {}
 
+// Accesseurs.
 inline std::list<std::shared_ptr<Boule> >& Population::boules()
     {return mBoules;}
 inline const std::list<std::shared_ptr<Boule> >& Population::boules() const
     {return mBoules;}
+
+// Calcule des statistiques sur cette population.
 inline double Population::meanVitesse() const
     {return this->totalVitesse() / mConfig.mTaille;}
 inline double Population::meanVit2() const
@@ -79,7 +89,7 @@ inline double Population::meanVit2() const
 inline double Population::meanEnergy() const
     {return this->meanVit2() * mConfig.mMasse;}
 inline double Population::meanPressure() const
-    {double freeRide = this->meanFreeRide(); if (freeRide) return this->meanEnergy() / (freeRide * freeRide); else return 0;}
+    {double freeRide = this->meanFreeRide(); return freeRide ? (this->meanEnergy() / (freeRide * freeRide)) : 0;}
 inline double Population::totalEnergy() const
     {return this->totalVit2() * mConfig.mMasse;}/*
 inline double Population::totalPressure() const
