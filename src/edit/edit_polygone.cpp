@@ -64,8 +64,8 @@ void EditPolygone::setPolygone(Polygone polygone)
     mModel->removeColumns(0, mModel->columnCount());
 
     // Ajoute chaque point au modèle.
-    for (int i = 0 ; i < mPoints.size() ; ++i)
-        mModel->appendColumn(QList<QStandardItem*>() << new QStandardItem(QString::number(mPoints[i].x)) << new QStandardItem(QString::number(mPoints[i].y)));
+    for (auto& point : mPoints)
+        mModel->appendColumn(QList<QStandardItem*>() << new QStandardItem(QString::number(point.x)) << new QStandardItem(QString::number(point.y)));
 
     // Envoie le polygone.
     this->sendPolygone();
@@ -87,10 +87,9 @@ void EditPolygone::setPolygone()
 void EditPolygone::sendPolygone()
 {
     // Liste les points sélectionnés.
-    QModelIndexList selected = mTableView->selectionModel()->selectedColumns();
     QSet<unsigned int> selection;
-    for (int i = 0 ; i < selected.size() ; ++i)
-        selection.insert(selected[i].column());
+    for (auto& it : mTableView->selectionModel()->selectedColumns())
+        selection.insert(it.column());
 
     // Point survolé.
     QList<Coord<double> > points(mPoints);

@@ -45,9 +45,9 @@ void ConfigCible::addValue(unsigned int valType, const QList<Population>& popula
         return;
 
     // Parcourt la population choisie.
-    for (auto it = populations[mIndex].boules().begin() ; it != populations[mIndex].boules().end() ; ++it)
+    for (auto& ptr : populations[mIndex].boules())
     {
-        const Boule& boule = **it;
+        const Boule& boule = *ptr;
         // Mesure seulement les boules dans la zone choisie.
         if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
         {
@@ -118,9 +118,9 @@ double ConfigCible::value(unsigned int valType, const Population& population, co
     double valeur = 0;
 
     // Parcourt la population.
-    for (auto it = population.boules().begin() ; it != population.boules().end() ; ++it)
+    for (auto& ptr : population.boules())
     {
-        const Boule& boule = **it;
+        const Boule& boule = *ptr;
         // Mesure seulement les boules dans la zone choisie.
         if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
         {

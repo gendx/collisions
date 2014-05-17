@@ -26,8 +26,8 @@ void Profil::push(Time time, const QList<Population>& populations)
     QMap<int, unsigned int> nbres;
     QMap<int, double> valeurs;
 
-    for (int i = 0 ; i < mConfig.mCibles.size() ; ++i)
-        mConfig.mCibles[i].addValue(mConfig.mType, populations, mConfig.mPolygone, valeurs, nbres, mConfig.mSlice);
+    for (auto& cible : mConfig.mCibles)
+        cible.addValue(mConfig.mType, populations, mConfig.mPolygone, valeurs, nbres, mConfig.mSlice);
 
     if (mConfig.mMean)
         for (auto it = valeurs.begin() ; it != valeurs.end() ; ++it)
@@ -73,10 +73,13 @@ double Profil::max() const
         return 0;
 
     double max = std::numeric_limits<double>::quiet_NaN();
-    for (int i = 0 ; i < mValeurs.size() ; ++i)
-        for (auto it = mValeurs[i].second.begin() ; it != mValeurs[i].second.end() ; ++it)
+    for (auto& valeur : mValeurs)
+    {
+        auto& valeurs = valeur.second;
+        for (auto it = valeurs.begin() ; it != valeurs.end() ; ++it)
             if (it.value() > max || (!(max == max)))
                 max = it.value();
+    }
 
     return max;
 }
@@ -88,9 +91,9 @@ int Profil::maxSlice() const
         return 0;
 
     float max = std::numeric_limits<float>::quiet_NaN();
-    for (int i = 0 ; i < mValeurs.size() ; ++i)
+    for (auto& valeur : mValeurs)
     {
-        auto it = mValeurs[i].second.end();
+        auto it = valeur.second.end();
         --it;
         if (it.key() > max || (!(max == max)))
             max = it.key();
@@ -104,9 +107,9 @@ int Profil::minSlice() const
         return 0;
 
     float min = std::numeric_limits<float>::quiet_NaN();
-    for (int i = 0 ; i < mValeurs.size() ; ++i)
+    for (auto& valeur : mValeurs)
     {
-        auto it = mValeurs[i].second.begin();
+        auto it = valeur.second.begin();
         if (it.key() < min || (!(min == min)))
             min = it.key();
     }

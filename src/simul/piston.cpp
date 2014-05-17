@@ -153,8 +153,10 @@ void Piston::doCollision(const Time&/* now*/, Piston* piston, std::set<Mobile*>&
 // Effectue un changement de zone.
 void Piston::changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes)
 {
-    mapMobiles[mArea1].pistons().erase(mMapIt1);
-    mapMobiles[mArea2].pistons().erase(mMapIt2);
+    auto& pistons1 = mapMobiles[mArea1].pistons();
+    auto& pistons2 = mapMobiles[mArea2].pistons();
+    pistons1.erase(mMapIt1);
+    pistons2.erase(mMapIt2);
 
     // Calcul des zones.
     if (mVitesse.y >= 0)
@@ -169,10 +171,10 @@ void Piston::changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int,
     }
 
     // Mise à jour de la carte.
-    mapMobiles[mArea1].pistons().prepend(this);
-    mMapIt1 = mapMobiles[mArea1].pistons().begin();
-    mapMobiles[mArea2].pistons().prepend(this);
-    mMapIt2 = mapMobiles[mArea2].pistons().begin();
+    pistons1.prepend(this);
+    mMapIt1 = pistons1.begin();
+    pistons2.prepend(this);
+    mMapIt2 = pistons2.begin();
     this->updateRefresh(toRefresh);
 }
 
@@ -184,34 +186,26 @@ void Piston::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> 
     for (int j = mArea1 - 1 ; j <= mArea1 + 1 ; ++j)
     {
         // Vérifie les boules.
-        QMultiMap<int, Boule*>& boules = mapMobiles[j].boules();
-
-        for (auto it = boules.begin() ; it != boules.end() ; ++it)
-            this->testeCollision(*it, events, now, sizeArea, gravity, countEtudes);
+        for (auto& boule : mapMobiles[j].boules())
+            this->testeCollision(boule, events, now, sizeArea, gravity, countEtudes);
 
         // Vérifie les pistons.
-        QList<Piston*> list = mapMobiles[j].pistons();
-
-        for (int k = 0 ; k < list.size() ; ++k)
-            if (list[k] != this)
-                this->testeCollision(list[k], events, now, sizeArea, gravity, countEtudes);
+        for (auto& piston : mapMobiles[j].pistons())
+            if (piston != this)
+                this->testeCollision(piston, events, now, sizeArea, gravity, countEtudes);
     }
 
     // Vérifie les mobiles des zones voisines.
     for (int j = mArea2 - 1 ; j <= mArea2 + 1 ; ++j)
     {
         // Vérifie les boules.
-        QMultiMap<int, Boule*>& boules = mapMobiles[j].boules();
-
-        for (auto it = boules.begin() ; it != boules.end() ; ++it)
-            this->testeCollision(*it, events, now, sizeArea, gravity, countEtudes);
+        for (auto& boule : mapMobiles[j].boules())
+            this->testeCollision(boule, events, now, sizeArea, gravity, countEtudes);
 
         // Vérifie les pistons.
-        QList<Piston*> list = mapMobiles[j].pistons();
-
-        for (int k = 0 ; k < list.size() ; ++k)
-            if (list[k] != this)
-                this->testeCollision(list[k], events, now, sizeArea, gravity, countEtudes);
+        for (auto& piston : mapMobiles[j].pistons())
+            if (piston != this)
+                this->testeCollision(piston, events, now, sizeArea, gravity, countEtudes);
     }
 
     // Vérifie un changement de zone.

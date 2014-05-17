@@ -196,11 +196,9 @@ void MainWindow::saveAs()
 
 void MainWindow::saveAll()
 {
-    QList<QMdiSubWindow*> windows = mMdi->subWindowList();
-
-    for (int i = 0 ; i < windows.size() ; ++i)
+    for (auto& window : mMdi->subWindowList())
     {
-        Document* document = qobject_cast<Document*>(windows.at(i)->widget());
+        Document* document = qobject_cast<Document*>(window->widget());
         if (document->modified())
             document->save();
     }
@@ -373,12 +371,11 @@ void MainWindow::updateActions()
 
     mExportConfigAction->setEnabled(doc && !doc->simulMode());
 
-    QList<QMdiSubWindow*> windows = mMdi->subWindowList();
-    for (int i = 0; i < windows.size(); ++i)
+    for (auto& window : mMdi->subWindowList())
     {
-        Document* document = qobject_cast<Document*>(windows[i]->widget());
+        Document* document = qobject_cast<Document*>(window->widget());
 
-        if (windows[i] == mMdi->activeSubWindow())
+        if (window == mMdi->activeSubWindow())
             QObject::connect(document, SIGNAL(statusText(QString)), this, SLOT(statusText(QString)));
         else
             QObject::disconnect(document, SIGNAL(statusText(QString)), this, SLOT(statusText(QString)));

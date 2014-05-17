@@ -23,8 +23,8 @@ bool Configuration::check() const
 {
     // Il faut au moins une population non vide.
     unsigned int nbre = 0;
-    for (int i = 0 ; i < mConfigPops.size() ; ++i)
-        nbre += mConfigPops[i].taille();
+    for (auto& pop : mConfigPops)
+        nbre += pop.taille();
     if (!nbre)
         return false;
 
@@ -42,9 +42,9 @@ double Configuration::sizeArea() const
 
     // Recherche du plus gros rayon d'une boule.
     double rayonMax = 0;
-    for (int i = 0 ; i < mConfigPops.size() ; ++i)
+    for (auto& pop : mConfigPops)
     {
-        double rayon = mConfigPops[i].rayon();
+        double rayon = pop.rayon();
         if (rayon > rayonMax)
             rayonMax = rayon;
     }

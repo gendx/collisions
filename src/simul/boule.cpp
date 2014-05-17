@@ -49,9 +49,8 @@ void Boule::avance(const Time& time, const Coord<double>& gravity)
 // Effectue une mutation pour cette boule.
 void Boule::changePopulation(const Time& now, QList<Population>& populations, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations)
 {
-    for (int i = 0 ; i < configMutations.size() ; ++i)
+    for (auto& mutation : configMutations)
     {
-        const ConfigMutation& mutation = configMutations[i];
         if (mPopulation == mutation.mPop1)
         {
             this->swap(now, mutation.mPop2, populations, events, configMutations, true);
@@ -68,9 +67,8 @@ void Boule::setPopulation(const Time& now, unsigned int population, std::list<st
 
     mEventIt = events.end();
 
-    for (int i = 0 ; i < configMutations.size() ; ++i)
+    for (auto& mutation : configMutations)
     {
-        const ConfigMutation& mutation = configMutations[i];
         if (mPopulation == mutation.mPop1)
         {
             double time = mutation.mTau;
@@ -125,7 +123,11 @@ Time Boule::collision(const Boule* boule) const
     double rayons = mRayon + boule->mRayon;
 
     // Résolution d'une équation du second degré.
-    return Solveur::fstQuadratique(dVitesse.squareLength(), 2.0 * dVitesse.scalar(dPosition), dPosition.squareLength() - rayons * rayons);
+    return Solveur::fstQuadratique(
+                dVitesse.squareLength(),
+                2.0 * dVitesse.scalar(dPosition),
+                dPosition.squareLength() - rayons * rayons
+                );
 }
 
 // Calcule l'instant de la prochaine collision avec l'obstacle.
@@ -136,10 +138,20 @@ Time Boule::collision(const Coord<double>& sommet, const Coord<double>& gravity)
 
     // Avec gravité : équation de degré 4.
     if (gravity != Coord<double>())
-        return Solveur::fstQuartique(gravity.squareLength(), 2.0 * gravity.scalar(mVitesse), mVitesse.squareLength() + 2.0 * gravity.scalar(dPosition), 2.0 * mVitesse.scalar(dPosition), dPosition.squareLength() - mRayon * mRayon);
+        return Solveur::fstQuartique(
+                    gravity.squareLength(),
+                    2.0 * gravity.scalar(mVitesse),
+                    mVitesse.squareLength() + 2.0 * gravity.scalar(dPosition),
+                    2.0 * mVitesse.scalar(dPosition),
+                    dPosition.squareLength() - mRayon * mRayon
+                    );
     // Sans gravité : équation du second degré.
     else
-        return Solveur::fstQuadratique(mVitesse.squareLength(), 2.0 * mVitesse.scalar(dPosition), dPosition.squareLength() - mRayon * mRayon);
+        return Solveur::fstQuadratique(
+                    mVitesse.squareLength(),
+                    2.0 * mVitesse.scalar(dPosition),
+                    dPosition.squareLength() - mRayon * mRayon
+                    );
 }
 
 Time Boule::collision(const Segment& segment, const Coord<double>& gravity) const
@@ -285,9 +297,8 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
     }
 
     // Changements de populations issus du contact entre les boules (réactions).
-    for (int i = 0 ; i < configReactions.size() ; ++i)
+    for (auto& reaction : configReactions)
     {
-        const ConfigReaction& reaction = configReactions[i];
         if ((mPopulation == reaction.mPop1 && boule->mPopulation == reaction.mPop2) || (mPopulation == reaction.mPop2 && boule->mPopulation == reaction.mPop1))
         {
             if (reaction.mType == ConfigReaction::proba)
@@ -360,7 +371,8 @@ void Boule::doCollision(const Time& now, const Coord<double>& sommet, std::set<M
 
         // Changement de vitesse selon l'axe [centre boule -- choc].
         dPosition /= dPosition.length();
-        mVitesse = dPosition * mVitesse.scalar(-dPosition) + Coord<double>(-dPosition.y, dPosition.x) * dPosition.det(mVitesse);
+        mVitesse = dPosition * mVitesse.scalar(-dPosition)
+                + Coord<double>(-dPosition.y, dPosition.x) * dPosition.det(mVitesse);
 
         this->updateRefresh(toRefresh);
     }
@@ -387,7 +399,8 @@ void Boule::doCollision(const Time& now, const Segment& segment, std::set<Mobile
 
         // Changement de vitesse selon l'axe orthogonal au segment.
         vect /= vect.length();
-        mVitesse = vect * vect.scalar(mVitesse) + Coord<double>(vect.y, -vect.x) * vect.det(mVitesse);
+        mVitesse = vect * vect.scalar(mVitesse)
+                + Coord<double>(vect.y, -vect.x) * vect.det(mVitesse);
         this->updateRefresh(toRefresh);
     }
     // Erreur : la boule s'éloigne du segment !
@@ -442,37 +455,32 @@ void Boule::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >
     // Vérifie les mobiles des zones voisines.
     for (int j = mArea.y - 1 ; j <= mArea.y + 1 ; ++j)
     {
+        auto& mapj = mapMobiles[j];
+
         for (int i = mArea.x - 1 ; i <= mArea.x + 1 ; ++i)
         {
             // Vérifie les boules.
-            QList<Boule*> list = mapMobiles[j].boules().values(i);
-
-            for (int k = 0 ; k < list.size() ; ++k)
-                if (list[k] != this)
-                    this->testeCollision(list[k], events, now, sizeArea, gravity, countEtudes);
+            for (auto& boule : mapj.boules().values(i))
+                if (boule != this)
+                    this->testeCollision(boule, events, now, sizeArea, gravity, countEtudes);
 
             // Vérifie les sommets.
-            QList<Coord<double> > sommets = mapMobiles[j].sommets().values(i);
-
-            for (int k = 0 ; k < sommets.size() ; ++k)
-                this->testeCollision(Collision(this, sommets[k]), events, now, sizeArea, gravity, countEtudes);
+            for (auto& sommet : mapj.sommets().values(i))
+                this->testeCollision(Collision(this, sommet), events, now, sizeArea, gravity, countEtudes);
 
             // Ajoute les segments à l'ensemble.
-            std::set<Segment> sgts = mapMobiles[j].segments().value(i);
-            for (auto it = sgts.begin() ; it != sgts.end() ; ++it)
-                segments.insert(*it);
+            for (auto& segment : mapj.segments().value(i))
+                segments.insert(segment);
         }
 
         // Vérifie les pistons.
-        QList<Piston*> list = mapMobiles[j].pistons();
-
-        for (int k = 0 ; k < list.size() ; ++k)
-            this->testeCollision(list[k], events, now, sizeArea, gravity, countEtudes);
+        for (auto& piston : mapj.pistons())
+            this->testeCollision(piston, events, now, sizeArea, gravity, countEtudes);
     }
 
     // Vérifie les segments listés.
-    for (auto it = segments.begin() ; it != segments.end() ; ++it)
-        this->testeCollision(Collision(this, *it), events, now, sizeArea, gravity, countEtudes);
+    for (auto& segment : segments)
+        this->testeCollision(Collision(this, segment), events, now, sizeArea, gravity, countEtudes);
 
     // Vérifie un changement de zone.
     this->testeCollision(Collision(this), events, now, sizeArea, gravity, countEtudes);
@@ -496,8 +504,9 @@ void Boule::swap(const Time& now, unsigned int population, QList<Population>& po
     populations[mPopulation].boules().erase(mPopIt);
 
     // Ajoute la boule à la population.
-    mPopIt = populations[population].boules().insert(populations[population].boules().end(), value);
-    mColor = populations[population].color();
+    Population& pop = populations[population];
+    mPopIt = pop.boules().insert(pop.boules().end(), value);
+    mColor = pop.color();
 
     if (eraseEvent && mEventIt != events.end())
         events.erase(mEventIt);

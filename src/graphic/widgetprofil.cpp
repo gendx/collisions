@@ -66,7 +66,7 @@ void WidgetProfil::update()
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    // Détermination des bornes
+    // Détermination des bornes.
     Time maxTime = mProfil.maxTime();
     Time minTime = mProfil.minTime();
     double max = mProfil.max();
@@ -76,22 +76,21 @@ void WidgetProfil::update()
     Coord<double> unit(1.0 / mLifespan.time(), 1.0 / (maxSlice + 1 - minSlice));
 
 
-    // Tracé par tranches horizontales
+    // Tracé par tranches horizontales.
     for (int j = minSlice ; j <= maxSlice ; ++j)
     {
         // Dégradé de couleurs.
         QLinearGradient gradient(QPointF((minTime.time() - start) * unit.x, 0), QPointF((maxTime.time() - start) * unit.x, 0));
 
         // Couleur point par point.
-        for (int i = 0 ; i < mProfil.valeurs().size() ; ++i)
+        for (auto& valeur : mProfil.valeurs())
         {
-            Time time = mProfil.valeurs()[i].first;
-
-            auto found = mProfil.valeurs()[i].second.find(j);
+            Time time = valeur.first;
+            auto found = valeur.second.find(j);
 
             // Choix de la couleur.
             QColor color = Qt::white;
-            if (found != mProfil.valeurs()[i].second.end())
+            if (found != valeur.second.end())
                 color = QColor::fromHsl((unsigned int)(560 - 260 * found.value() / max) % 360, 255, 128);
             gradient.setColorAt((time.time() - minTime.time()) / (maxTime.time() - minTime.time()), color);
         }

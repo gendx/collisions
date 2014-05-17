@@ -24,8 +24,8 @@ void Courbe::push(Time time, unsigned int valType, bool mean, const QList<Popula
     unsigned int nbre = 0;
     double valeur = 0;
 
-    for (int i = 0 ; i < mConfig.mCibles.size() ; ++i)
-        valeur += mConfig.mCibles[i].value(valType, populations, mConfig.mPolygone, pistons, nbre);
+    for (auto& cible : mConfig.mCibles)
+        valeur += cible.value(valType, populations, mConfig.mPolygone, pistons, nbre);
 
     if (mean)
         valeur /= nbre;

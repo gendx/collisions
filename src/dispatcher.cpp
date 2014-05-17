@@ -93,8 +93,8 @@ bool Dispatcher::waitCloseAll()
     else
     {
         // On traite directement la requête.
-        for (auto it = obj.mSetPlay.begin() ; it != obj.mSetPlay.end() ; ++it)
-            (*it)->mPlaying = false;
+        for (auto& it : obj.mSetPlay)
+            it->mPlaying = false;
         obj.mSetPlay.clear();
     }
 
@@ -111,8 +111,8 @@ bool Dispatcher::waitClose()
     else
     {
         // On traite directement la requête.
-        for (auto it = obj.mSetPlay.begin() ; it != obj.mSetPlay.end() ; ++it)
-            (*it)->mPlaying = false;
+        for (auto& it : obj.mSetPlay)
+            it->mPlaying = false;
         obj.mSetPlay.clear();
     }
 
@@ -132,8 +132,8 @@ void Dispatcher::run()
     while (!(mWaitClose || (mSetPlay.isEmpty() && mWaitPlay.isEmpty() && mWaitRestart.isEmpty() && mWaitCloseDoc.empty())))
     {
         // Redémarre les simulations souhaitées.
-        for (auto it = mWaitRestart.begin() ; it != mWaitRestart.end() ; ++it)
-            (*it)->mSimulateur->doRestart();
+        for (auto& it : mWaitRestart)
+            it->mSimulateur->doRestart();
         mWaitRestart.clear();
 
         // Met à jour la liste des simulations en cours.
@@ -148,10 +148,10 @@ void Dispatcher::run()
         mWaitPlay.clear();
 
         // Ferme les documents souhaités.
-        for (auto it = mWaitCloseDoc.begin() ; it != mWaitCloseDoc.end() ; ++it)
+        for (auto& it : mWaitCloseDoc)
         {
-            (*it)->mPlaying = false;
-            mSetPlay.remove(*it);
+            it->mPlaying = false;
+            mSetPlay.remove(it);
         }
 
         if (mWaitCloseAll)
@@ -168,16 +168,16 @@ void Dispatcher::run()
 
         // Avance chaque simulation jusqu'au prochain dessin.
         mSimulStep = true;
-        for (auto it = mSetPlay.begin() ; it != mSetPlay.end() ; ++it)
-            (*it)->mSimulateur->playToNextDraw();
+        for (auto& it : mSetPlay)
+            it->mSimulateur->playToNextDraw();
         mSimulStep = false;
     }
 
     // Ferme la fenêtre principale.
     if (mWaitClose)
     {
-        for (auto it = mSetPlay.begin() ; it != mSetPlay.end() ; ++it)
-            (*it)->mPlaying = false;
+        for (auto& it : mSetPlay)
+            it->mPlaying = false;
         mSetPlay.clear();
 
         mWaitClose = false;

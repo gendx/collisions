@@ -64,15 +64,15 @@ void EditPopulations::setPopulations(QList<ConfigPopulation> populations)
     mIndex = 0;
 
     // Ajoute les populations.
-    for (int i = 0 ; i < populations.size() ; ++i)
+    for (auto& population : populations)
     {
         this->addPolygone();
-        mPolygones[i] = populations[i].polygone();
+        mPolygones.back() = population.polygone();
 
-        QString name = ColorEditor::strFromColor(populations[i].color());
-        mModel->appendRow(QList<QStandardItem*>() << new QStandardItem(QString::number(populations[i].taille())) << new QStandardItem(QString::number(populations[i].rayon())) << new QStandardItem(QString::number(populations[i].masse())) << new QStandardItem(QString::number(populations[i].vitesse())) << new QStandardItem(name));
-        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), populations[i].color(), Qt::DecorationRole);
-        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), populations[i].color(), Qt::UserRole);
+        QString name = ColorEditor::strFromColor(population.color());
+        mModel->appendRow(QList<QStandardItem*>() << new QStandardItem(QString::number(population.taille())) << new QStandardItem(QString::number(population.rayon())) << new QStandardItem(QString::number(population.masse())) << new QStandardItem(QString::number(population.vitesse())) << new QStandardItem(name));
+        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), population.color(), Qt::DecorationRole);
+        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), population.color(), Qt::UserRole);
     }
 
     mTableView->selectRow(mIndex);

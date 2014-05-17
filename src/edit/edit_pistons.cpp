@@ -63,13 +63,13 @@ void EditPistons::setPistons(QList<ConfigPiston> pistons)
     mIndex = -1;
 
     // Ajoute les pistons.
-    for (int i = 0 ; i < pistons.size() ; ++i)
+    for (auto& piston : pistons)
     {
         ++mIndex;
-        QString name = ColorEditor::strFromColor(pistons[i].color());
-        mModel->appendRow(QList<QStandardItem*>() << new QStandardItem(QString::number(pistons[i].epaisseur())) << new QStandardItem(QString::number(pistons[i].masse())) << new QStandardItem(QString::number(pistons[i].position())) << new QStandardItem(QString::number(pistons[i].vitesse())) << new QStandardItem(name));
-        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), pistons[i].color(), Qt::DecorationRole);
-        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), pistons[i].color(), Qt::UserRole);
+        QString name = ColorEditor::strFromColor(piston.color());
+        mModel->appendRow(QList<QStandardItem*>() << new QStandardItem(QString::number(piston.epaisseur())) << new QStandardItem(QString::number(piston.masse())) << new QStandardItem(QString::number(piston.position())) << new QStandardItem(QString::number(piston.vitesse())) << new QStandardItem(name));
+        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), piston.color(), Qt::DecorationRole);
+        mModel->setData(mModel->index(mIndex, 4, QModelIndex()), piston.color(), Qt::UserRole);
     }
 
     mTableView->selectRow(mIndex);

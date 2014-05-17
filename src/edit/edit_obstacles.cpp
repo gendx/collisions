@@ -58,11 +58,11 @@ void EditObstacles::setObstacles(QList<Obstacle> obstacles)
         this->removePolygone();
 
     // Ajoute les obstacles.
-    for (int i = 0 ; i < obstacles.size() ; ++i)
+    for (auto& obstacle : obstacles)
     {
         this->addPolygone();
         this->addObstacle();
-        mPolygones[mIndex] = obstacles[i].sommets();
+        mPolygones[mIndex] = obstacle.sommets();
     }
 
     // Sélectionne l'obstacle en cours.

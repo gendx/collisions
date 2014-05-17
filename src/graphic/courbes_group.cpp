@@ -54,10 +54,10 @@ void CourbesGroup::clear()
     mScrollBar->setMaximum(0);
 
     // Arrête la récupération de valeurs.
-    for (int i = 0 ; i < mCourbes.size() ; ++i)
-        mCourbes[i]->setFinished();
-    for (int i = 0 ; i < mProfils.size() ; ++i)
-        mProfils[i]->setFinished();
+    for (auto& courbe : mCourbes)
+        courbe->setFinished();
+    for (auto& profil : mProfils)
+        profil->setFinished();
 
     // Supprime le widget.
     mLayout->removeWidget(mSplitter);
@@ -84,10 +84,10 @@ void CourbesGroup::addProfil(const ConfigProfil& profil)
 // Ajoute des valeurs aux courbes.
 void CourbesGroup::push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
 {
-    for (int i = 0 ; i < mCourbes.size() ; ++i)
-        mCourbes[i]->push(time, populations, pistons);
-    for (int i = 0 ; i < mProfils.size() ; ++i)
-        mProfils[i]->push(time, populations);
+    for (auto& courbe : mCourbes)
+        courbe->push(time, populations, pistons);
+    for (auto& profil : mProfils)
+        profil->push(time, populations);
 
     if (time < mBegin)
         mBegin = time;
@@ -117,17 +117,17 @@ void CourbesGroup::update()
 // Défilement horizontal.
 void CourbesGroup::scroll(int value)
 {
-    for (int i = 0 ; i < mCourbes.size() ; ++i)
+    for (auto& courbe : mCourbes)
     {
-        mCourbes[i]->setScroll((mScrollBar->maximum() - value) / 10000.0);
-        mCourbes[i]->setLifespan(mLifespan);
-        mCourbes[i]->update();
+        courbe->setScroll((mScrollBar->maximum() - value) / 10000.0);
+        courbe->setLifespan(mLifespan);
+        courbe->update();
     }
-    for (int i = 0 ; i < mProfils.size() ; ++i)
+    for (auto& profil : mProfils)
     {
-        mProfils[i]->setScroll((mScrollBar->maximum() - value) / 10000.0);
-        mProfils[i]->setLifespan(mLifespan);
-        mProfils[i]->update();
+        profil->setScroll((mScrollBar->maximum() - value) / 10000.0);
+        profil->setLifespan(mLifespan);
+        profil->update();
     }
 }
 

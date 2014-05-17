@@ -59,8 +59,8 @@ Mobile::Mobile(const Coord<double>& position, const Coord<double>& vitesse, cons
 void Mobile::showTargets() const
 {
     std::cout << "mTargets[" << *this << "].size() = " << mTargets.size() << std::endl;
-    for (auto it = mTargets.begin() ; it != mTargets.end() ; ++it)
-        std::cout << "\ttarget : " << **it << std::endl;
+    for (auto& target : mTargets)
+        std::cout << "\ttarget : " << *target << std::endl;
 }
 
 
@@ -127,8 +127,8 @@ bool Mobile::checkLastCollision(const Collision& collision, const Time& time) co
     return (mLastTime != time);
     //return true;
     /*/
-    for (int i = 0 ; i < mLastCollisions.size() ; ++i)
-        if (*mLastCollisions[i] == collision && mLastTime == time)
+    for (auto& lastCollision : mLastCollisions)
+        if (*lastCollision == collision && mLastTime == time)
             return false;
     return true;
     //*/
@@ -163,8 +163,8 @@ void Mobile::detach(const Collision& collision)
 void Mobile::updateRefresh(std::set<Mobile*>& toRefresh)
 {
     toRefresh.insert(this);
-    for (auto it = mAttached.begin() ; it != mAttached.end() ; ++it)
-        toRefresh.insert(*it);
+    for (auto& attached : mAttached)
+        toRefresh.insert(attached);
 }
 
 

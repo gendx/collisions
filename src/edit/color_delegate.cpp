@@ -78,10 +78,9 @@ void ColorDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, con
     QString str = ColorEditor::strFromColor(value);
 
     // Choix d'un nom de couleur user-friendly.
-    QStringList colorNames = QColor::colorNames();
-    for (int i = 0 ; i < colorNames.size() ; ++i)
-        if (value == QColor(colorNames[i]))
-            str = colorNames[i];
+    for (auto& name : QColor::colorNames())
+        if (value == QColor(name))
+            str = name;
 
     // Application au modèle MVC.
     model->setData(index, value.name(), Qt::UserRole);

@@ -162,8 +162,8 @@ void Editeur::setPolygones(QList<Polygone> polygones)
 {
     QList<DrawPolygone> result;
 
-    for (int i = 0 ; i < polygones.size() ; ++i)
-        result.append(DrawPolygone(polygones[i], /*QColor(0xFF609010), */QColor(0xFFC0C0E0), QVector<qreal>() << 3 << 3, QSet<unsigned int>()));
+    for (auto& polygone : polygones)
+        result.append(DrawPolygone(polygone, /*QColor(0xFF609010), */QColor(0xFFC0C0E0), QVector<qreal>() << 3 << 3, QSet<unsigned int>()));
 
     mGraph->setPolygones(result);
 }

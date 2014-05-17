@@ -90,26 +90,27 @@ void Simulateur::doRestart()
     this->addObstacles();
 
     // Création des pistons.
-    for (int i = 0 ; i < mConfig.configPistons().size() ; ++i)
+    for (auto& piston : mConfig.configPistons())
     {
-        mPistons.push_back(std::make_shared<Piston>(mConfig.configPistons()[i], mSizeArea, mMapMobiles));
+        mPistons.push_back(std::make_shared<Piston>(piston, mSizeArea, mMapMobiles));
         mPistons.back()->updateCollisions(mEvents, mMapMobiles, mNow, mSizeArea, mConfig.gravity(), mCountEtudes);
     }
 
     // Création des populations.
-    for (int i = 0 ; i < mConfig.configPops().size() ; ++i)
+    const auto& configPops = mConfig.configPops();
+    for (int i = 0 ; i < configPops.size() ; ++i)
     {
-        mPopulations.push_back(Population(mConfig.configPops()[i]));
+        mPopulations.push_back(Population(configPops[i]));
         mPopulations.back().create(mConfig, mPopulations, i, mMapMobiles, mPistons, mEvents, mNow, mSizeArea);
     }
 
     // Création des courbes.
-    for (int i = 0 ; i < mConfig.configFcourbes().size() ; ++i)
-        mGroupCourbes->addCourbe(mConfig.configFcourbes()[i]);
+    for (auto& fcourbe : mConfig.configFcourbes())
+        mGroupCourbes->addCourbe(fcourbe);
 
     // Création des profils.
-    for (int i = 0 ; i < mConfig.configProfils().size() ; ++i)
-        mGroupCourbes->addProfil(mConfig.configProfils()[i]);
+    for (auto& profil : mConfig.configProfils())
+        mGroupCourbes->addProfil(profil);
 
     // Ajoute les événements de dessin et de courbe.
     this->addDrawEvent();
@@ -179,20 +180,17 @@ void Simulateur::draw(QPainter& painter, double width)
     QPointF right = inverted.map(QPointF(width, 0));
 
     // Dessin des pistons.
-    for (int i = 0 ; i < mPistons.size() ; ++i)
+    for (auto& piston : mPistons)
     {
-        const Piston* piston = mPistons[i].get();
         painter.setBrush(piston->color());
         painter.drawRect(QRectF(left.x(), piston->position().y, right.x() - left.x(), piston->epaisseur()));
     }
 
     // Dessin des populations.
-    for (int i = 0 ; i < mPopulations.size() ; ++i)
+    for (auto& population : mPopulations)
     {
-        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        for (auto& boule : population.boules())
         {
-            const Boule* boule = it->get();
-
             painter.setBrush(boule->color());
             painter.drawEllipse(QRectF(boule->position().x - boule->rayon(), boule->position().y - boule->rayon(), 2 * boule->rayon(), 2 * boule->rayon()));
         }
@@ -288,8 +286,8 @@ void Simulateur::setCourbes(int value)
 void Simulateur::addObstacles()
 {
     // ajout des sommets
-    for (int i = 0 ; i < mConfig.obstacles().size() ; ++i)
-        this->addObstacle(mConfig.obstacles()[i].sommets());
+    for (auto& obstacle : mConfig.obstacles())
+        this->addObstacle(obstacle.sommets());
     this->addObstacle(mConfig.contour().sommets());
 }
 
@@ -380,13 +378,13 @@ void Simulateur::avance(const Time& time)
     Time diff = time - mNow;
 
     // Avance les populations de boules.
-    for (int i = 0 ; i < mPopulations.size() ; ++i)
-        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
-            (*it)->avance(diff, mConfig.gravity());
+    for (auto& population : mPopulations)
+        for (auto& boule : population.boules())
+            boule->avance(diff, mConfig.gravity());
 
     // Avance les populations de pistons.
-    for (int i = 0 ; i < mPistons.size() ; ++i)
-        mPistons[i]->avance(diff, mConfig.gravity());
+    for (auto& piston : mPistons)
+        piston->avance(diff, mConfig.gravity());
 
     mNow = time;
 }
@@ -398,7 +396,8 @@ bool Simulateur::check() const
 {
     for (int i = 0 ; i < mPopulations.size() ; ++i)
     {
-        for (auto it = mPopulations[i].boules().begin() ; it != mPopulations[i].boules().end() ; ++it)
+        auto& boules = mPopulations[i].boules();
+        for (auto it = boules.begin() ; it != boules.end() ; ++it)
         {
             const Boule& boule = **it;
             const Coord<double>& pos = boule.position();
@@ -414,7 +413,7 @@ bool Simulateur::check() const
             // Chevauchements entre boules.
             for (int x = 0 ; x < mPopulations.size() && x <= i ; ++x)
             {
-                for (auto iter = mPopulations[i].boules().begin() ; iter != mPopulations[i].boules().end() ; ++iter)
+                for (auto iter = boules.begin() ; iter != boules.end() ; ++iter)
                 {
                     if (it == iter)
                         break;
@@ -428,19 +427,19 @@ bool Simulateur::check() const
             }
 
             // Chevauchements entre boules et pistons.
-            for (int k = 0 ; k < mPistons.size() ; ++k)
+            for (auto& piston : mPistons)
             {
-                if ((mPistons[k]->position().y - pos.y) < rayon && (pos.y - mPistons[k]->position().y) < rayon + mPistons[k]->epaisseur())
+                if ((piston->position().y - pos.y) < rayon && (pos.y - piston->position().y) < rayon + piston->epaisseur())
                 {
-                    std::cout << "collision (piston) : " << boule << " ; " << *mPistons[k] << std::endl;
+                    std::cout << "collision (piston) : " << boule << " ; " << *piston << std::endl;
                     return false;
                 }
             }
 
             // Chevauchements entre boules et obstacles.
-            for (int k = 0 ; k < mConfig.obstacles().size() ; ++k)
+            for (auto& obstacle : mConfig.obstacles())
             {
-                if (mConfig.obstacles()[k].sommets().intersect(pos, rayon) || mConfig.obstacles()[k].sommets().inside(pos))
+                if (obstacle.sommets().intersect(pos, rayon) || obstacle.sommets().inside(pos))
                 {
                     std::cout << "collision (obstacle) : " << boule << std::endl;
                     return false;

@@ -55,8 +55,8 @@ QPolygonF Polygone::toPolygon() const
 {
     QPolygonF result;
 
-    for (int i = 0 ; i < mSommets.size() ; ++i)
-        result.push_back(QPointF(mSommets[i].x, mSommets[i].y));
+    for (auto& sommet : mSommets)
+        result.push_back(QPointF(sommet.x, sommet.y));
     return result;
 }
 

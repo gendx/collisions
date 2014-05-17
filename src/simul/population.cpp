@@ -41,7 +41,18 @@ void Population::create(const Configuration& config, QList<Population>& populati
         while (this->invalid(pos, config, populations, pistons));
 
         // Ajoute une boule.
-        auto it = mBoules.insert(mBoules.end(), std::make_shared<Boule>(pos, Coord<double>(distribVitesse(Solveur::generateur), distribVitesse(Solveur::generateur)), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles));
+        auto it = mBoules.insert(mBoules.end(),
+                                 std::make_shared<Boule>(
+                                     pos,
+                                     Coord<double>(distribVitesse(Solveur::generateur),
+                                                   distribVitesse(Solveur::generateur)),
+                                     mConfig.mColor,
+                                     mConfig.mMasse,
+                                     mConfig.mRayon,
+                                     now,
+                                     sizeArea,
+                                     mapMobiles)
+                                 );
         mBoules.back()->setPopulation(now, index, it, events, config.configMutations());
         std::pair<unsigned int, unsigned int> countEtudes;
         mBoules.back()->updateCollisions(events, mapMobiles, now, sizeArea, config.gravity(), countEtudes);
@@ -58,26 +69,29 @@ bool Population::invalid(const Coord<double>& pos, const Configuration& config, 
         return true;
 
     // Vérifie les intersections avec les obstacles.
-    for (int j = 0 ; j < config.obstacles().size() ; ++j)
-        if (config.obstacles()[j].sommets().intersect(pos, mConfig.mRayon)
-         || config.obstacles()[j].sommets().inside(pos))
+    for (auto& obstacle : config.obstacles())
+    {
+        auto& sommets = obstacle.sommets();
+        if (sommets.intersect(pos, mConfig.mRayon)
+         || sommets.inside(pos))
             return true;
+    }
 
     // Vérifie les intersections avec les pistons.
-    for (int j = 0 ; j < pistons.size() ; ++j)
-        if ((pistons[j]->position().y - pos.y) <= mConfig.mRayon
-         && (pos.y - pistons[j]->position().y) <= mConfig.mRayon + pistons[j]->epaisseur())
+    for (auto& piston : pistons)
+        if ((piston->position().y - pos.y) <= mConfig.mRayon
+         && (pos.y - piston->position().y) <= mConfig.mRayon + piston->epaisseur())
             return true;
 
     // Vérifie les intersections avec les autres boules de cette population.
-    for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
-        if (((*it)->position() - pos).length() <= 2 * mConfig.mRayon)
+    for (auto& boule : mBoules)
+        if ((boule->position() - pos).length() <= 2 * mConfig.mRayon)
             return true;
 
     // Vérifie les intersections avec les boules des autres populations.
-    for (int j = 0 ; j < populations.size() ; ++j)
-        for (auto it = populations[j].mBoules.begin() ; it != populations[j].mBoules.end() ; ++it)
-            if (((*it)->position() - pos).length() <= mConfig.mRayon + populations[j].mConfig.mRayon)
+    for (auto& population : populations)
+        for (auto& boule : population.mBoules)
+            if ((boule->position() - pos).length() <= mConfig.mRayon + population.mConfig.mRayon)
                 return true;
 
     return false;
@@ -88,11 +102,11 @@ double Population::meanFreeRide() const
 {
     double result = 0;
     unsigned int nbre = 0;
-    for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (auto& boule : mBoules)
     {
-        if ((*it)->validFree())
+        if (boule->validFree())
         {
-            result += (*it)->freeRide().length();
+            result += boule->freeRide().length();
             ++nbre;
         }
     }
@@ -107,11 +121,11 @@ double Population::meanFreeTime() const
 {
     double result = 0;
     unsigned int nbre = 0;
-    for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
+    for (auto& boule : mBoules)
     {
-        if ((*it)->validFree())
+        if (boule->validFree())
         {
-            result += (*it)->freeTime().time();
+            result += boule->freeTime().time();
             ++nbre;
         }
     }
@@ -125,8 +139,8 @@ double Population::meanFreeTime() const
 double Population::meanFromOrigin() const
 {
     double result = 0;
-    for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
-        result += (*it)->fromOrigin().length();
+    for (auto& boule : mBoules)
+        result += boule->fromOrigin().length();
     return result / mBoules.size();
 }
 
@@ -134,8 +148,8 @@ double Population::meanFromOrigin() const
 double Population::squareFromOrigin() const
 {
     double result = 0;
-    for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
-        result += (*it)->fromOrigin().squareLength();
+    for (auto& boule : mBoules)
+        result += boule->fromOrigin().squareLength();
     return result / mBoules.size();
 }
 
@@ -143,8 +157,8 @@ double Population::squareFromOrigin() const
 double Population::totalVitesse() const
 {
     double result = 0;
-    for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
-        result += (*it)->vitesse().length();
+    for (auto& boule : mBoules)
+        result += boule->vitesse().length();
     return result;
 }
 
@@ -152,7 +166,7 @@ double Population::totalVitesse() const
 double Population::totalVit2() const
 {
     double result = 0;
-    for (auto it = mBoules.begin() ; it != mBoules.end() ; ++it)
-        result += (*it)->vitesse().squareLength();
+    for (auto& boule : mBoules)
+        result += boule->vitesse().squareLength();
     return result;
 }

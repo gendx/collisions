@@ -30,8 +30,8 @@ WidgetCourbe::WidgetCourbe(Time lifespan, const ConfigWidgetCourbe& config) :
     mCourbes(),
     mConfig(config)
 {
-    for (int i = 0 ; i < mConfig.mCourbes.size() ; ++i)
-        mCourbes.push_back(Courbe(mConfig.mCourbes[i]));
+    for (auto& courbe : mConfig.mCourbes)
+        mCourbes.push_back(Courbe(courbe));
     this->setMinimumSize(200, 50);
 }
 
@@ -59,8 +59,8 @@ void WidgetCourbe::resizeEvent(QResizeEvent*/* event*/)
 // Calcule et ajoute des valeurs aux courbes.
 void WidgetCourbe::push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
 {
-    for (int i = 0 ; i < mConfig.mCourbes.size() ; ++i)
-        mCourbes[i].push(time, mConfig.mType, mConfig.mMean, populations, pistons);
+    for (auto& courbe : mCourbes)
+        courbe.push(time, mConfig.mType, mConfig.mMean, populations, pistons);
 }
 
 // Redessine la QPixmap.
@@ -119,22 +119,25 @@ void WidgetCourbe::update()
     double start = maxTime.time() - mLifespan.time() * (1 + mScroll);
 
     // Tracé en reliant les points par des segments.
-    for (int i = 0 ; i < mCourbes.size() ; ++i)
+    for (auto& courbe : mCourbes)
     {
         QPainterPath path;
+        bool isBegin = true;
 
-        for (int j = 0 ; j < mCourbes[i].valeurs().size() ; ++j)
+        for (auto& valeur : courbe.valeurs())
         {
-            const std::pair<Time, double>& valeur = mCourbes[i].valeurs()[j];
             QPointF point((valeur.first.time() - start) / mLifespan.time(), (1 - (valeur.second - min) / (max - min)));
 
-            if (j == 0)
+            if (isBegin)
+            {
                 path.moveTo(point);
+                isBegin = false;
+            }
             else
                 path.lineTo(point);
         }
 
-        painter.strokePath(path, mCourbes[i].color());
+        painter.strokePath(path, courbe.color());
     }
 
     // Met à jour le widget.

@@ -124,30 +124,30 @@ void Graph::reinitBackground(bool force)
     {
         mBackground.fill(Qt::white);
 
-        // Tracé des polygones.
-        for (int i = 0 ; i < mPolygones.size() ; ++i)
-            mPolygones[i].draw(painter);
+        // Trace les polygones.
+        for (auto& polygone : mPolygones)
+            polygone.draw(painter);
     }
     // En mode simulation.
     else
     {
         mBackground.fill(mConfig.contour().color());
 
-        // Tracé du contour.
+        // Trace le contour.
         painter.setBrush(Qt::white);
         painter.setPen(mConfig.contour().color());
         painter.drawPolygon(mConfig.contour().sommets().toPolygon());
 
-        // Tracé des obstacles.
-        for (int i = 0 ; i < mConfig.obstacles().size() ; ++i)
+        // Trace les obstacles.
+        for (auto& obstacle : mConfig.obstacles())
         {
-            painter.setBrush(mConfig.obstacles()[i].color());
-            painter.setPen(mConfig.obstacles()[i].color());
-            painter.drawPolygon(mConfig.obstacles()[i].sommets().toPolygon());
+            painter.setBrush(obstacle.color());
+            painter.setPen(obstacle.color());
+            painter.drawPolygon(obstacle.sommets().toPolygon());
         }
     }
 
-    // Tracé du quadrillage.
+    // Trace le quadrillage.
     painter.setRenderHint(QPainter::Antialiasing, false);
     painter.setPen(QPen());
 
