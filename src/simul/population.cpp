@@ -37,7 +37,7 @@ void Population::create(const Configuration& config, QList<Population>& populati
             pos = Coord<double>(distribX(Solveur::generateur), distribY(Solveur::generateur));
         while (this->invalid(pos, config, populations, pistons));
 
-        auto it = mBoules.insert(mBoules.end(), std::shared_ptr<Boule>(new Boule(pos, Coord<double>(distribVitesse(Solveur::generateur), distribVitesse(Solveur::generateur)), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles)));
+        auto it = mBoules.insert(mBoules.end(), std::make_shared<Boule>(pos, Coord<double>(distribVitesse(Solveur::generateur), distribVitesse(Solveur::generateur)), mConfig.mColor, mConfig.mMasse, mConfig.mRayon, now, sizeArea, mapMobiles));
         mBoules.back()->setPopulation(now, index, it, events, config.configMutations());
         std::pair<unsigned int, unsigned int> countEtudes;
         mBoules.back()->updateCollisions(events, mapMobiles, now, sizeArea, config.gravity(), countEtudes);

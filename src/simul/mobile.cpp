@@ -112,7 +112,7 @@ void Mobile::setLastCollision(const Time& now, const Collision& collision)
 {
     if (mLastTime != now)
         mLastCollisions.clear();
-    mLastCollisions.append(std::shared_ptr<Collision>(new Collision(collision)));
+    mLastCollisions.append(std::make_shared<Collision>(collision));
     mLastTime = now;
 }
 
@@ -150,7 +150,7 @@ void Mobile::detach(const Collision& collision)
 {
     for (auto it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
     {
-        if (*reinterpret_cast<Collision*>((*it)->second.get()) == collision)
+        if (*std::dynamic_pointer_cast<Collision>((*it)->second) == collision)
         {
             mNextCollisions.erase(it);
             break;
@@ -210,7 +210,7 @@ void Mobile::testeCollision(const Collision& collision, std::multimap<Time, std:
         this->detach(events);
     }
     if (time == mTargetTime)
-        mNextCollisions.insert(events.insert(std::make_pair(mTargetTime, std::shared_ptr<Event>(new Collision(collision)))));
+        mNextCollisions.insert(events.insert(std::make_pair(mTargetTime, std::make_shared<Collision>(collision))));
 }
 
 
@@ -222,7 +222,7 @@ void Mobile::detach(std::multimap<Time, std::shared_ptr<Event> >& events)
     {
         std::shared_ptr<Event> copy = (*it)->second;
         events.erase(*it);
-        reinterpret_cast<Collision*>(copy.get())->detach(this);
+        std::dynamic_pointer_cast<Collision>(copy)->detach(this);
     }
     mNextCollisions.clear();
 
@@ -242,7 +242,7 @@ bool Mobile::addTarget(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event
     // Ajoute la collision à la liste des événements si nécessaire.
     if (addCollision && mobile->mTargets.find(this) != mobile->mTargets.end())
     {
-        auto it = events.insert(std::make_pair(mTargetTime, std::shared_ptr<Event>(new Collision(this, mobile))));
+        auto it = events.insert(std::make_pair(mTargetTime, std::make_shared<Collision>(this, mobile)));
         mNextCollisions.insert(it);
         mobile->mNextCollisions.insert(it);
         return true;

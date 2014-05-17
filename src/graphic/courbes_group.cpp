@@ -70,14 +70,14 @@ void CourbesGroup::clear()
 // Ajout d'une courbe.
 void CourbesGroup::addCourbe(const ConfigWidgetCourbe& courbe)
 {
-    mCourbes.push_back(std::shared_ptr<WidgetCourbe>(new WidgetCourbe(mLifespan, courbe)));
+    mCourbes.push_back(std::make_shared<WidgetCourbe>(mLifespan, courbe));
     mSplitter->addWidget(mCourbes.back().get());
 }
 
 // Ajout d'un profil.
 void CourbesGroup::addProfil(const ConfigProfil& profil)
 {
-    mProfils.push_back(std::shared_ptr<WidgetProfil>(new WidgetProfil(mLifespan, profil)));
+    mProfils.push_back(std::make_shared<WidgetProfil>(mLifespan, profil));
     mSplitter->addWidget(mProfils.back().get());
 }
 

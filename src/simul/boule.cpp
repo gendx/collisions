@@ -82,7 +82,7 @@ void Boule::setPopulation(const Time& now, unsigned int population, std::list<st
             }
 
             if (time > 0)
-                mEventIt = events.insert(std::make_pair(now + Time(time), std::shared_ptr<Event>(new BouleEvent(this))));
+                mEventIt = events.insert(std::make_pair(now + Time(time), std::make_shared<BouleEvent>(this)));
             break;
         }
     }

@@ -99,7 +99,7 @@ void Simulateur::doRestart()
     // Création des pistons.
     for (int i = 0 ; i < mConfig.configPistons().size() ; ++i)
     {
-        mPistons.push_back(std::shared_ptr<Piston>(new Piston(mConfig.configPistons()[i], mSizeArea, mMapMobiles)));
+        mPistons.push_back(std::make_shared<Piston>(mConfig.configPistons()[i], mSizeArea, mMapMobiles));
         mPistons.back()->updateCollisions(mEvents, mMapMobiles, mNow, mSizeArea, mConfig.gravity(), mCountEtudes);
     }
 
@@ -258,17 +258,17 @@ bool Simulateur::performBouleEvent(Boule* boule)
 // Ajoute un événement.
 void Simulateur::addDrawEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepDraw, std::shared_ptr<Event>(new DrawEvent)));
+    mEvents.insert(std::make_pair(mNow + mStepDraw, std::make_shared<DrawEvent>()));
 }
 
 void Simulateur::addValueEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepValues, std::shared_ptr<Event>(new ValueEvent)));
+    mEvents.insert(std::make_pair(mNow + mStepValues, std::make_shared<ValueEvent>()));
 }
 
 void Simulateur::addCourbeEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepCourbes, std::shared_ptr<Event>(new CourbeEvent)));
+    mEvents.insert(std::make_pair(mNow + mStepCourbes, std::make_shared<CourbeEvent>()));
 }
 
 
