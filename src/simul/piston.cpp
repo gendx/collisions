@@ -153,10 +153,8 @@ void Piston::doCollision(const Time&/* now*/, Piston* piston, std::set<Mobile*>&
 // Effectue un changement de zone.
 void Piston::changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes)
 {
-    auto& pistons1 = mapMobiles[mArea1].pistons();
-    auto& pistons2 = mapMobiles[mArea2].pistons();
-    pistons1.erase(mMapIt1);
-    pistons2.erase(mMapIt2);
+    mapMobiles[mArea1].pistons().erase(mMapIt1);
+    mapMobiles[mArea2].pistons().erase(mMapIt2);
 
     // Calcul des zones.
     if (mVitesse.y >= 0)
@@ -171,10 +169,14 @@ void Piston::changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int,
     }
 
     // Mise à jour de la carte.
+    auto& pistons1 = mapMobiles[mArea1].pistons();
     pistons1.prepend(this);
     mMapIt1 = pistons1.begin();
+
+    auto& pistons2 = mapMobiles[mArea2].pistons();
     pistons2.prepend(this);
     mMapIt2 = pistons2.begin();
+
     this->updateRefresh(toRefresh);
 }
 
