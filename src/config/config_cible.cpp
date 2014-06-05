@@ -22,8 +22,7 @@
 
 #include "config_widgetcourbe.hpp"
 #include "config_profil.hpp"
-#include "population.hpp"
-#include "piston.hpp"
+#include "state.hpp"
 
 // Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigCible& config)
@@ -39,27 +38,27 @@ QDataStream& operator>>(QDataStream& stream, ConfigCible& config)
 
 
 // Ajoute une tranche pour un profil.
-void ConfigCible::addValue(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, QMap<int, double>& values, QMap<int, unsigned int>& nbres, double slice)
+void ConfigCible::addValue(unsigned int valType, const Polygone& polygone, State& state, QMap<int, double>& values, QMap<int, unsigned int>& nbres, double slice)
 {
-    if (mType != _population || mIndex >= populations.size())
+    if (mType != _population || mIndex >= state.populations.size())
         return;
 
     // Parcourt la population choisie.
-    for (auto& ptr : populations[mIndex].boules())
+    for (auto& ptr : state.populations[mIndex].boules())
     {
         const Boule& boule = *ptr;
         // Mesure seulement les boules dans la zone choisie.
         if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
         {
-            if (values.contains(floor(boule.position().y / slice)))
+            if (values.contains(std::floor(boule.position().y / slice)))
             {
-                values[floor(boule.position().y / slice)] += this->profilValue(valType, boule);
-                ++nbres[floor(boule.position().y / slice)];
+                values[std::floor(boule.position().y / slice)] += this->profilValue(valType, boule);
+                ++nbres[std::floor(boule.position().y / slice)];
             }
             else
             {
-                values[floor(boule.position().y / slice)] = this->profilValue(valType, boule);
-                nbres[floor(boule.position().y / slice)] = 1;
+                values[std::floor(boule.position().y / slice)] = this->profilValue(valType, boule);
+                nbres[std::floor(boule.position().y / slice)] = 1;
             }
         }
     }
@@ -67,20 +66,20 @@ void ConfigCible::addValue(unsigned int valType, const QList<Population>& popula
 
 
 // Calcule la valeur associée à l'ensemble concerné.
-double ConfigCible::value(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, const QList<std::shared_ptr<Piston> >& pistons, unsigned int& nbre)
+double ConfigCible::value(unsigned int valType, const Polygone& polygone, State& state, unsigned int& nbre)
 {
     if (mType == _piston)
     {
-        if (mIndex < pistons.size())
+        if (mIndex < state.pistons.size())
         {
             ++nbre;
-            return this->value(valType, *pistons[mIndex]);
+            return this->value(valType, *state.pistons[mIndex]);
         }
     }
     else if (mType == _population)
     {
-        if (mIndex < populations.size())
-            return this->value(valType, populations[mIndex], polygone, nbre);
+        if (mIndex < state.populations.size())
+            return this->value(valType, state.populations[mIndex], polygone, nbre);
     }
 
     return std::numeric_limits<double>::quiet_NaN();

@@ -32,11 +32,7 @@ Simulateur::Simulateur(const Configuration& config) :
     mSliderValues(new QSlider(Qt::Horizontal)),
     mLabelCourbes(new QLabel(QString::fromUtf8("courbes :"))),
     mSliderCourbes(new QSlider(Qt::Horizontal)),
-    mSizeArea(),
-    mCountChocs(0),
-    mCountEtudes(0, 0),
-    mTotalEtudes(0),
-    mConfig(config)
+    mState(config)
 {
     // Création de l'interface graphique.
     mSliderVitesse->setRange(-1000, 250);
@@ -70,46 +66,17 @@ Simulateur::Simulateur(const Configuration& config) :
 void Simulateur::doRestart()
 {
     // Destruction de la simulation précédente.
-    mEvents.clear();
-    mToRefresh.clear();
-    mDrawingsRefresh.clear();
-    mPopulations.clear();
-    mPistons.clear();
-    mMapMobiles.clear();
-    mNow = 0;
-    mCountChocs = 0;
-    mCountEtudes.first = 0;
-    mCountEtudes.second = 0;
-    mTotalEtudes = 0;
-    mFrames.clear();
+    mState.clear();
     mGroupCourbes->clear();
 
-    mSizeArea = mConfig.sizeArea();
-
-    // Création des obstacles.
-    this->addObstacles();
-
-    // Création des pistons.
-    for (auto& piston : mConfig.configPistons())
-    {
-        mPistons.push_back(std::make_shared<Piston>(piston, mSizeArea, mMapMobiles));
-        mPistons.back()->updateCollisions(mEvents, mMapMobiles, mNow, mSizeArea, mConfig.gravity(), mCountEtudes);
-    }
-
-    // Création des populations.
-    const auto& configPops = mConfig.configPops();
-    for (int i = 0 ; i < configPops.size() ; ++i)
-    {
-        mPopulations.push_back(Population(configPops[i]));
-        mPopulations.back().create(mConfig, mPopulations, i, mMapMobiles, mPistons, mEvents, mNow, mSizeArea);
-    }
+    mState.create();
 
     // Création des courbes.
-    for (auto& fcourbe : mConfig.configFcourbes())
+    for (auto& fcourbe : mState.config.configFcourbes())
         mGroupCourbes->addCourbe(fcourbe);
 
     // Création des profils.
-    for (auto& profil : mConfig.configProfils())
+    for (auto& profil : mState.config.configProfils())
         mGroupCourbes->addProfil(profil);
 
     // Ajoute les événements de dessin et de courbe.
@@ -131,14 +98,14 @@ void Simulateur::playToNextDraw()
 bool Simulateur::playNext()
 {
     // Avance jusqu'au prochain événement.
-    Time timeEvent = mEvents.begin()->first;
+    Time timeEvent = mState.events.begin()->first;
     this->avance(timeEvent);
 
     //*
     bool isDraw = false;
-    for (auto it = mEvents.begin() ; it != mEvents.end() && it->first == mNow ; ++it)
+    for (auto it = mState.events.begin() ; it != mState.events.end() && it->first == mState.now ; ++it)
         if (it->second->perform(*this, isDraw))
-            mDrawingsRefresh.push_back(it);
+            mState.drawingsRefresh.push_back(it);
     /*/
     unsigned int count = 0;
     unsigned int countChocs = 0;
@@ -180,14 +147,14 @@ void Simulateur::draw(QPainter& painter, double width)
     QPointF right = inverted.map(QPointF(width, 0));
 
     // Dessin des pistons.
-    for (auto& piston : mPistons)
+    for (auto& piston : mState.pistons)
     {
         painter.setBrush(piston->color());
         painter.drawRect(QRectF(left.x(), piston->position().y, right.x() - left.x(), piston->epaisseur()));
     }
 
     // Dessin des populations.
-    for (auto& population : mPopulations)
+    for (auto& population : mState.populations)
     {
         for (auto& boule : population.boules())
         {
@@ -201,22 +168,23 @@ void Simulateur::draw(QPainter& painter, double width)
 // Effectue une collision.
 bool Simulateur::performCollision(Collision& collision)
 {
-    collision.doCollision(mNow, mSizeArea, mToRefresh, mEvents, mConfig.configMutations(), mConfig.configReactions(), mPopulations, mMapMobiles, mCountEtudes);
+    collision.doCollision(mState);
     if (collision.isReal())
-        ++mCountChocs;
+        ++mState.countChocs;
     return false;
 }
 
 // Met à jour le dessin.
 bool Simulateur::performDrawEvent()
 {
-    if ((!mFrames.empty()) && mFrames.front().first.elapsed() >= 2000)
-        this->emitStatusText(mFrames.front().first.elapsed(), mFrames.size(), mCountChocs - mFrames.front().second, mCountChocs);
-    while ((!mFrames.empty()) && mFrames.front().first.elapsed() >= 2000)
-        mFrames.pop_front();
+    auto& frames = mState.frames;
+    if ((!frames.empty()) && frames.front().first.elapsed() >= 2000)
+        this->emitStatusText(frames.front().first.elapsed(), frames.size(), mState.countChocs - frames.front().second, mState.countChocs);
+    while ((!frames.empty()) && frames.front().first.elapsed() >= 2000)
+        frames.pop_front();
 
-    mFrames.append(std::make_pair(QTime(), mCountChocs));
-    mFrames.back().first.start();
+    frames.push_back(std::make_pair(QTime(), mState.countChocs));
+    frames.back().first.start();
 
     emit draw();
     QCoreApplication::processEvents();
@@ -227,7 +195,7 @@ bool Simulateur::performDrawEvent()
 // Met à jour les valeurs des courbes.
 bool Simulateur::performValueEvent()
 {
-    mGroupCourbes->push(mNow, mPopulations, mPistons);
+    mGroupCourbes->push(mState);
     return true;
 }
 
@@ -241,7 +209,7 @@ bool Simulateur::performCourbeEvent()
 // Change la boule de population.
 bool Simulateur::performBouleEvent(Boule* boule)
 {
-    boule->changePopulation(mNow, mPopulations, mEvents, mConfig.configMutations());
+    boule->changePopulation(mState);
     return false;
 }
 
@@ -249,91 +217,55 @@ bool Simulateur::performBouleEvent(Boule* boule)
 // Ajoute un événement.
 void Simulateur::addDrawEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepDraw, std::make_shared<DrawEvent>()));
+    mState.events.insert(
+                std::make_pair(
+                    mState.now + mState.stepDraw,
+                    std::make_shared<DrawEvent>()
+                ));
 }
 
 void Simulateur::addValueEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepValues, std::make_shared<ValueEvent>()));
+    mState.events.insert(
+                std::make_pair(
+                    mState.now + mState.stepValues,
+                    std::make_shared<ValueEvent>()
+                ));
 }
 
 void Simulateur::addCourbeEvent()
 {
-    mEvents.insert(std::make_pair(mNow + mStepCourbes, std::make_shared<CourbeEvent>()));
+    mState.events.insert(
+                std::make_pair(
+                    mState.now + mState.stepCourbes,
+                    std::make_shared<CourbeEvent>()
+                ));
 }
 
 
 // Change la fréquence d'affichage.
 void Simulateur::setVitesse(int value)
 {
-    mStepDraw = pow(10, value / 250.0);
+    mState.stepDraw = std::pow(10, value / 250.0);
 }
 
 // Change la fréquence de sondage de valeurs.
 void Simulateur::setValues(int value)
 {
-    mStepValues = pow(10, -value / 250.0);
+    mState.stepValues = std::pow(10, -value / 250.0);
 }
 
 // Change la fréquence d'affichage des courbes.
 void Simulateur::setCourbes(int value)
 {
-    mStepCourbes = pow(10, -value / 250.0);
-}
-
-
-// Ajoute les obstacles à la simulation.
-void Simulateur::addObstacles()
-{
-    // ajout des sommets
-    for (auto& obstacle : mConfig.obstacles())
-        this->addObstacle(obstacle.sommets());
-    this->addObstacle(mConfig.contour().sommets());
-}
-
-// Ajoute un obstacle à la simulation.
-void Simulateur::addObstacle(const Polygone& sommets)
-{
-    for (unsigned int j = 0 ; j < sommets.size() ; ++j)
-    {
-        const Coord<double>& point = sommets.point(j);
-        mMapMobiles[floor(point.y / mSizeArea)].sommets().insert(floor(point.x / mSizeArea), point);
-        this->addSegment(sommets.segment(j));
-    }
-}
-
-// Ajoute un segment à la simulation.
-void Simulateur::addSegment(const Segment& segment)
-{
-    // Extrémités du segment.
-    Coord<int> point1 = segment.point1(mSizeArea);
-    Coord<int> point2 = segment.point2(mSizeArea);
-
-    // Rectangle contenant le segment.
-    Coord<int> min = point1.min(point2);
-    Coord<int> max = point1.max(point2);
-
-    // Ajout aux zones intersectées.
-    for (int i = min.x ; i < max.x ; ++i)
-    {
-        int y = floor(segment.yAtX(i * mSizeArea) / mSizeArea);
-        mMapMobiles[y].segments()[i].insert(segment);
-        mMapMobiles[y].segments()[i + 1].insert(segment);
-    }
-
-    for (int j = min.y ; j < max.y ; ++j)
-    {
-        int x = floor(segment.xAtY(j * mSizeArea) / mSizeArea);
-        mMapMobiles[j].segments()[x].insert(segment);
-        mMapMobiles[j + 1].segments()[x].insert(segment);
-    }
+    mState.stepCourbes = std::pow(10, -value / 250.0);
 }
 
 
 // Génère un texte pour la barre de statut (images par seconde, etc).
 void Simulateur::emitStatusText(unsigned int msec, unsigned int frames, unsigned int chocs, unsigned int chocsTotal)
 {
-    mTotalEtudes += mCountEtudes.first;
+    mState.totalEtudes += mState.countEtudes.first;
 
     double fps = 1000.0 * frames / msec;
     unsigned int cps = 1000 * chocs / msec;/*
@@ -344,7 +276,7 @@ void Simulateur::emitStatusText(unsigned int msec, unsigned int frames, unsigned
     unsigned int spe = 100 * (double)mCountEtudes.second / mTotalEtudes;
     //*/
 
-    mCountEtudes.first = 0;
+    mState.countEtudes.first = 0;
 
     // Envoie le texte.
     emit statusText(QString::number(fps, 'g', 2) + " images par seconde ; " + QString::number(cps) + " chocs par seconde ; " + QString::number(chocsTotal) + " chocs au total");
@@ -354,39 +286,39 @@ void Simulateur::emitStatusText(unsigned int msec, unsigned int frames, unsigned
 // Met à jour les collisions en partant des mobiles concernés par la(les) dernière(s) effectuée(s).
 void Simulateur::refreshCollisions()
 {
-    for (auto it = mToRefresh.begin() ; it != mToRefresh.end() ; ++it)
-        (*it)->updateCollisions(mEvents, mMapMobiles, mNow, mSizeArea, mConfig.gravity(), mCountEtudes);
-    mToRefresh.clear();
+    for (auto it = mState.toRefresh.begin() ; it != mState.toRefresh.end() ; ++it)
+        (*it)->updateCollisions(mState);
+    mState.toRefresh.clear();
 }
 
 // Met à jour les événements de dessin (supprime ceux qui viennent d'être effectués).
 void Simulateur::refreshDrawings()
 {
-    for (auto it = mDrawingsRefresh.begin() ; it != mDrawingsRefresh.end() ; ++it)
+    for (auto it = mState.drawingsRefresh.begin() ; it != mState.drawingsRefresh.end() ; ++it)
     {
         (*it)->second->addEvent(*this);
-        mEvents.erase(*it);
+        mState.events.erase(*it);
     }
 
-    mDrawingsRefresh.clear();
+    mState.drawingsRefresh.clear();
 }
 
 
 // Avance la simulation à un instant donné.
 void Simulateur::avance(const Time& time)
 {
-    Time diff = time - mNow;
+    Time diff = time - mState.now;
 
     // Avance les populations de boules.
-    for (auto& population : mPopulations)
+    for (auto& population : mState.populations)
         for (auto& boule : population.boules())
-            boule->avance(diff, mConfig.gravity());
+            boule->avance(diff, mState.config.gravity());
 
     // Avance les populations de pistons.
-    for (auto& piston : mPistons)
-        piston->avance(diff, mConfig.gravity());
+    for (auto& piston : mState.pistons)
+        piston->avance(diff, mState.config.gravity());
 
-    mNow = time;
+    mState.now = time;
 }
 
 

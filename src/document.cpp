@@ -31,13 +31,13 @@ Document::Document() :
     mReady(false),
     mSimulMode(true),
     mPlaying(false),
+    mConfig(),
     mLayout(new QVBoxLayout(this)),
     mSplitter(new QSplitter),
     mGraph(new Graph(mConfig)),
     mStackedWidget(new QStackedWidget),
     mSimulateur(new Simulateur(mConfig)),
-    mEditeur(new Editeur(mGraph)),
-    mConfig()
+    mEditeur(new Editeur(mGraph))
 {
     // Le widget est détruit à sa fermeture.
     this->setAttribute(Qt::WA_DeleteOnClose);

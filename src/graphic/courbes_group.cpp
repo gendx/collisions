@@ -19,6 +19,7 @@
 #include "courbes_group.hpp"
 
 #include <QWheelEvent>
+#include "state.hpp"
 
 // Constructeur.
 CourbesGroup::CourbesGroup(Time lifespan) :
@@ -82,17 +83,17 @@ void CourbesGroup::addProfil(const ConfigProfil& profil)
 
 
 // Ajoute des valeurs aux courbes.
-void CourbesGroup::push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
+void CourbesGroup::push(State& state)
 {
     for (auto& courbe : mCourbes)
-        courbe->push(time, populations, pistons);
+        courbe->push(state);
     for (auto& profil : mProfils)
-        profil->push(time, populations);
+        profil->push(state);
 
-    if (time < mBegin)
-        mBegin = time;
-    if (mEnd.isNever() || mEnd < time)
-        mEnd = time;
+    if (state.now < mBegin)
+        mBegin = state.now;
+    if (mEnd.isNever() || mEnd < state.now)
+        mEnd = state.now;
 }
 
 // Met à jour la barre de défilement.
@@ -137,7 +138,7 @@ void CourbesGroup::wheelEvent(QWheelEvent* event)
     if (mCourbes.isEmpty() && mProfils.isEmpty())
         return;
 
-    double facteur = exp(-event->delta() / 1600.0);
+    double facteur = std::exp(-event->delta() / 1600.0);
     mLifespan = mLifespan.time() * facteur;
 
     // Limites de la barre de défilement.

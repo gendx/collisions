@@ -67,7 +67,7 @@ void Graph::setSimulMode()
 // Changement de zoom.
 void Graph::setZoom(int value)
 {
-    mZone->mZoom = pow(10, value / 250.0);
+    mZone->mZoom = std::pow(10, value / 250.0);
     emit fullDraw();
 }
 
@@ -81,10 +81,10 @@ void Graph::setPolygones(QList<DrawPolygone> polygones)
 // Trouve le point du quadrillage le plus proche.
 Coord<double> Graph::normalize(Coord<double> pt) const
 {
-    int logZoom = floor(1.8 - log10(mZone->mZoom));
-    double space = pow(10, logZoom);
+    int logZoom = std::floor(1.8 - std::log10(mZone->mZoom));
+    double space = std::pow(10, logZoom);
 
-    return Coord<double>(round(pt.x / space) * space, round(pt.y / space) * space);
+    return Coord<double>(std::round(pt.x / space) * space, std::round(pt.y / space) * space);
 }
 
 // Evénements de souris sur un point du graphe.
@@ -163,8 +163,8 @@ void Graph::drawAxes(QPainter& painter) const
     QPointF leftTop = inverted.map(QPointF(0, 0));
     QPointF rightBottom = inverted.map(QPointF(this->size().width(), this->size().height()));
 
-    int logZoom = floor(1.8 - log10(mZone->mZoom));
-    double remain = 2 - log10(mZone->mZoom) - logZoom;
+    int logZoom = std::floor(1.8 - std::log10(mZone->mZoom));
+    double remain = 2 - std::log10(mZone->mZoom) - logZoom;
 
     // Détermine les nuances de gris à utiliser suivant le zoom.
     int _grey = 0x20 + 0x80 * (1 - remain);
@@ -175,9 +175,9 @@ void Graph::drawAxes(QPainter& painter) const
     QColor black(0x00, 0x00, 0x00, _black);
 
     // Détermine les lignes minimum et maximum.
-    double space = pow(10, logZoom);
-    Coord<int> min = Coord<int>(floor(leftTop.x() / space), floor(leftTop.y() / space));
-    Coord<int> max = Coord<int>(ceil(rightBottom.x() / space), ceil(rightBottom.y() / space));
+    double space = std::pow(10, logZoom);
+    Coord<int> min = Coord<int>(std::floor(leftTop.x() / space), std::floor(leftTop.y() / space));
+    Coord<int> max = Coord<int>(std::ceil(rightBottom.x() / space), std::ceil(rightBottom.y() / space));
 
     // Dessine les lignes de différentes couleurs.
     Graph::drawPartialAxes(painter, grey, min, max, space, 1);
@@ -189,14 +189,14 @@ void Graph::drawAxes(QPainter& painter) const
 void Graph::drawPartialAxes(QPainter& painter, const QColor& color, Coord<int> min, Coord<int> max, double space, double ratio, bool skipBig)
 {
     painter.setPen(color);
-    for (int i = floor(min.x / ratio) ; i <= ceil(max.x / ratio) ; ++i)
+    for (int i = std::floor(min.x / ratio) ; i <= std::ceil(max.x / ratio) ; ++i)
     {
         if (skipBig && i % 10 == 0)
             continue;
         painter.drawLine(QLineF(ratio * i * space, min.y * space,
                                 ratio * i * space, max.y * space));
     }
-    for (int i = floor(min.y / ratio) ; i <= ceil(max.y / ratio) ; ++i)
+    for (int i = std::floor(min.y / ratio) ; i <= std::ceil(max.y / ratio) ; ++i)
     {
         if (skipBig && i % 10 == 0)
             continue;

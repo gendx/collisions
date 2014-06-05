@@ -27,8 +27,6 @@
 // La configuration indique la position initiale de la population, le nombre de boules, etc...
 class ConfigPopulation
 {
-    friend class Population;
-
 public:
     // Constructeurs.
     inline ConfigPopulation();
@@ -38,15 +36,6 @@ public:
     friend QDataStream& operator<<(QDataStream& stream, const ConfigPopulation& config);
     friend QDataStream& operator>>(QDataStream& stream, ConfigPopulation& config);
 
-    // Accesseurs.
-    inline unsigned int taille() const;
-    inline double rayon() const;
-    inline double masse() const;
-    inline QColor color() const;
-    inline Polygone polygone() const;
-    inline double vitesse() const;
-
-private:
     // Paramètres de la population.
     // Nombre de boules.
     unsigned int mTaille;
@@ -65,19 +54,5 @@ inline ConfigPopulation::ConfigPopulation() :
     mTaille(0), mRayon(0), mMasse(0), mColor(Qt::black) {}
 inline ConfigPopulation::ConfigPopulation(unsigned int taille, double rayon, double masse, const QColor& color, const Polygone& polygone, double vitesse) :
     mTaille(taille), mRayon(rayon), mMasse(masse), mColor(color), mPolygone(polygone), mVitesse(vitesse) {}
-
-// Accesseurs.
-inline unsigned int ConfigPopulation::taille() const
-    {return mTaille;}
-inline double ConfigPopulation::rayon() const
-    {return mRayon;}
-inline double ConfigPopulation::masse() const
-    {return mMasse;}
-inline QColor ConfigPopulation::color() const
-    {return mColor;}
-inline Polygone ConfigPopulation::polygone() const
-    {return mPolygone;}
-inline double ConfigPopulation::vitesse() const
-    {return mVitesse;}
 
 #endif // CONFIG_POPULATION_HPP

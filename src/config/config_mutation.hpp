@@ -25,8 +25,6 @@
 // Une mutation est un changement spontané de population pour une boule.
 class ConfigMutation
 {
-    friend class Boule;
-
 public:
     enum Type
     {
@@ -41,13 +39,6 @@ public:
     friend QDataStream& operator<<(QDataStream& stream, const ConfigMutation& config);
     friend QDataStream& operator>>(QDataStream& stream, ConfigMutation& config);
 
-    // Accesseurs.
-    inline unsigned int pop1() const;
-    inline unsigned int pop2() const;
-    inline double tau() const;
-    inline unsigned int type() const;
-
-private:
     // Populations source et destination.
     unsigned int mPop1;
     unsigned int mPop2;
@@ -62,15 +53,5 @@ inline ConfigMutation::ConfigMutation() :
     mPop1(0), mPop2(0), mType(time), mTau(0) {}
 inline ConfigMutation::ConfigMutation(unsigned int pop1, unsigned int pop2, Type type, double tau) :
     mPop1(pop1), mPop2(pop2), mType(type), mTau(tau) {}
-
-// Accesseurs.
-inline unsigned int ConfigMutation::pop1() const
-    {return mPop1;}
-inline unsigned int ConfigMutation::pop2() const
-    {return mPop2;}
-inline double ConfigMutation::tau() const
-    {return mTau;}
-inline unsigned int ConfigMutation::type() const
-    {return mType;}
 
 #endif // CONFIG_MUTATION_HPP

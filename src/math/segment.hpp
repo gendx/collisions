@@ -86,9 +86,9 @@ inline double Segment::squareLength() const
 
 // Case du quadrillage de pas "sizeArea" contenant le point.
 inline Coord<int> Segment::point1(double sizeArea) const
-    {return Coord<int>(floor(mPoint1.x / sizeArea), floor(mPoint1.y / sizeArea));}
+    {return Coord<int>(std::floor(mPoint1.x / sizeArea), std::floor(mPoint1.y / sizeArea));}
 inline Coord<int> Segment::point2(double sizeArea) const
-    {return Coord<int>(floor((mPoint1.x + mVecteur.x) / sizeArea), floor((mPoint1.y + mVecteur.y) / sizeArea));}
+    {return Coord<int>(std::floor((mPoint1.x + mVecteur.x) / sizeArea), std::floor((mPoint1.y + mVecteur.y) / sizeArea));}
 
 // Projection sur le segment parallèlement au repère.
 inline double Segment::yAtX(double x) const

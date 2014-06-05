@@ -69,6 +69,7 @@ HEADERS += \
     simul/piston.hpp \
     simul/population.hpp \
     simul/simulateur.hpp \
+    simul/state.hpp \
     simul/time.hpp
 
 SOURCES += \
@@ -116,6 +117,7 @@ SOURCES += \
     simul/piston.cpp \
     simul/population.cpp \
     simul/simulateur.cpp \
+    simul/state.cpp \
     simul/time.cpp
 
 RESOURCES += \

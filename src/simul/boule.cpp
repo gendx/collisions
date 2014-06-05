@@ -19,21 +19,17 @@
 #include "boule.hpp"
 
 #include "coord_io.tpl"
-#include "population.hpp"
-#include "collision.hpp"
-#include "piston.hpp"
-#include "solveur.hpp"
-#include "map_ligne.hpp"
+#include "state.hpp"
 
 // Constructeur.
-Boule::Boule(const Coord<double>& position, const Coord<double>& vitesse, const QColor& color, double masse, double rayon, const Time& now, double sizeArea, QMap<int, MapLigne>& mapMobiles) :
+Boule::Boule(const Coord<double>& position, const Coord<double>& vitesse, const QColor& color, double masse, double rayon, State& state) :
     Mobile(position, vitesse, color, masse),
     mOrigine(position),
     mOldFree(std::make_pair(Coord<double>(), Time())),
-    mLastFree(std::make_pair(position, now)),
+    mLastFree(std::make_pair(position, state.now)),
     mRayon(rayon),
-    mArea(floor(position.x / sizeArea), floor(position.y / sizeArea)),
-    mMapIt(mapMobiles[mArea.y].boules().insert(mArea.x, this))
+    mArea(std::floor(position.x / state.sizeArea), std::floor(position.y / state.sizeArea)),
+    mMapIt(state.mapMobiles[mArea.y].boules().insert(mArea.x, this))
 {
 }
 
@@ -47,27 +43,25 @@ void Boule::avance(const Time& time, const Coord<double>& gravity)
 
 
 // Effectue une mutation pour cette boule.
-void Boule::changePopulation(const Time& now, QList<Population>& populations, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations)
+void Boule::changePopulation(State& state)
 {
-    for (auto& mutation : configMutations)
+    for (auto& mutation : state.config.configMutations())
     {
         if (mPopulation == mutation.mPop1)
         {
-            this->swap(now, mutation.mPop2, populations, events, configMutations, true);
+            this->swap(mutation.mPop2, state, true);
             return;
         }
     }
 }
 
 // Définit la population de cette boule et prépare la prochaine mutation.
-void Boule::setPopulation(const Time& now, unsigned int population, std::list<std::shared_ptr<Boule> >::iterator iterator, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations)
+void Boule::setPopulation(unsigned int population, State& state)
 {
     mPopulation = population;
-    mPopIt = iterator;
+    mEventIt = state.events.end();
 
-    mEventIt = events.end();
-
-    for (auto& mutation : configMutations)
+    for (auto& mutation : state.config.configMutations())
     {
         if (mPopulation == mutation.mPop1)
         {
@@ -80,7 +74,11 @@ void Boule::setPopulation(const Time& now, unsigned int population, std::list<st
             }
 
             if (time > 0)
-                mEventIt = events.insert(std::make_pair(now + Time(time), std::make_shared<BouleEvent>(this)));
+                mEventIt = state.events.insert(
+                            std::make_pair(
+                                state.now + Time(time),
+                                std::make_shared<BouleEvent>(this)
+                            ));
             break;
         }
     }
@@ -251,13 +249,13 @@ Time Boule::newArea(double sizeArea, const Coord<double>& gravity) const
 
 
 // Effectue la collision avec le mobile.
-void Boule::doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(Mobile* mobile, State& state)
 {
-    mobile->doCollision(now, this, toRefresh, events, configMutations, configReactions, populations, countEtudes);
+    mobile->doCollision(this, state);
 }
 
 // Collision avec une boule.
-void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(Boule* boule, State& state)
 {
     // Différence de position.
     Coord<double> dPosition = boule->mPosition - mPosition;
@@ -269,9 +267,9 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
         // Met à jour l'instant de la dernière collision.
         mOldFree = mLastFree;
         mLastFree.first = mPosition;
-        mLastFree.second = now;
+        mLastFree.second = state.now;
         boule->mLastFree.first = boule->mPosition;
-        boule->mLastFree.second = now;
+        boule->mLastFree.second = state.now;
 
         dPosition /= dPosition.length();
 
@@ -285,21 +283,22 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
         boule->mVitesse = (dPosition * (vitesse2.x * (boule->mMasse - mMasse) + vitesse1.x * 2.0 * mMasse) / (mMasse + boule->mMasse)
                      + Coord<double>(-dPosition.y, dPosition.x) * vitesse2.y);
 
-        this->updateRefresh(toRefresh);
-        boule->updateRefresh(toRefresh);
+        this->updateRefresh(state);
+        boule->updateRefresh(state);
     }
     // Erreur : les mobiles s'éloignent !
     else
     {
-        //std::cout << "collision refusée (boules) : " << *this << " ; " << *boule << std::endl;
-        toRefresh.insert(this);
-        toRefresh.insert(boule);
+        std::cerr << "collision refusée (boules) : " << *this << " ; " << *boule << std::endl;
+        state.toRefresh.insert(this);
+        state.toRefresh.insert(boule);
     }
 
     // Changements de populations issus du contact entre les boules (réactions).
-    for (auto& reaction : configReactions)
+    for (auto& reaction : state.config.configReactions())
     {
-        if ((mPopulation == reaction.mPop1 && boule->mPopulation == reaction.mPop2) || (mPopulation == reaction.mPop2 && boule->mPopulation == reaction.mPop1))
+        if ((mPopulation == reaction.mPop1 && boule->mPopulation == reaction.mPop2)
+         || (mPopulation == reaction.mPop2 && boule->mPopulation == reaction.mPop1))
         {
             if (reaction.mType == ConfigReaction::proba)
             {
@@ -310,13 +309,13 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
 
             if (mPopulation == reaction.mPop1)
             {
-                this->swap(now, reaction.m_Pop1, populations, events, configMutations, true);
-                boule->swap(now, reaction.m_Pop2, populations, events, configMutations, true);
+                this->swap(reaction.m_Pop1, state, true);
+                boule->swap(reaction.m_Pop2, state, true);
             }
             else
             {
-                this->swap(now, reaction.m_Pop2, populations, events, configMutations, true);
-                boule->swap(now, reaction.m_Pop1, populations, events, configMutations, true);
+                this->swap(reaction.m_Pop2, state, true);
+                boule->swap(reaction.m_Pop1, state, true);
             }
 
             break;
@@ -325,7 +324,7 @@ void Boule::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefr
 }
 
 // Collision avec un piston.
-void Boule::doCollision(const Time& now, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >&/* events*/, const QList<ConfigMutation>&/* configMutations*/, const QList<ConfigReaction>&/* configReactions*/, QList<Population>&/* populations*/, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(Piston* piston, State& state)
 {
     // Vitesses initiales.
     double vitesse1 = mVitesse.y;
@@ -337,26 +336,26 @@ void Boule::doCollision(const Time& now, Piston* piston, std::set<Mobile*>& toRe
         // Met à jour l'instant de la dernière collision.
         mOldFree = mLastFree;
         mLastFree.first = mPosition;
-        mLastFree.second = now;
+        mLastFree.second = state.now;
 
         // Changement des vitesses selon les masses.
         mVitesse.y = (vitesse1 * (mMasse - piston->mMasse) + vitesse2 * 2.0 * piston->mMasse) / (mMasse + piston->mMasse);
         piston->mVitesse.y = (vitesse2 * (piston->mMasse - mMasse) + vitesse1 * 2.0 * mMasse) / (mMasse + piston->mMasse);
 
-        this->updateRefresh(toRefresh);
-        piston->updateRefresh(toRefresh);
+        this->updateRefresh(state);
+        piston->updateRefresh(state);
     }
     // Erreur : les mobiles s'éloignent !
     else
     {
-        std::cout << "collision refusée (piston) : " << *this << " ; " << *piston << std::endl;
-        toRefresh.insert(this);
-        toRefresh.insert(piston);
+        std::cerr << "collision refusée (piston) : " << *this << " ; " << *piston << std::endl;
+        state.toRefresh.insert(this);
+        state.toRefresh.insert(piston);
     }
 }
 
 // Collision avec un sommet.
-void Boule::doCollision(const Time& now, const Coord<double>& sommet, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(const Coord<double>& sommet, State& state)
 {
     // Différence de position.
     Coord<double> dPosition = sommet - mPosition;
@@ -367,25 +366,25 @@ void Boule::doCollision(const Time& now, const Coord<double>& sommet, std::set<M
         // Met à jour l'instant de la dernière collision.
         mOldFree = mLastFree;
         mLastFree.first = mPosition;
-        mLastFree.second = now;
+        mLastFree.second = state.now;
 
         // Changement de vitesse selon l'axe [centre boule -- choc].
         dPosition /= dPosition.length();
         mVitesse = dPosition * mVitesse.scalar(-dPosition)
                 + Coord<double>(-dPosition.y, dPosition.x) * dPosition.det(mVitesse);
 
-        this->updateRefresh(toRefresh);
+        this->updateRefresh(state);
     }
     // Erreur : la boule s'éloigne du sommet !
     else
     {
-        std::cout << "collision refusée (sommet) : " << *this << std::endl;
-        toRefresh.insert(this);
+        std::cerr << "collision refusée (sommet) : " << *this << std::endl;
+        state.toRefresh.insert(this);
     }
 }
 
 // Collision avec un segment.
-void Boule::doCollision(const Time& now, const Segment& segment, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::doCollision(const Segment& segment, State& state)
 {
     Coord<double> vect = segment.vect();
 
@@ -395,59 +394,60 @@ void Boule::doCollision(const Time& now, const Segment& segment, std::set<Mobile
         // Met à jour l'instant de la dernière collision.
         mOldFree = mLastFree;
         mLastFree.first = mPosition;
-        mLastFree.second = now;
+        mLastFree.second = state.now;
 
         // Changement de vitesse selon l'axe orthogonal au segment.
         vect /= vect.length();
         mVitesse = vect * vect.scalar(mVitesse)
                 + Coord<double>(vect.y, -vect.x) * vect.det(mVitesse);
-        this->updateRefresh(toRefresh);
+        this->updateRefresh(state);
     }
     // Erreur : la boule s'éloigne du segment !
     else
     {
-        std::cout << "collision refusée (segment) : " << *this << std::endl;
-        toRefresh.insert(this);
+        std::cerr << "collision refusée (segment) : " << *this << std::endl;
+        state.toRefresh.insert(this);
     }
 }
 
 // Effectue un changement de zone.
-void Boule::changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::changeArea(State& state)
 {
-    this->detachArea(mapMobiles);
-    this->setArea(sizeArea, toRefresh, mapMobiles);
+    this->detachArea(state);
+    this->setArea(state);
 }
 
 
 // Recalcule la zone et met à jour la table des zones.
-void Boule::setArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles)
+void Boule::setArea(State& state)
 {
-    bool x = (fabs(round(mPosition.x / sizeArea) - mPosition.x / sizeArea) <= fabs(round(mPosition.y / sizeArea) - mPosition.y / sizeArea));
+    double sizeArea = state.sizeArea;
+    bool x = (std::fabs(std::round(mPosition.x / sizeArea) - mPosition.x / sizeArea) <= std::fabs(std::round(mPosition.y / sizeArea) - mPosition.y / sizeArea));
 
     // Calcul des zones
     if (x)
     {
         if (mVitesse.x >= 0)
-            mArea.x = floor(mPosition.x / sizeArea + 0.5);
+            mArea.x = std::floor(mPosition.x / sizeArea + 0.5);
         else
-            mArea.x = floor(mPosition.x / sizeArea - 0.5);
+            mArea.x = std::floor(mPosition.x / sizeArea - 0.5);
     }
     else
     {
         if (mVitesse.y >= 0)
-            mArea.y = floor(mPosition.y / sizeArea + 0.5);
+            mArea.y = std::floor(mPosition.y / sizeArea + 0.5);
         else
-            mArea.y = floor(mPosition.y / sizeArea - 0.5);
+            mArea.y = std::floor(mPosition.y / sizeArea - 0.5);
     }
 
     // Mise à jour de la table.
-    mMapIt = mapMobiles[mArea.y].boules().insert(mArea.x, this);
-    this->updateRefresh(toRefresh);
+    mMapIt = state.mapMobiles[mArea.y].boules().insert(mArea.x, this);
+    this->updateRefresh(state);
 }
 
 
 // Cherche des collisions avec des mobiles.
-void Boule::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Boule::updateCollisionsMobiles(State& state)
 {
     // Ensemble des segments trouvés dans les zones voisines.
     std::set<Segment> segments;
@@ -455,60 +455,59 @@ void Boule::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >
     // Vérifie les mobiles des zones voisines.
     for (int j = mArea.y - 1 ; j <= mArea.y + 1 ; ++j)
     {
-        auto& mapj = mapMobiles[j];
+        //auto& mapj = state.mapMobiles[j];
 
         for (int i = mArea.x - 1 ; i <= mArea.x + 1 ; ++i)
         {
             // Vérifie les boules.
-            for (auto& boule : mapj.boules().values(i))
+            for (auto& boule : state.mapMobiles[j].boules().values(i))
                 if (boule != this)
-                    this->testeCollision(boule, events, now, sizeArea, gravity, countEtudes);
+                    this->testeCollision(boule, state);
 
             // Vérifie les sommets.
-            for (auto& sommet : mapj.sommets().values(i))
-                this->testeCollision(Collision(this, sommet), events, now, sizeArea, gravity, countEtudes);
+            for (auto& sommet : state.mapMobiles[j].sommets().values(i))
+                this->testeCollision(Collision(this, sommet), state);
 
-            // Ajoute les segments à l'ensemble.
-            for (auto& segment : mapj.segments().value(i))
+            // Ajoute les segments à l'ensemble à traiter (un segment peut être sur plusieurs zones).
+            for (auto& segment : state.mapMobiles[j].segments().value(i))
                 segments.insert(segment);
         }
 
         // Vérifie les pistons.
-        for (auto& piston : mapj.pistons())
-            this->testeCollision(piston, events, now, sizeArea, gravity, countEtudes);
+        for (auto& piston : state.mapMobiles[j].pistons())
+            this->testeCollision(piston, state);
     }
 
     // Vérifie les segments listés.
     for (auto& segment : segments)
-        this->testeCollision(Collision(this, segment), events, now, sizeArea, gravity, countEtudes);
+        this->testeCollision(Collision(this, segment), state);
 
     // Vérifie un changement de zone.
-    this->testeCollision(Collision(this), events, now, sizeArea, gravity, countEtudes);
+    this->testeCollision(Collision(this), state);
 }
 
 // Enlève la boule de la table des zones.
-void Boule::detachArea(QMap<int, MapLigne>& mapMobiles)
+void Boule::detachArea(State& state)
 {
-    mapMobiles[mArea.y].boules().erase(mMapIt);
+    state.mapMobiles[mArea.y].boules().erase(mMapIt);
 }
 
 
 // Change la boule de population.
-void Boule::swap(const Time& now, unsigned int population, QList<Population>& populations, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, bool eraseEvent)
+void Boule::swap(unsigned int population, State& state, bool eraseEvent)
 {
     if (population == mPopulation)
         return;
 
-    // Supprime la boule de la population.
-    std::shared_ptr<Boule> value = *mPopIt;
-    populations[mPopulation].boules().erase(mPopIt);
+    // Change la boule de population.
+    state.populations[mPopulation].boules().erase(this);
 
-    // Ajoute la boule à la population.
-    Population& pop = populations[population];
-    mPopIt = pop.boules().insert(pop.boules().end(), value);
+    Population& pop = state.populations[population];
+    pop.boules().insert(this);
     mColor = pop.color();
 
-    if (eraseEvent && mEventIt != events.end())
-        events.erase(mEventIt);
-    this->setPopulation(now, population, mPopIt, events, configMutations);
+    // Met à jour les événements (mutations).
+    if (eraseEvent && mEventIt != state.events.end())
+        state.events.erase(mEventIt);
+    this->setPopulation(population, state);
 }

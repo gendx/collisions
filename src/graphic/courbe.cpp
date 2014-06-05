@@ -18,18 +18,20 @@
 
 #include "courbe.hpp"
 
+#include "state.hpp"
+
 // Calcule et ajoute une valeur à la courbe.
-void Courbe::push(Time time, unsigned int valType, bool mean, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
+void Courbe::push(unsigned int valType, bool mean, State& state)
 {
     unsigned int nbre = 0;
     double valeur = 0;
 
     for (auto& cible : mConfig.mCibles)
-        valeur += cible.value(valType, populations, mConfig.mPolygone, pistons, nbre);
+        valeur += cible.value(valType, mConfig.mPolygone, state, nbre);
 
     if (mean)
         valeur /= nbre;
-    this->push(time, valeur);
+    this->push(state.now, valeur);
 }
 
 // Ajoute une valeur à la courbe.

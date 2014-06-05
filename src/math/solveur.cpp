@@ -48,7 +48,7 @@ double Solveur::fstQuadratique(double a, double b, double c)
     double delta = b * b - 2.0 * a * c;
 
     if (delta >= 0.0)
-        return a > 0.0 ? -(b + sqrt(delta)) / a : (-b + sqrt(delta)) / a;
+        return a > 0.0 ? -(b + std::sqrt(delta)) / a : (-b + std::sqrt(delta)) / a;
     return -1;
 }
 
@@ -58,22 +58,22 @@ double Solveur::sndQuadratique(double a, double b, double c)
     double delta = b * b - 2.0 * a * c;
 
     if (delta >= 0.0)
-        return a > 0.0 ? (-b + sqrt(delta)) / a : -(b + sqrt(delta)) / a;
+        return a > 0.0 ? (-b + std::sqrt(delta)) / a : -(b + std::sqrt(delta)) / a;
     return -1;
 }
 
 // Degré 3.
 double Solveur::racinecubique(double x)
 {
-    return x < 0.0 ? -exp(log(-x) / 3.0) : exp(log(x) / 3.0);
+    return x < 0.0 ? -std::exp(std::log(-x) / 3.0) : std::exp(std::log(x) / 3.0);
 }
 
 double Solveur::racinecubiquecomplex(std::complex<double> z)
 {
-    double module = sqrt(std::norm(z));
+    double module = std::sqrt(std::norm(z));
     z /= module;
 
-    return exp(log(module) / 3.0) * cos(std::arg(z) / 3.0);
+    return std::exp(std::log(module) / 3.0) * std::cos(std::arg(z) / 3.0);
 }
 
 void Solveur::cubique(double a, double b, double c, double d, std::complex<double>& z0, std::complex<double>& z1, std::complex<double>& z2)
@@ -90,13 +90,13 @@ void Solveur::cubique(double a, double b, double c, double d, std::complex<doubl
 
     if (delta > 0.0)
     {
-        double rac = sqrt(delta);
+        double rac = std::sqrt(delta);
         z0 = s + racinecubique((-q + rac) / 2.0) + racinecubique((-q - rac) / 2.0);
         Solveur::quadratique(1.0, b + z0.real(), c + z0.real() * (b + z0.real()), z1, z2);
     }
     else if (delta < 0.0)
     {
-        double tmp = racinecubiquecomplex(std::complex<double>(-q, sqrt(-delta)) / 2.0);
+        double tmp = racinecubiquecomplex(std::complex<double>(-q, std::sqrt(-delta)) / 2.0);
         z0 = s + 2.0 * tmp;
         Solveur::quadratique(1.0, b + z0.real(), c + z0.real() * (b + z0.real()), z1, z2);
     }
@@ -121,12 +121,12 @@ double Solveur::realCubique(double a, double b, double c, double d)
 
     if (delta > 0.0)
     {
-        double rac = sqrt(delta);
+        double rac = std::sqrt(delta);
         s += racinecubique((-q + rac) / 2.0) + racinecubique((-q - rac) / 2.0);
     }
     else if (delta < 0.0)
     {
-        double tmp = racinecubiquecomplex(std::complex<double>(-q, sqrt(-delta)) / 2.0);
+        double tmp = racinecubiquecomplex(std::complex<double>(-q, std::sqrt(-delta)) / 2.0);
         s += 2.0 * tmp;
     }
     else
@@ -163,7 +163,7 @@ void Solveur::quartique(double a, double b, double c, double d, double e, std::c
 void Solveur::min(double& a, const std::complex<double>& b, double _a, double _b, double _c, double _d)
 {
     if (b.imag() == 0.0 && b.real() >= 0.0 && (b.real() < a || a < 0.0)
-            && (_a * pow(b.real(), 3) + _b * pow(b.real(), 2) + _c * b.real() + _d) <= 0.0)
+            && (_a * std::pow(b.real(), 3) + _b * std::pow(b.real(), 2) + _c * b.real() + _d) <= 0.0)
         a = b.real();
 }
 

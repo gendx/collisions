@@ -21,16 +21,8 @@
 
 #include <QLabel>
 #include <QSlider>
-#include <QTime>
-#include "population.hpp"
-#include "boule.hpp"
-#include "piston.hpp"
-#include "collision.hpp"
-#include "obstacle.hpp"
-#include "widgetcourbe.hpp"
-#include "widgetprofil.hpp"
-#include "map_ligne.hpp"
 #include "courbes_group.hpp"
+#include "state.hpp"
 
 // Widget pour simuler une configuration.
 class Simulateur : public QWidget
@@ -77,11 +69,6 @@ private slots:
     void setCourbes(int value);
 
 private:
-    // Ajoute des éléments à la simulation.
-    void addObstacles();
-    void addObstacle(const Polygone& sommets);
-    void addSegment(const Segment& segment);
-
     // Génère un texte pour la barre de statut (images par seconde, etc).
     void emitStatusText(unsigned int msec, unsigned int frames, unsigned int chocs, unsigned int chocsTotal);
 
@@ -108,29 +95,7 @@ private:
     QLabel* mLabelCourbes;
     QSlider* mSliderCourbes;
 
-    // Fréquences d'affichage.
-    Time mStepDraw;
-    Time mStepValues;
-    Time mStepCourbes;
-    Time mNow;
-    double mSizeArea;
-    // Statistiques.
-    unsigned int mCountChocs;
-    std::pair<unsigned int, unsigned int> mCountEtudes;
-    unsigned int mTotalEtudes;
-    QList<std::pair<QTime, unsigned int> > mFrames;
-
-    // Configuration et objets de la simulation.
-    const Configuration& mConfig;
-    QList<Population> mPopulations;
-    QList<std::shared_ptr<Boule> > mBoules;
-    QList<std::shared_ptr<Piston> > mPistons;
-    QMap<int, MapLigne> mMapMobiles;
-
-    // Evénements à simuler.
-    std::multimap<Time, std::shared_ptr<Event> > mEvents;
-    std::set<Mobile*> mToRefresh;
-    QList<std::multimap<Time, std::shared_ptr<Event> >::iterator> mDrawingsRefresh;
+    State mState;
 };
 
 #endif // SIMULATEUR_HPP

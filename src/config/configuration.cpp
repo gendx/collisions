@@ -24,7 +24,7 @@ bool Configuration::check() const
     // Il faut au moins une population non vide.
     unsigned int nbre = 0;
     for (auto& pop : mConfigPops)
-        nbre += pop.taille();
+        nbre += pop.mTaille;
     if (!nbre)
         return false;
 
@@ -44,7 +44,7 @@ double Configuration::sizeArea() const
     double rayonMax = 0;
     for (auto& pop : mConfigPops)
     {
-        double rayon = pop.rayon();
+        double rayon = pop.mRayon;
         if (rayon > rayonMax)
             rayonMax = rayon;
     }

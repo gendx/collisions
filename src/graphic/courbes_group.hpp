@@ -40,7 +40,7 @@ public:
     void addProfil(const ConfigProfil& profil);
 
     // Ajoute des valeurs aux courbes.
-    void push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons);
+    void push(State& state);
     void update();
 
 private slots:

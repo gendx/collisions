@@ -94,6 +94,9 @@ private:
     bool mSimulMode;
     bool mPlaying;
 
+    // Configuration associée.
+    Configuration mConfig;
+
     // Widgets.
     QVBoxLayout* mLayout;
     QSplitter* mSplitter;
@@ -101,9 +104,6 @@ private:
     QStackedWidget* mStackedWidget;
     Simulateur* mSimulateur;
     Editeur* mEditeur;
-
-    // Configuration associée.
-    Configuration mConfig;
 };
 
 

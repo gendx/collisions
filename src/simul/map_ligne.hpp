@@ -19,7 +19,7 @@
 #ifndef MAP_LIGNE_HPP
 #define MAP_LIGNE_HPP
 
-#include <QMap>
+#include <map>
 #include <set>
 #include "boule.hpp"
 

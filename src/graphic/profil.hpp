@@ -34,7 +34,7 @@ public:
     inline Profil(const ConfigProfil& config);
 
     // Calcule et ajoute une tranche au profil.
-    void push(Time time, const QList<Population>& populations);
+    void push(State& state);
 
     // Accesseurs.
     inline const QList<std::pair<Time, QMap<int, double> > >& valeurs() const;

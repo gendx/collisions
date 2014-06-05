@@ -23,6 +23,7 @@
 #include <memory>
 #include "polygone.hpp"
 
+class State;
 class Population;
 class Piston;
 class Boule;
@@ -42,9 +43,9 @@ public:
     inline ConfigCible(Type type, unsigned int index, const Polygone& polygone);
 
     // Calcule la valeur associée à l'ensemble concerné.
-    double value(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, const QList<std::shared_ptr<Piston> >& pistons, unsigned int& nbre);
+    double value(unsigned int valType, const Polygone& polygone, State& state, unsigned int& nbre);
     // Ajoute une tranche pour un profil.
-    void addValue(unsigned int valType, const QList<Population>& populations, const Polygone& polygone, QMap<int, double>& values, QMap<int, unsigned int>& nbres, double slice);
+    void addValue(unsigned int valType, const Polygone& polygone, State& state, QMap<int, double>& values, QMap<int, unsigned int>& nbres, double slice);
 
     // Lecture/écriture pour les fichiers de configuration.
     friend QDataStream& operator<<(QDataStream& stream, const ConfigCible& config);

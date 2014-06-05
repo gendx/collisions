@@ -46,7 +46,7 @@ public:
     void detach(const Mobile* mobile) const;
 
     // Calcule l'instant de cette collision.
-    Time time(const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes) const;
+    Time time(State& state) const;
 
     // Comparaison.
     bool operator==(const Collision& collision) const;
@@ -55,7 +55,7 @@ public:
     inline bool isReal() const;
 
     // Effectue la collision : calcul du changement de trajectoire et mise à jour des prochaines collisions.
-    void doCollision(const Time& now, double sizeArea, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes);
+    void doCollision(State& state);
 
 private:
     enum Type {_defaut, _mobiles, _sommet, _segment, _area};

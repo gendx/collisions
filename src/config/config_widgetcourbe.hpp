@@ -25,8 +25,6 @@
 // Un widget de courbe est un ensemble de courbes représentant la même grandeur.
 class ConfigWidgetCourbe
 {
-    friend class WidgetCourbe;
-
 public:
     enum Type
     {
@@ -41,7 +39,6 @@ public:
     friend QDataStream& operator<<(QDataStream& stream, const ConfigWidgetCourbe& config);
     friend QDataStream& operator>>(QDataStream& stream, ConfigWidgetCourbe& config);
 
-private:
     // Type de grandeur.
     unsigned int mType;
     // Calcul de valeur moyenne ou non.

@@ -26,15 +26,15 @@ class Boule : public Mobile
 {
 public:
     // Constructeur.
-    Boule(const Coord<double>& position, const Coord<double>& vitesse, const QColor& color, double masse, double rayon, const Time& now, double sizeArea, QMap<int, MapLigne>& mapMobiles);
+    Boule(const Coord<double>& position, const Coord<double>& vitesse, const QColor& color, double masse, double rayon, State& state);
 
     // Avance le mobile jusqu'à l'instant indiqué (sans tenir compte des autres mobiles).
     virtual void avance(const Time& time, const Coord<double>& gravity);
 
     // Effectue une mutation pour cette boule.
-    void changePopulation(const Time& now, QList<Population>& populations, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations);
+    void changePopulation(State& state);
     // Définit la population de cette boule et prépare la prochaine mutation.
-    void setPopulation(const Time& now, unsigned int population, std::list<std::shared_ptr<Boule> >::iterator iterator, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations);
+    void setPopulation(unsigned int population, State& state);
 
     // Accesseurs.
     inline Coord<double> freeRide() const;
@@ -55,24 +55,24 @@ public:
     Time newArea(double sizeArea, const Coord<double>& gravity) const;
 
     // Effectue la collision avec le mobile.
-    void doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes);
-    void doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes);
-    void doCollision(const Time& now, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes);
-    void doCollision(const Time& now, const Coord<double>& sommet, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes);
-    void doCollision(const Time& now, const Segment& segment, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes);
-    void changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes);
+    virtual void doCollision(Mobile* mobile, State& state);
+    virtual void doCollision(Boule* boule, State& state);
+    virtual void doCollision(Piston* piston, State& state);
+    virtual void doCollision(const Coord<double>& sommet, State& state);
+    virtual void doCollision(const Segment& segment, State& state);
+    void changeArea(State& state);
 
     // Recalcule la zone et met à jour la table des zones.
-    void setArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles);
+    void setArea(State& state);
 
 private:
     // Cherche des collisions avec des mobiles.
-    void updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes);
+    void updateCollisionsMobiles(State& state);
     // Enlève la boule de la table des zones.
-    void detachArea(QMap<int, MapLigne>& mapMobiles);
+    void detachArea(State& state);
 
     // Change la boule de population.
-    void swap(const Time& now, unsigned int population, QList<Population>& populations, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, bool eraseEvent);
+    void swap(unsigned int population, State& state, bool eraseEvent);
 
     // Propriétés géométriques.
     Coord<double> mOrigine;
@@ -84,7 +84,6 @@ private:
 
     // Population contenant la boule.
     unsigned int mPopulation;
-    std::list<std::shared_ptr<Boule> >::iterator mPopIt;
     std::multimap<Time, std::shared_ptr<Event> >::iterator mEventIt;
 };
 

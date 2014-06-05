@@ -25,8 +25,6 @@
 // Un profil est un affichage d'une grandeur selon des tranches de l'espace.
 class ConfigProfil
 {
-    friend class Profil;
-
 public:
     enum Type
     {
@@ -41,7 +39,6 @@ public:
     friend QDataStream& operator<<(QDataStream& stream, const ConfigProfil& config);
     friend QDataStream& operator>>(QDataStream& stream, ConfigProfil& config);
 
-private:
     // Type de grandeur.
     unsigned int mType;
     // Calcul de valeur moyenne ou non.

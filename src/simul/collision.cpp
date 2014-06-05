@@ -97,37 +97,37 @@ void Collision::detach(const Mobile* mobile) const
 
 
 // Calcule l'instant de cette collision.
-Time Collision::time(const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes) const
+Time Collision::time(State& state) const
 {
     if (mType == _defaut)
         return Time();
 
-    ++countEtudes.first;
+    ++state.countEtudes.first;
 
     // Utilise les méthodes implémentées par les classes de mobiles.
     Time time;
     if (mType == _mobiles)
     {
         time = mMobile1->collision(mMobile2);
-        ++countEtudes.second;
+        ++state.countEtudes.second;
     }
     else if (mType == _sommet)
-        time = mMobile1->collision(mSommet, gravity);
+        time = mMobile1->collision(mSommet, state.config.gravity());
     else if (mType == _segment)
-        time = mMobile1->collision(mSegment, gravity);
+        time = mMobile1->collision(mSegment, state.config.gravity());
     else if (mType == _area)
-        time = mMobile1->newArea(sizeArea, gravity);
+        time = mMobile1->newArea(state.sizeArea, state.config.gravity());
 
     // Empêche d'effectuer la même collision deux fois de suite (à cause d'erreurs d'arrondis).
     // Cependant, la condition doit normalement être toujours fausse.
     // TODO : valider la suppression des lignes suivantes.
-    if (mType != _area && (!mMobile1->checkLastCollision(*this, now + time)) && (mType != _mobiles || (!mMobile2->checkLastCollision(*this, now + time))))
+    if (mType != _area && (!mMobile1->checkLastCollision(*this, state.now + time)) && (mType != _mobiles || (!mMobile2->checkLastCollision(*this, state.now + time))))
     {
         std::cout << "refusé : " << *this << std::endl;
         return Time();
     }
 
-    return now + time;
+    return state.now + time;
 }
 
 // Comparaison.
@@ -151,23 +151,21 @@ bool Collision::operator==(const Collision& collision) const
 
 
 // Effectue la collision : calcul du changement de trajectoire et mise à jour des prochaines collisions.
-void Collision::doCollision(const Time& now, double sizeArea, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes)
+void Collision::doCollision(State& state)
 {
-    mMobile1->setLastCollision(now, *this);
-
-    //std::cout << "doing : " << *this << std::endl;
+    mMobile1->setLastCollision(*this, state.now);
 
     if (mType == _defaut)
         return;
     else if (mType == _mobiles)
     {
-        mMobile2->setLastCollision(now, *this);
-        return mMobile1->doCollision(now, mMobile2, toRefresh, events, configMutations, configReactions, populations, countEtudes);
+        mMobile2->setLastCollision(*this, state.now);
+        return mMobile1->doCollision(mMobile2, state);
     }
     else if (mType == _sommet)
-        return mMobile1->doCollision(now, mSommet, toRefresh, countEtudes);
+        return mMobile1->doCollision(mSommet, state);
     else if (mType == _segment)
-        return mMobile1->doCollision(now, mSegment, toRefresh, countEtudes);
+        return mMobile1->doCollision(mSegment, state);
     else if (mType == _area)
-        return mMobile1->changeArea(sizeArea, toRefresh, mapMobiles, countEtudes);
+        return mMobile1->changeArea(state);
 }

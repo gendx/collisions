@@ -19,9 +19,7 @@
 #include "mobile.hpp"
 
 #include "coord_io.tpl"
-#include "population.hpp"
-#include "configuration.hpp"
-#include "piston.hpp"
+#include "state.hpp"
 
 // Identifiant unique du dernier mobile.
 unsigned int Mobile::index = -1;
@@ -90,59 +88,50 @@ Time Mobile::newArea(double/* sizeArea*/, const Coord<double>&/* gravity*/) cons
 
 
 // Effectue la collision avec le mobile : calcul du changement de trajectoire et mise à jour des prochaines collisions.
-void Mobile::doCollision(const Time&/* now*/, const Coord<double>&/* sommet*/, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::doCollision(const Coord<double>&/* sommet*/, State& state)
 {
-    this->updateRefresh(toRefresh);
+    this->updateRefresh(state);
 }
 
-void Mobile::doCollision(const Time&/* now*/, const Segment&/* segment*/, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::doCollision(const Segment&/* segment*/, State& state)
 {
-    this->updateRefresh(toRefresh);
+    this->updateRefresh(state);
 }
 
 // Effectue un changement de zone.
-void Mobile::changeArea(double/* sizeArea*/, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>&/* mapMobiles*/, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::changeArea(State& state)
 {
-    this->updateRefresh(toRefresh);
+    this->updateRefresh(state);
 }
 
 
 // Définit la dernière collision du mobile.
-void Mobile::setLastCollision(const Time& now, const Collision& collision)
+void Mobile::setLastCollision(const Collision& collision, const Time& now)
 {
     if (mLastTime != now)
         mLastCollisions.clear();
-    mLastCollisions.append(std::make_shared<Collision>(collision));
+    mLastCollisions.push_back(std::make_shared<Collision>(collision));
     mLastTime = now;
 }
 
 // Vérifie que la collision est compatible avec la dernière collision du mobile.
 bool Mobile::checkLastCollision(const Collision& collision, const Time& time) const
 {
-    /*
-    std::cout.precision(15);
-    std::cout << "mLastTime = " << mLastTime << " ; time = " << time << std::endl;
-    //*/
-    /*
-    return (mLastTime != time);
-    //return true;
-    /*/
     for (auto& lastCollision : mLastCollisions)
         if (*lastCollision == collision && mLastTime == time)
             return false;
     return true;
-    //*/
 }
 
 
 // Cherche la prochaine collision de ce mobile et met à jour la table des événements.
-void Mobile::updateCollisions(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::updateCollisions(State& state)
 {
     mTargetTime = Time();
-    this->detach(events);
+    this->detach(state);
 
     // Recherche des collisions avec des mobiles.
-    this->updateCollisionsMobiles(events, mapMobiles, now, sizeArea, gravity, countEtudes);
+    this->updateCollisionsMobiles(state);
 }
 
 // Détache le mobile de la collision (appelé en cas de changement de trajectoire).
@@ -160,80 +149,86 @@ void Mobile::detach(const Collision& collision)
 
 
 // Ajoute tous les mobiles attachés (i.e. qui ciblent celui-ci) à l'ensemble à mettre à jour.
-void Mobile::updateRefresh(std::set<Mobile*>& toRefresh)
+void Mobile::updateRefresh(State& state)
 {
-    toRefresh.insert(this);
+    state.toRefresh.insert(this);
     for (auto& attached : mAttached)
-        toRefresh.insert(attached);
+        state.toRefresh.insert(attached);
 }
 
 
 // Teste la collision avec l'autre mobile.
-void Mobile::testeCollision(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::testeCollision(Mobile* mobile, State& state)
 {
     Collision collision(this, mobile);
-    Time time = collision.time(now, sizeArea, gravity, countEtudes);
+    Time time = collision.time(state);
 
-    if (time < now || time.isNever())
+    if (time < state.now || time.isNever())
         return;
 
     // La collision a lieu avant celle prévue précédemment.
     if (time < mTargetTime)
     {
         mTargetTime = time;
-        this->detach(events);
+        this->detach(state);
     }
     if (time < mobile->mTargetTime)
     {
         mobile->mTargetTime = time;
-        mobile->detach(events);
+        mobile->detach(state);
     }
 
     bool add = true;
     if (time == mTargetTime)
-        add = !this->addTarget(mobile, events);
+        add = !this->addTarget(mobile, state);
     if (time == mobile->mTargetTime)
-        mobile->addTarget(this, events, add);
+        mobile->addTarget(this, state, add);
 }
 
 // Teste la collision.
-void Mobile::testeCollision(const Collision& collision, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Mobile::testeCollision(const Collision& collision, State& state)
 {
-    Time time = collision.time(now, sizeArea, gravity, countEtudes);
-    if (time < now || time.isNever())
+    Time time = collision.time(state);
+    if (time < state.now || time.isNever())
         return;
 
     // La collision a lieu avant celle prévue précédemment.
     if (time < mTargetTime)
     {
         mTargetTime = time;
-        this->detach(events);
+        this->detach(state);
     }
+
     if (time == mTargetTime)
-        mNextCollisions.insert(events.insert(std::make_pair(mTargetTime, std::make_shared<Collision>(collision))));
+        mNextCollisions.insert(
+                    state.events.insert(
+                        std::make_pair(
+                            mTargetTime,
+                            std::make_shared<Collision>(collision)
+                        )));
 }
 
 
 // Supprime le mobile de la liste des événements.
-void Mobile::detach(std::multimap<Time, std::shared_ptr<Event> >& events)
+void Mobile::detach(State& state)
 {
     // Supprime les prochaines collisions (cibles) de la liste des événements et des mobiles concernés.
     for (auto it = mNextCollisions.begin() ; it != mNextCollisions.end() ; ++it)
     {
         std::shared_ptr<Event> copy = (*it)->second;
-        events.erase(*it);
+        state.events.erase(*it);
         std::dynamic_pointer_cast<Collision>(copy)->detach(this);
     }
     mNextCollisions.clear();
 
     // Détache ce mobile de ses cibles.
-    for (auto it = mTargets.begin() ; it != mTargets.end() ; ++it)
-        (*it)->mAttached.erase(this);
+    for (auto& target : mTargets)
+        target->mAttached.erase(this);
     mTargets.clear();
 }
 
 // Ajoute un mobile à la liste des cibles.
-bool Mobile::addTarget(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event> >& events, bool addCollision)
+bool Mobile::addTarget(Mobile* mobile, State& state, bool addCollision)
 {
     // Crée le double lien.
     mTargets.insert(mobile);
@@ -242,7 +237,11 @@ bool Mobile::addTarget(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event
     // Ajoute la collision à la liste des événements si nécessaire.
     if (addCollision && mobile->mTargets.find(this) != mobile->mTargets.end())
     {
-        auto it = events.insert(std::make_pair(mTargetTime, std::make_shared<Collision>(this, mobile)));
+        auto it = state.events.insert(
+                    std::make_pair(
+                        mTargetTime,
+                        std::make_shared<Collision>(this, mobile)
+                    ));
         mNextCollisions.insert(it);
         mobile->mNextCollisions.insert(it);
         return true;

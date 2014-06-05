@@ -19,20 +19,21 @@
 #include "profil.hpp"
 
 #include <limits>
+#include "state.hpp"
 
 // Calcule et ajoute une tranche au profil.
-void Profil::push(Time time, const QList<Population>& populations)
+void Profil::push(State& state)
 {
     QMap<int, unsigned int> nbres;
     QMap<int, double> valeurs;
 
     for (auto& cible : mConfig.mCibles)
-        cible.addValue(mConfig.mType, populations, mConfig.mPolygone, valeurs, nbres, mConfig.mSlice);
+        cible.addValue(mConfig.mType, mConfig.mPolygone, state, valeurs, nbres, mConfig.mSlice);
 
     if (mConfig.mMean)
         for (auto it = valeurs.begin() ; it != valeurs.end() ; ++it)
             it.value() /= nbres[it.key()];
-    this->push(time, valeurs);
+    this->push(state.now, valeurs);
 }
 
 // Ajoute une tranche au profil.

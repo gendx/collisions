@@ -43,7 +43,7 @@ bool Polygone::intersect(const Coord<double>& center, double rayon) const
         Coord<double> segment(mSommets[(i + 1) % mSommets.size()] - mSommets[i]);
         Coord<double> vect(center - mSommets[i]);
 
-        if ((abs(segment.det(vect)) <= rayon * segment.length() && segment.scalar(vect) >= 0 && segment.scalar(vect) <= segment.squareLength())
+        if ((std::abs(segment.det(vect)) <= rayon * segment.length() && segment.scalar(vect) >= 0 && segment.scalar(vect) <= segment.squareLength())
             || vect.length() <= rayon)
             return true;
     }

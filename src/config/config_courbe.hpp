@@ -26,8 +26,6 @@
 // Configuration d'une courbe.
 class ConfigCourbe
 {
-    friend class Courbe;
-
 public:
     // Constructeurs.
     inline ConfigCourbe();
@@ -37,7 +35,6 @@ public:
     friend QDataStream& operator<<(QDataStream& stream, const ConfigCourbe& config);
     friend QDataStream& operator>>(QDataStream& stream, ConfigCourbe& config);
 
-private:
     // Ensemble de cibles concernées.
     QList<ConfigCible> mCibles;
     // Couleur de la courbe.

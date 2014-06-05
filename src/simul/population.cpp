@@ -21,10 +21,10 @@
 #include <iostream>
 #include <limits>
 #include "coord_io.tpl"
-#include "piston.hpp"
+#include "state.hpp"
 
 // Génère une population de boules selon la configuration.
-void Population::create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<std::shared_ptr<Piston> >& pistons, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea)
+void Population::create(unsigned int index, State& state)
 {
     // Distributions aléatoires en position (uniforme) et en vitesse (normale sur chaque axe).
     std::uniform_real_distribution<> distribX(mConfig.mPolygone.left(), mConfig.mPolygone.right());
@@ -38,38 +38,37 @@ void Population::create(const Configuration& config, QList<Population>& populati
 
         do
             pos = Coord<double>(distribX(Solveur::generateur), distribY(Solveur::generateur));
-        while (this->invalid(pos, config, populations, pistons));
+        while (this->invalid(pos, state));
 
         // Ajoute une boule.
-        auto it = mBoules.insert(mBoules.end(),
-                                 std::make_shared<Boule>(
-                                     pos,
-                                     Coord<double>(distribVitesse(Solveur::generateur),
-                                                   distribVitesse(Solveur::generateur)),
-                                     mConfig.mColor,
-                                     mConfig.mMasse,
-                                     mConfig.mRayon,
-                                     now,
-                                     sizeArea,
-                                     mapMobiles)
-                                 );
-        mBoules.back()->setPopulation(now, index, it, events, config.configMutations());
-        std::pair<unsigned int, unsigned int> countEtudes;
-        mBoules.back()->updateCollisions(events, mapMobiles, now, sizeArea, config.gravity(), countEtudes);
+        std::shared_ptr<Boule> boule = std::make_shared<Boule>(
+                    pos,
+                    Coord<double>(distribVitesse(Solveur::generateur),
+                                  distribVitesse(Solveur::generateur)),
+                    mConfig.mColor,
+                    mConfig.mMasse,
+                    mConfig.mRayon,
+                    state);
+        state.boules.push_back(boule);
+
+        mBoules.insert(boule.get());
+        boule->setPopulation(index, state);
+        boule->updateCollisions(state);
     }
 }
 
 // Vérifie les contraintes d'intersection entre les différents objets.
-bool Population::invalid(const Coord<double>& pos, const Configuration& config, QList<Population>& populations, QList<std::shared_ptr<Piston> >& pistons)
+bool Population::invalid(const Coord<double>& pos, State& state)
 {
     // Vérifie que la boule est bien dans la zone autorisée.
+    auto& contour = state.config.contour().sommets();
     if ((mConfig.mPolygone.intersect(pos, mConfig.mRayon) || !mConfig.mPolygone.inside(pos))
-        || (config.contour().sommets().intersect(pos, mConfig.mRayon)
-        || !config.contour().sommets().inside(pos)))
+        || (contour.intersect(pos, mConfig.mRayon)
+        || !contour.inside(pos)))
         return true;
 
     // Vérifie les intersections avec les obstacles.
-    for (auto& obstacle : config.obstacles())
+    for (auto& obstacle : state.config.obstacles())
     {
         auto& sommets = obstacle.sommets();
         if (sommets.intersect(pos, mConfig.mRayon)
@@ -78,7 +77,7 @@ bool Population::invalid(const Coord<double>& pos, const Configuration& config, 
     }
 
     // Vérifie les intersections avec les pistons.
-    for (auto& piston : pistons)
+    for (auto& piston : state.pistons)
         if ((piston->position().y - pos.y) <= mConfig.mRayon
          && (pos.y - piston->position().y) <= mConfig.mRayon + piston->epaisseur())
             return true;
@@ -89,7 +88,7 @@ bool Population::invalid(const Coord<double>& pos, const Configuration& config, 
             return true;
 
     // Vérifie les intersections avec les boules des autres populations.
-    for (auto& population : populations)
+    for (auto& population : state.populations)
         for (auto& boule : population.mBoules)
             if ((boule->position() - pos).length() <= mConfig.mRayon + population.mConfig.mRayon)
                 return true;

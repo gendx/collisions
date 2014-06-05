@@ -24,8 +24,6 @@
 // Configuration d'un piston.
 class ConfigPiston
 {
-    friend class Piston;
-
 public:
     // Constructeurs.
     inline ConfigPiston();
@@ -35,14 +33,6 @@ public:
     friend QDataStream& operator<<(QDataStream& stream, const ConfigPiston& config);
     friend QDataStream& operator>>(QDataStream& stream, ConfigPiston& config);
 
-    // Accesseurs.
-    inline double position() const;
-    inline double vitesse() const;
-    inline QColor color() const;
-    inline double masse() const;
-    inline double epaisseur() const;
-
-private:
     // Paramètres du piston.
     double mPosition;
     double mVitesse;
@@ -56,17 +46,5 @@ inline ConfigPiston::ConfigPiston() :
     mPosition(0), mVitesse(0), mColor(Qt::black), mMasse(0), mEpaisseur(0) {}
 inline ConfigPiston::ConfigPiston(double positionY, double vitesseY, const QColor& color, double masse, double epaisseur) :
     mPosition(positionY), mVitesse(vitesseY), mColor(color), mMasse(masse), mEpaisseur(epaisseur) {}
-
-// Accesseurs.
-inline double ConfigPiston::position() const
-    {return mPosition;}
-inline double ConfigPiston::vitesse() const
-    {return mVitesse;}
-inline QColor ConfigPiston::color() const
-    {return mColor;}
-inline double ConfigPiston::masse() const
-    {return mMasse;}
-inline double ConfigPiston::epaisseur() const
-    {return mEpaisseur;}
 
 #endif // CONFIG_PISTON_HPP

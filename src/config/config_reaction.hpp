@@ -25,8 +25,6 @@
 // Une réaction est un changement de population dû à une collision entre boules.
 class ConfigReaction
 {
-    friend class Boule;
-
 public:
     enum Type
     {
@@ -41,15 +39,6 @@ public:
     friend QDataStream& operator<<(QDataStream& stream, const ConfigReaction& config);
     friend QDataStream& operator>>(QDataStream& stream, ConfigReaction& config);
 
-    // Accesseurs.
-    inline unsigned int pop1() const;
-    inline unsigned int pop2() const;
-    inline unsigned int _pop1() const;
-    inline unsigned int _pop2() const;
-    inline double seuil() const;
-    inline unsigned int type() const;
-
-private:
     // Populations sources.
     unsigned int mPop1;
     unsigned int mPop2;
@@ -67,19 +56,5 @@ inline ConfigReaction::ConfigReaction() :
     mPop1(0), mPop2(0), mType(none), mSeuil(0), m_Pop1(0), m_Pop2(0) {}
 inline ConfigReaction::ConfigReaction(unsigned int pop1, unsigned int pop2, Type type, double seuil, unsigned int _pop1, unsigned int _pop2) :
     mPop1(pop1), mPop2(pop2), mType(type), mSeuil(seuil), m_Pop1(_pop1), m_Pop2(_pop2) {}
-
-// Accesseurs.
-inline unsigned int ConfigReaction::pop1() const
-    {return mPop1;}
-inline unsigned int ConfigReaction::pop2() const
-    {return mPop2;}
-inline unsigned int ConfigReaction::_pop1() const
-    {return m_Pop1;}
-inline unsigned int ConfigReaction::_pop2() const
-    {return m_Pop2;}
-inline double ConfigReaction::seuil() const
-    {return mSeuil;}
-inline unsigned int ConfigReaction::type() const
-    {return mType;}
 
 #endif // CONFIG_REACTION_HPP

@@ -18,23 +18,24 @@
 
 #include "piston.hpp"
 
-#include "boule.hpp"
-#include "map_ligne.hpp"
-#include "collision.hpp"
+#include "state.hpp"
 #include "solveur.hpp"
 
 // Constructeur.
-Piston::Piston(ConfigPiston config, double sizeArea, QMap<int, MapLigne>& mapMobiles) :
+Piston::Piston(ConfigPiston config, State& state) :
     Mobile(Coord<double>(0, config.mPosition), Coord<double>(0, config.mVitesse), config.mColor, config.mMasse),
     mEpaisseur(config.mEpaisseur),
-    mArea1(floor(mPosition.y / sizeArea)),
-    mArea2(floor((mPosition.y + mEpaisseur) / sizeArea))
+    mArea1(std::floor(mPosition.y / state.sizeArea)),
+    mArea2(std::floor((mPosition.y + mEpaisseur) / state.sizeArea))
 {
     // Mise à jour de la carte.
-    mapMobiles[mArea1].pistons().prepend(this);
-    mMapIt1 = mapMobiles[mArea1].pistons().begin();
-    mapMobiles[mArea2].pistons().prepend(this);
-    mMapIt2 = mapMobiles[mArea2].pistons().begin();
+    auto& pistons1 = state.mapMobiles[mArea1].pistons();
+    pistons1.prepend(this);
+    mMapIt1 = pistons1.begin();
+
+    auto& pistons2 = state.mapMobiles[mArea2].pistons();
+    pistons2.prepend(this);
+    mMapIt2 = pistons2.begin();
 }
 
 
@@ -115,19 +116,19 @@ Time Piston::newArea(double sizeArea, const Coord<double>& gravity) const
 
 
 // Effectue la collision avec le mobile.
-void Piston::doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::doCollision(Mobile* mobile, State& state)
 {
-    mobile->doCollision(now, this, toRefresh, events, configMutations, configReactions, populations, countEtudes);
+    mobile->doCollision(this, state);
 }
 
 // Collision avec une boule.
-void Piston::doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::doCollision(Boule* boule, State& state)
 {
-    boule->doCollision(now, this, toRefresh, events, configMutations, configReactions, populations, countEtudes);
+    boule->doCollision(this, state);
 }
 
 // Collision avec un piston.
-void Piston::doCollision(const Time&/* now*/, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >&/* events*/, const QList<ConfigMutation>&/* configMutations*/, const QList<ConfigReaction>&/* configReactions*/, QList<Population>&/* populations*/, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::doCollision(Piston* piston, State& state)
 {
     // Vitesses initiales.
     double vitesse1 = mVitesse.y;
@@ -140,76 +141,76 @@ void Piston::doCollision(const Time&/* now*/, Piston* piston, std::set<Mobile*>&
         mVitesse.y = (vitesse1 * (mMasse - piston->mMasse) + vitesse2 * 2.0 * piston->mMasse) / (mMasse + piston->mMasse);
         piston->mVitesse.y = (vitesse2 * (piston->mMasse - mMasse) + vitesse1 * 2.0 * mMasse) / (mMasse + piston->mMasse);
 
-        this->updateRefresh(toRefresh);
-        piston->updateRefresh(toRefresh);
+        this->updateRefresh(state);
+        piston->updateRefresh(state);
     }
     else
     {
-        toRefresh.insert(this);
-        toRefresh.insert(piston);
+        state.toRefresh.insert(this);
+        state.toRefresh.insert(piston);
     }
 }
 
 // Effectue un changement de zone.
-void Piston::changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::changeArea(State& state)
 {
-    mapMobiles[mArea1].pistons().erase(mMapIt1);
-    mapMobiles[mArea2].pistons().erase(mMapIt2);
+    state.mapMobiles[mArea1].pistons().erase(mMapIt1);
+    state.mapMobiles[mArea2].pistons().erase(mMapIt2);
 
     // Calcul des zones.
     if (mVitesse.y >= 0)
     {
-        mArea1 = floor(mPosition.y / sizeArea + 0.5);
-        mArea2 = floor((mPosition.y + mEpaisseur) / sizeArea + 0.5);
+        mArea1 = std::floor(mPosition.y / state.sizeArea + 0.5);
+        mArea2 = std::floor((mPosition.y + mEpaisseur) / state.sizeArea + 0.5);
     }
     else
     {
-        mArea1 = floor(mPosition.y / sizeArea - 0.5);
-        mArea2 = floor((mPosition.y + mEpaisseur) / sizeArea - 0.5);
+        mArea1 = std::floor(mPosition.y / state.sizeArea - 0.5);
+        mArea2 = std::floor((mPosition.y + mEpaisseur) / state.sizeArea - 0.5);
     }
 
     // Mise à jour de la carte.
-    auto& pistons1 = mapMobiles[mArea1].pistons();
+    auto& pistons1 = state.mapMobiles[mArea1].pistons();
     pistons1.prepend(this);
     mMapIt1 = pistons1.begin();
 
-    auto& pistons2 = mapMobiles[mArea2].pistons();
+    auto& pistons2 = state.mapMobiles[mArea2].pistons();
     pistons2.prepend(this);
     mMapIt2 = pistons2.begin();
 
-    this->updateRefresh(toRefresh);
+    this->updateRefresh(state);
 }
 
 
 // Cherche des collisions avec des mobiles.
-void Piston::updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes)
+void Piston::updateCollisionsMobiles(State& state)
 {
     // Vérifie les mobiles des zones voisines.
     for (int j = mArea1 - 1 ; j <= mArea1 + 1 ; ++j)
     {
         // Vérifie les boules.
-        for (auto& boule : mapMobiles[j].boules())
-            this->testeCollision(boule, events, now, sizeArea, gravity, countEtudes);
+        for (auto& boule : state.mapMobiles[j].boules())
+            this->testeCollision(boule, state);
 
         // Vérifie les pistons.
-        for (auto& piston : mapMobiles[j].pistons())
+        for (auto& piston : state.mapMobiles[j].pistons())
             if (piston != this)
-                this->testeCollision(piston, events, now, sizeArea, gravity, countEtudes);
+                this->testeCollision(piston, state);
     }
 
     // Vérifie les mobiles des zones voisines.
     for (int j = mArea2 - 1 ; j <= mArea2 + 1 ; ++j)
     {
         // Vérifie les boules.
-        for (auto& boule : mapMobiles[j].boules())
-            this->testeCollision(boule, events, now, sizeArea, gravity, countEtudes);
+        for (auto& boule : state.mapMobiles[j].boules())
+            this->testeCollision(boule, state);
 
         // Vérifie les pistons.
-        for (auto& piston : mapMobiles[j].pistons())
+        for (auto& piston : state.mapMobiles[j].pistons())
             if (piston != this)
-                this->testeCollision(piston, events, now, sizeArea, gravity, countEtudes);
+                this->testeCollision(piston, state);
     }
 
     // Vérifie un changement de zone.
-    this->testeCollision(Collision(this), events, now, sizeArea, gravity, countEtudes);
+    this->testeCollision(Collision(this), state);
 }

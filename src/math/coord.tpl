@@ -346,7 +346,7 @@ double Coord<T>::squareLength() const
 template <typename T>
 double Coord<T>::length() const
 {
-    return sqrt(this->squareLength());
+    return std::sqrt(this->squareLength());
 }
 
 // arctangente, i.e. argument

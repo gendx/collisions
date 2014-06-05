@@ -57,10 +57,10 @@ void WidgetCourbe::resizeEvent(QResizeEvent*/* event*/)
 
 
 // Calcule et ajoute des valeurs aux courbes.
-void WidgetCourbe::push(Time time, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons)
+void WidgetCourbe::push(State& state)
 {
     for (auto& courbe : mCourbes)
-        courbe.push(time, mConfig.mType, mConfig.mMean, populations, pistons);
+        courbe.push(mConfig.mType, mConfig.mMean, state);
 }
 
 // Redessine la QPixmap.

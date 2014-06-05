@@ -31,15 +31,11 @@
 #include "segment.hpp"
 #include "polygone.hpp"
 
-class Population;
+class State;
 class Collision;
-class Configuration;
 class Piston;
 class Boule;
 class Event;
-class MapLigne;
-class ConfigReaction;
-class ConfigMutation;
 
 // Comparaison pour utiliser un std::set.
 bool operator<(const std::multimap<Time, std::shared_ptr<Event> >::iterator& it1, const std::multimap<Time, std::shared_ptr<Event> >::iterator& it2);
@@ -78,34 +74,34 @@ public:
     virtual Time newArea(double sizeArea, const Coord<double>& gravity) const;
 
     // Effectue la collision avec le mobile : calcul du changement de trajectoire et mise à jour des prochaines collisions.
-    virtual void doCollision(const Time& now, Mobile* mobile, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes) = 0;
-    virtual void doCollision(const Time& now, Boule* boule, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes) = 0;
-    virtual void doCollision(const Time& now, Piston* piston, std::set<Mobile*>& toRefresh, std::multimap<Time, std::shared_ptr<Event> >& events, const QList<ConfigMutation>& configMutations, const QList<ConfigReaction>& configReactions, QList<Population>& populations, std::pair<unsigned int, unsigned int>& countEtudes) = 0;
-    virtual void doCollision(const Time& now, const Coord<double>& sommet, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes);
-    virtual void doCollision(const Time& now, const Segment& segment, std::set<Mobile*>& toRefresh, std::pair<unsigned int, unsigned int>& countEtudes);
+    virtual void doCollision(Mobile* mobile, State& state) = 0;
+    virtual void doCollision(Boule* boule, State& state) = 0;
+    virtual void doCollision(Piston* piston, State& state) = 0;
+    virtual void doCollision(const Coord<double>& sommet, State& state);
+    virtual void doCollision(const Segment& segment, State& state);
     // Effectue un changement de zone.
-    virtual void changeArea(double sizeArea, std::set<Mobile*>& toRefresh, QMap<int, MapLigne>& mapMobiles, std::pair<unsigned int, unsigned int>& countEtudes);
+    virtual void changeArea(State& state);
 
     // Définit la dernière collision du mobile.
-    void setLastCollision(const Time& now, const Collision& collision);
+    void setLastCollision(const Collision& collision, const Time& now);
     // Vérifie que la collision est compatible avec la dernière collision du mobile.
     bool checkLastCollision(const Collision& collision, const Time& time) const;
 
     // Cherche la prochaine collision de ce mobile et met à jour la table des événements.
-    void updateCollisions(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes);
+    void updateCollisions(State& state);
     // Détache le mobile de la collision (appelé en cas de changement de trajectoire).
     void detach(const Collision& collision);
 
 protected:
     // Ajoute tous les mobiles attachés (i.e. qui ciblent celui-ci) à l'ensemble à mettre à jour.
-    void updateRefresh(std::set<Mobile*>& toRefresh);
+    void updateRefresh(State& state);
 
     // Cherche des collisions avec des mobiles.
-    virtual void updateCollisionsMobiles(std::multimap<Time, std::shared_ptr<Event> >& events, QMap<int, MapLigne>& mapMobiles, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes) = 0;
+    virtual void updateCollisionsMobiles(State& state) = 0;
 
     // Teste la collision avec l'autre mobile.
-    void testeCollision(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes);
-    void testeCollision(const Collision& collision, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea, const Coord<double>& gravity, std::pair<unsigned int, unsigned int>& countEtudes);
+    void testeCollision(Mobile* mobile, State& state);
+    void testeCollision(const Collision& collision, State& state);
 
     // Paramètres.
     Coord<double> mPosition;
@@ -116,9 +112,9 @@ protected:
 
 private:
     // Supprime le mobile de la liste des événements.
-    void detach(std::multimap<Time, std::shared_ptr<Event> >& events);
+    void detach(State& state);
     // Ajoute un mobile à la liste des cibles.
-    bool addTarget(Mobile* mobile, std::multimap<Time, std::shared_ptr<Event> >& events, bool addCollision = true);
+    bool addTarget(Mobile* mobile, State& state, bool addCollision = true);
 
     // Prochaine(s) collision(s).
     Time mTargetTime;
@@ -128,7 +124,7 @@ private:
     std::set<Mobile*> mAttached;
     // Dernière(s) collision(s).
     Time mLastTime;
-    QList<std::shared_ptr<Collision> > mLastCollisions;
+    std::list<std::shared_ptr<Collision> > mLastCollisions;
 
     // Identifiant unique du mobile.
     unsigned int mIndex;

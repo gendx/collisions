@@ -30,7 +30,7 @@ public:
     WidgetProfil(Time lifespan, const ConfigProfil& config);
 
     // Calcule et ajoute une tranche au profil.
-    inline void push(Time time, const QList<Population>& populations);
+    inline void push(State& state);
     // Redessine la QPixmap.
     void update();
 
@@ -55,8 +55,8 @@ private:
 };
 
 // Calcule et ajoute une tranche au profil.
-inline void WidgetProfil::push(Time time, const QList<Population>& populations)
-    {mProfil.push(time, populations);}
+inline void WidgetProfil::push(State& state)
+    {mProfil.push(state);}
 // Accesseurs.
 inline void WidgetProfil::setScroll(double scroll)
     {mScroll = scroll;}

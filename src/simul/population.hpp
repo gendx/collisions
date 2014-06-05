@@ -19,9 +19,7 @@
 #ifndef POPULATION_HPP
 #define POPULATION_HPP
 
-#include <QMap>
 #include <memory>
-#include <list>
 #include "boule.hpp"
 #include "polygone.hpp"
 #include "obstacle.hpp"
@@ -38,11 +36,11 @@ public:
     inline Population(const ConfigPopulation& config);
 
     // Génère une population de boules selon la configuration.
-    void create(const Configuration& config, QList<Population>& populations, unsigned int index, QMap<int, MapLigne>& mapMobiles, QList<std::shared_ptr<Piston> >& pistons, std::multimap<Time, std::shared_ptr<Event> >& events, const Time& now, double sizeArea);
+    void create(unsigned int index, State& state);
 
     // Accesseurs.
-    inline std::list<std::shared_ptr<Boule> >& boules();
-    inline const std::list<std::shared_ptr<Boule> >& boules() const;
+    inline std::set<Boule*>& boules();
+    inline const std::set<Boule*>& boules() const;
 
     // Calcule des statistiques sur cette population.
     double meanFreeRide() const;
@@ -63,10 +61,10 @@ public:
     inline QColor color() const;
 
 private:
-    bool invalid(const Coord<double>& pos, const Configuration& config, QList<Population>& populations, QList<std::shared_ptr<Piston> >& pistons);
+    bool invalid(const Coord<double>& pos, State& state);
 
     ConfigPopulation mConfig;
-    std::list<std::shared_ptr<Boule> > mBoules;
+    std::set<Boule*> mBoules;
 };
 
 // Constructeurs.
@@ -76,9 +74,9 @@ inline Population::Population(const ConfigPopulation& config) :
     mConfig(config) {}
 
 // Accesseurs.
-inline std::list<std::shared_ptr<Boule> >& Population::boules()
+inline std::set<Boule*>& Population::boules()
     {return mBoules;}
-inline const std::list<std::shared_ptr<Boule> >& Population::boules() const
+inline const std::set<Boule*>& Population::boules() const
     {return mBoules;}
 
 // Calcule des statistiques sur cette population.

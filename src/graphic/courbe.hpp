@@ -32,7 +32,7 @@ public:
     inline Courbe(const ConfigCourbe& config);
 
     // Calcule et ajoute une valeur à la courbe.
-    void push(Time time, unsigned int valType, bool mean, const QList<Population>& populations, const QList<std::shared_ptr<Piston> >& pistons);
+    void push(unsigned int valType, bool mean, State& state);
 
     // Accesseurs.
     inline const QList<std::pair<Time, double> >& valeurs() const;
