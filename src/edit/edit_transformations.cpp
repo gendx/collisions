@@ -102,8 +102,8 @@ void EditTransformations::setReactions(QList<ConfigReaction> reactions)
     for (auto& reaction : reactions)
     {
         ++mIndexReactions;
-        mModelReactions->appendRow(QList<QStandardItem*>() << new QStandardItem(mReactionsList[reaction.type()]) << new QStandardItem(QString::number(reaction.seuil())) << new QStandardItem(QString::number(reaction.pop1())) << new QStandardItem(QString::number(reaction.pop2())) << new QStandardItem(QString::number(reaction._pop1())) << new QStandardItem(QString::number(reaction._pop2())));
-        mModelReactions->setData(mModelReactions->index(mIndexReactions, 0, QModelIndex()), reaction.type(), Qt::UserRole);
+        mModelReactions->appendRow(QList<QStandardItem*>() << new QStandardItem(mReactionsList[reaction.mType]) << new QStandardItem(QString::number(reaction.mSeuil)) << new QStandardItem(QString::number(reaction.mPop1)) << new QStandardItem(QString::number(reaction.mPop2)) << new QStandardItem(QString::number(reaction.m_Pop1)) << new QStandardItem(QString::number(reaction.m_Pop2)));
+        mModelReactions->setData(mModelReactions->index(mIndexReactions, 0, QModelIndex()), reaction.mType, Qt::UserRole);
     }
 
     mReactionsView->selectRow(mIndexReactions);
@@ -119,8 +119,8 @@ void EditTransformations::setMutations(QList<ConfigMutation> mutations)
     for (auto& mutation : mutations)
     {
         ++mIndexMutations;
-        mModelMutations->appendRow(QList<QStandardItem*>() << new QStandardItem(mMutationsList[mutation.type()]) << new QStandardItem(QString::number(mutation.tau())) << new QStandardItem(QString::number(mutation.pop1())) << new QStandardItem(QString::number(mutation.pop2())));
-        mModelMutations->setData(mModelMutations->index(mIndexMutations, 0, QModelIndex()), mutation.type(), Qt::UserRole);
+        mModelMutations->appendRow(QList<QStandardItem*>() << new QStandardItem(mMutationsList[mutation.mType]) << new QStandardItem(QString::number(mutation.mTau)) << new QStandardItem(QString::number(mutation.mPop1)) << new QStandardItem(QString::number(mutation.mPop2)));
+        mModelMutations->setData(mModelMutations->index(mIndexMutations, 0, QModelIndex()), mutation.mType, Qt::UserRole);
     }
 
     mMutationsView->selectRow(mIndexMutations);

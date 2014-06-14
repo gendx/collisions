@@ -10,7 +10,8 @@ In order to build this software, you will need to install :
 * A C++ compiler supporting the C++11 standard (for *shared_ptr* and *random* libraries). The last version of GCC should be all right.
 
 Compilation was tested on "Qt Creator" IDE, with GCC 4.8.
-Automatic testing with [Travis CI](ttps://travis-ci.org) should be available soon.
+
+Automatic testing with [Travis CI](ttps://travis-ci.org) is now available. [![Build Status](https://travis-ci.org/gendx/collisions.png?branch=master)](https://travis-ci.org/gendx/collisions)
 
 
 ## Usage
