@@ -146,7 +146,7 @@ void EditObstacles::remove()
         return;
     if (mIndex == 0)
     {
-        QMessageBox::warning(this, "Erreur", QString("Impossible de supprimer le contour !"));
+        QMessageBox::warning(this, "Error", "Cannot remove the contour !");
         return;
     }
 

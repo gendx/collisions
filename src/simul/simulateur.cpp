@@ -26,11 +26,11 @@
 Simulateur::Simulateur(const Configuration& config) :
     mLayout(new QGridLayout(this)),
     mGroupCourbes(new CourbesGroup(500)),
-    mLabelVitesse(new QLabel("vitesse :")),
+    mLabelVitesse(new QLabel("simulation speed :")),
     mSliderVitesse(new QSlider(Qt::Horizontal)),
-    mLabelValues(new QLabel(QString::fromUtf8("valeurs :"))),
+    mLabelValues(new QLabel("measure frequency :")),
     mSliderValues(new QSlider(Qt::Horizontal)),
-    mLabelCourbes(new QLabel(QString::fromUtf8("courbes :"))),
+    mLabelCourbes(new QLabel("display frequency :")),
     mSliderCourbes(new QSlider(Qt::Horizontal)),
     mState(config)
 {
@@ -123,7 +123,7 @@ bool Simulateur::playNext()
         std::cout << "Plusieurs collisions simultanées !" << std::endl;
     if (count > 1)
         std::cout << "Plusieurs dessins simultanés !" << std::endl;
-        //QMessageBox::warning(this, "attention", QString::fromUtf8("Plusieurs collisions simultanées !"));
+        //QMessageBox::warning(this, "warning", "Several simultaneous collisions !");
     //*/
 
     // Met à jour les événements de collisions et de dessin.
@@ -279,7 +279,7 @@ void Simulateur::emitStatusText(unsigned int msec, unsigned int frames, unsigned
     mState.countEtudes.first = 0;
 
     // Envoie le texte.
-    emit statusText(QString::number(fps, 'g', 2) + " images par seconde ; " + QString::number(cps) + " chocs par seconde ; " + QString::number(chocsTotal) + " chocs au total");
+    emit statusText(QString::number(fps, 'g', 2) + " frames per second ; " + QString::number(cps) + " collisions per second ; " + QString::number(chocsTotal) + " collisions in total");
 }
 
 

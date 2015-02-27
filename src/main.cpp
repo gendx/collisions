@@ -33,11 +33,11 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception& except)
     {
-        QMessageBox::critical(0, "Erreur", QString::fromUtf8(except.what()));
+        QMessageBox::critical(0, "Error", QString::fromUtf8(except.what()));
     }
     catch (...)
     {
-        QMessageBox::critical(0, "Erreur", "Une erreur inconnue s'est produite !");
+        QMessageBox::critical(0, "Error", "An unknown error occurred !");
     }
 
     return 0;

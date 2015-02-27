@@ -23,16 +23,16 @@
 // Constructeur.
 EditTransformations::EditTransformations() :
     mLayout(new QGridLayout(this)),
-    mAddReaction(new QPushButton("ajouter")),
-    mRemoveReaction(new QPushButton("supprimer")),
+    mAddReaction(new QPushButton("add")),
+    mRemoveReaction(new QPushButton("remove")),
     mModelReactions(new QStandardItemModel),
     mReactionsView(new QTableView),
-    mAddMutation(new QPushButton("ajouter")),
-    mRemoveMutation(new QPushButton("supprimer")),
+    mAddMutation(new QPushButton("add")),
+    mRemoveMutation(new QPushButton("remove")),
     mModelMutations(new QStandardItemModel),
     mMutationsView(new QTableView),
-    mReactionsList(QStringList() << "rencontre" << QString::fromUtf8("probabilité") << QString::fromUtf8("seuil d'énergie")),
-    mMutationsList(QStringList() << QString::fromUtf8("durée") << QString::fromUtf8("probabilité")),
+    mReactionsList(QStringList() << "reaction" << "probability" << "energy threshold"),
+    mMutationsList(QStringList() << "decay" << "probability"),
     mSpinboxDelegate(new SpinBoxDelegate),
     mDoubleDelegate(new DoubleDelegate),
     mComboReactions(new ComboDelegate(mReactionsList)),
@@ -49,7 +49,7 @@ EditTransformations::EditTransformations() :
 
     // Création du modèle MVC (réactions).
     mModelReactions->setColumnCount(6);
-    mModelReactions->setHorizontalHeaderLabels(QStringList() << QString::fromUtf8("critère") << "seuil" << "pop src 1" << "pop src 2" << "pop dst 1" << "pop dst 2");
+    mModelReactions->setHorizontalHeaderLabels(QStringList() << "criterion" << "threshold" << "src pop 1" << "src pop 2" << "dst pop 1" << "dst pop 2");
 
     // Propriétés de la table (réactions).
     mReactionsView->setModel(mModelReactions);
@@ -65,7 +65,7 @@ EditTransformations::EditTransformations() :
 
     // Création du modèle MVC (mutations).
     mModelMutations->setColumnCount(4);
-    mModelMutations->setHorizontalHeaderLabels(QStringList() << QString::fromUtf8("critère") << "seuil" << "pop. source" << "pop. destination");
+    mModelMutations->setHorizontalHeaderLabels(QStringList() << "criterion" << "threshold" << "source pop." << "destination pop.");
 
     // Propriétés de la table (mutations).
     mMutationsView->setModel(mModelMutations);

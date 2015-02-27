@@ -289,7 +289,7 @@ void Boule::doCollision(Boule* boule, State& state)
     // Erreur : les mobiles s'éloignent !
     else
     {
-        std::cerr << "collision refusée (boules) : " << *this << " ; " << *boule << std::endl;
+        std::cerr << "rejected collision (balls) : " << *this << " ; " << *boule << std::endl;
         state.toRefresh.insert(this);
         state.toRefresh.insert(boule);
     }
@@ -348,7 +348,7 @@ void Boule::doCollision(Piston* piston, State& state)
     // Erreur : les mobiles s'éloignent !
     else
     {
-        std::cerr << "collision refusée (piston) : " << *this << " ; " << *piston << std::endl;
+        std::cerr << "rejected collision (piston) : " << *this << " ; " << *piston << std::endl;
         state.toRefresh.insert(this);
         state.toRefresh.insert(piston);
     }
@@ -378,7 +378,7 @@ void Boule::doCollision(const Coord<double>& sommet, State& state)
     // Erreur : la boule s'éloigne du sommet !
     else
     {
-        std::cerr << "collision refusée (sommet) : " << *this << std::endl;
+        std::cerr << "rejected collision (vertex) : " << *this << std::endl;
         state.toRefresh.insert(this);
     }
 }
@@ -405,7 +405,7 @@ void Boule::doCollision(const Segment& segment, State& state)
     // Erreur : la boule s'éloigne du segment !
     else
     {
-        std::cerr << "collision refusée (segment) : " << *this << std::endl;
+        std::cerr << "rejected collision (segment) : " << *this << std::endl;
         state.toRefresh.insert(this);
     }
 }

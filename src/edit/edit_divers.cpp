@@ -32,8 +32,8 @@ EditDivers::EditDivers() :
     mYGrav->setValidator(new QDoubleValidator(mYGrav));
 
     // Remplissage du layout.
-    mLayout->addRow(QString::fromUtf8("gravité x"), mXGrav);
-    mLayout->addRow(QString::fromUtf8("gravité y"), mYGrav);
+    mLayout->addRow("gravity x", mXGrav);
+    mLayout->addRow("gravity y", mYGrav);
 }
 
 

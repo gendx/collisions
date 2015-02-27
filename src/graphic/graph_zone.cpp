@@ -26,7 +26,7 @@
 // Constructeur.
 GraphZone::GraphZone(Graph* graph) :
     mGraph(graph),
-    mActionCenter(new QAction("&Centrer", this)),
+    mActionCenter(new QAction("&Center", this)),
     mMousePress(false),
     mCtrl(false),
     mZoom(1),

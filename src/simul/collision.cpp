@@ -123,7 +123,7 @@ Time Collision::time(State& state) const
     // TODO : valider la suppression des lignes suivantes.
     if (mType != _area && (!mMobile1->checkLastCollision(*this, state.now + time)) && (mType != _mobiles || (!mMobile2->checkLastCollision(*this, state.now + time))))
     {
-        std::cout << "refusé : " << *this << std::endl;
+        std::cout << "rejected : " << *this << std::endl;
         return Time();
     }
 

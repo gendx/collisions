@@ -39,8 +39,8 @@ Editeur::Editeur(Graph* graph) :
     mCombo->addItem("populations");
     mCombo->addItem("pistons");
     mCombo->addItem("transformations");
-    mCombo->addItem("courbes");
-    mCombo->addItem("divers");
+    mCombo->addItem("curves");
+    mCombo->addItem("misc");
 
     mStackedWidget->addWidget(mEditObstacles);
     mStackedWidget->addWidget(mEditPopulations);

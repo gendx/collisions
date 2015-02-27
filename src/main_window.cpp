@@ -30,8 +30,8 @@
 // Constructeur.
 MainWindow::MainWindow() :
     mMdi(new QMdiArea),
-    mFileToolbar(this->addToolBar("&Fichier")),
-    mEditToolbar(this->addToolBar("&Edition")),
+    mFileToolbar(this->addToolBar("&File")),
+    mEditToolbar(this->addToolBar("&Edit")),
     mSimulToolbar(this->addToolBar("&Simulation"))
 {
     // Création de l'interface graphique.
@@ -111,27 +111,27 @@ void MainWindow::createActions()
     // Dossier contenant les icônes.
     QString folder(":/icons/");
 
-    mFileMenu = this->menuBar()->addMenu("&Fichier");
-    mNewAction = mFileMenu->addAction(QIcon(folder + "new.png"), "&Nouveau projet");
-    mOpenAction = mFileMenu->addAction(QIcon(folder + "open.png"), "&Ouvrir...");
-    mSaveAction = mFileMenu->addAction(QIcon(folder + "save.png"), "&Enregistrer");
-    mSaveasAction = mFileMenu->addAction(QIcon(folder + "save_as.png"), "Enregistrer &sous...");
-    mSaveallAction = mFileMenu->addAction(QIcon(folder + "save_all.png"), "&Tout enregistrer");
-    mCloseAction = mFileMenu->addAction(QIcon(folder + "close.png"), "&Fermer");
-    mCloseallAction = mFileMenu->addAction(QIcon(folder + "close_all.png"), "Tout fermer");
-    mEditMenu = this->menuBar()->addMenu("&Edition");
-    mEditModeAction = mEditMenu->addAction(QIcon(folder + "edit.png"), QString::fromUtf8("Mode &édition"));
-    mExportConfigAction = mEditMenu->addAction(QIcon(folder + "export.png"), QString::fromUtf8("E&xporter la configuration"));
+    mFileMenu = this->menuBar()->addMenu("&File");
+    mNewAction = mFileMenu->addAction(QIcon(folder + "new.png"), "&New project");
+    mOpenAction = mFileMenu->addAction(QIcon(folder + "open.png"), "&Open...");
+    mSaveAction = mFileMenu->addAction(QIcon(folder + "save.png"), "&Save");
+    mSaveasAction = mFileMenu->addAction(QIcon(folder + "save_as.png"), "Save &as...");
+    mSaveallAction = mFileMenu->addAction(QIcon(folder + "save_all.png"), "Save a&ll");
+    mCloseAction = mFileMenu->addAction(QIcon(folder + "close.png"), "&Close");
+    mCloseallAction = mFileMenu->addAction(QIcon(folder + "close_all.png"), "Close all");
+    mEditMenu = this->menuBar()->addMenu("&Edit");
+    mEditModeAction = mEditMenu->addAction(QIcon(folder + "edit.png"), "&Edit mode");
+    mExportConfigAction = mEditMenu->addAction(QIcon(folder + "export.png"), "E&xport configuration");
     mSimulMenu = this->menuBar()->addMenu("&Simulation");
-    mSimulModeAction = mSimulMenu->addAction(QIcon(folder + "run.png"), "Mode &simulation");
-    mPlayAction = mSimulMenu->addAction(QIcon(folder + "play.png"), QString::fromUtf8("&Démarrer"));
-    mRestartAction = mSimulMenu->addAction(QIcon(folder + "restart.png"), QString::fromUtf8("&Redémarrer"));
-    mWindowMenu = this->menuBar()->addMenu(QString::fromUtf8("Fe&nêtre"));
-    mTileAction = new QAction(QString::fromUtf8("Réorganiser"), this);
-    mCascadeAction = new QAction("Cascade", this);
-    mTabAction = new QAction("Tab", this);
-    mPreviousAction = new QAction(QIcon(folder + "left.png"), QString::fromUtf8("Précédent"), this);
-    mNextAction = new QAction(QIcon(folder + "right.png"), "Suivant", this);
+    mSimulModeAction = mSimulMenu->addAction(QIcon(folder + "run.png"), "Simulation &mode");
+    mPlayAction = mSimulMenu->addAction(QIcon(folder + "play.png"), "&Run");
+    mRestartAction = mSimulMenu->addAction(QIcon(folder + "restart.png"), "Re&start");
+    mWindowMenu = this->menuBar()->addMenu("&Window");
+    mTileAction = new QAction("&Tile", this);
+    mCascadeAction = new QAction("&Cascade", this);
+    mTabAction = new QAction("Ta&b", this);
+    mPreviousAction = new QAction(QIcon(folder + "left.png"), "&Previous", this);
+    mNextAction = new QAction(QIcon(folder + "right.png"), "&Next", this);
     mSeparatorAction = new QAction(this);
 }
 
@@ -169,13 +169,13 @@ void MainWindow::open()
         Document* document = createDocument();
         if (document->load(path))
         {
-            statusBar()->showMessage(QString::fromUtf8("Fichier chargé"), 2000);
+            statusBar()->showMessage("File loaded", 2000);
             document->show();
         }
         else
         {
             document->close();
-            QMessageBox::critical(this, "Erreur de chargement", "Une erreur est survenue lors du chargement du fichier.");
+            QMessageBox::critical(this, "Loading error", "An error occurred while opening the file.");
         }
     }
 }
@@ -184,14 +184,14 @@ void MainWindow::save()
 {
     Document* active = activeDocument();
     if (active && active->save())
-        statusBar()->showMessage(QString::fromUtf8("Fichier sauvegardé"), 2000);
+        statusBar()->showMessage("File saved", 2000);
 }
 
 void MainWindow::saveAs()
 {
     Document* active = activeDocument();
     if (active && active->saveAs())
-        statusBar()->showMessage(QString::fromUtf8("Fichier sauvegardé"), 2000);
+        statusBar()->showMessage("File saved", 2000);
 }
 
 void MainWindow::saveAll()
@@ -232,7 +232,7 @@ void MainWindow::exportConfig()
         Configuration config = active->config();
         if (!config.check())
         {
-            QMessageBox::critical(this, "Collisions", "La configuration est invalide. Impossible de l'exporter.");
+            QMessageBox::critical(this, "Collisions", "Invalid configuration. Impossible to export.");
             return;
         }
 
@@ -250,6 +250,13 @@ void MainWindow::setSimulMode()
     Document* active = activeDocument();
     if (active)
     {
+        Configuration config = active->config();
+        if (!config.check())
+        {
+            QMessageBox::critical(this, "Collisions", "Invalid configuration. Impossible to simulate.");
+            return;
+        }
+
         active->setSimulMode();
         this->updateActions();
     }
@@ -260,7 +267,7 @@ void MainWindow::play()
     Document* active = activeDocument();
     if (active)
     {
-        mPlayAction->setText(active->playing() ? QString::fromUtf8("&Démarrer") : "&Pause");
+        mPlayAction->setText(active->playing() ? "&Run" : "&Pause");
         QString folder(":/icons/");
         mPlayAction->setIcon(QIcon(folder + (active->playing() ? "play.png" : "pause.png")));
 
@@ -352,11 +359,12 @@ void MainWindow::updateActions()
     mSimulModeAction->setEnabled(hasDocument);
     mTileAction->setEnabled(hasDocument);
     mCascadeAction->setEnabled(hasDocument);
+    mTabAction->setEnabled(hasDocument);
     mNextAction->setEnabled(hasDocument);
     mPreviousAction->setEnabled(hasDocument);
     mSeparatorAction->setVisible(hasDocument);
 
-    mPlayAction->setText((doc && doc->playing()) ? "&Pause" : QString::fromUtf8("&Démarrer"));
+    mPlayAction->setText((doc && doc->playing()) ? "&Pause" : "&Run");
     QString folder(":/icons/");
     mPlayAction->setIcon(QIcon(folder + ((doc && doc->playing()) ? "pause.png" : "play.png")));
 

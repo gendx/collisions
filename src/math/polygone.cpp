@@ -110,6 +110,9 @@ double Polygone::bottom() const
 // Calcule la surface du polygone.
 double Polygone::surface() const
 {
+    if (mSommets.empty())
+        return 0.0;
+
     double result = (mSommets.back().x + mSommets.front().x) * (mSommets.front().y - mSommets.back().y) / 2.0;
 
     for (int i = 1 ; i < mSommets.size() ; ++i)

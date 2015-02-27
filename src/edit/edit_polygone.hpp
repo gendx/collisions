@@ -72,6 +72,7 @@ private:
     QTableView* mTableView;
     QStandardItemModel* mModel;
     QCheckBox* mCheckGrid;
+    QLabel* mHintLabel;
     DoubleDelegate* mDelegate;
 };
 

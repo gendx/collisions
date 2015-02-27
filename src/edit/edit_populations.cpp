@@ -31,7 +31,7 @@ EditPopulations::EditPopulations(EditPolygone* editPolygone) :
 {
     // Création du modèle MVC.
     mModel->setColumnCount(5);
-    mModel->setHorizontalHeaderLabels(QStringList() << "nombre" << "rayon" << "masse" << "vitesse" << "couleur");
+    mModel->setHorizontalHeaderLabels(QStringList() << "count" << "radius" << "mass" << "speed" << "color");
 
     // Propriétés de la table.
     mTableView->setModel(mModel);

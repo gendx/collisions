@@ -173,7 +173,7 @@ bool Document::maybeSave()
 {
     if (mModified)
     {
-        QMessageBox::StandardButton result = QMessageBox::warning(this, "Collisions", QString::fromUtf8("Le fichier '%1' a été modifié.\nVoulez vous le sauvegarder?").arg(this->userFriendlyPath()), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        QMessageBox::StandardButton result = QMessageBox::warning(this, "Collisions", QString("File '%1' was modified.\nDo you want to save it ?").arg(this->userFriendlyPath()), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
         if (result == QMessageBox::Save)
             return this->save();
@@ -208,7 +208,7 @@ bool Document::save()
 // Choisit un fichier et sauvegarde la configuration.
 bool Document::saveAs()
 {
-    QString path = QFileDialog::getSaveFileName(this, "Enregistrer un fichier", "", "Fichiers collisions (*.col)");
+    QString path = QFileDialog::getSaveFileName(this, "Save file", "", "Collisions files (*.col)");
     if (path.isNull())
         return false;
 
@@ -222,7 +222,7 @@ bool Document::save(const QString& path)
 
     if (!file.open(QIODevice::WriteOnly))
     {
-        QMessageBox::critical(this, "Erreur d'enregistrement", QString("Impossible d'enregistrer le fichier %1:\n%2").arg(path).arg(file.errorString()));
+        QMessageBox::critical(this, "Saving error", QString("Unable to save file '%1':\n%2").arg(path).arg(file.errorString()));
         return false;
     }
 

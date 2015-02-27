@@ -31,7 +31,7 @@ EditPistons::EditPistons(EditPolygone* editPolygone) :
 {
     // Création du modèle MVC.
     mModel->setColumnCount(5);
-    mModel->setHorizontalHeaderLabels(QStringList() << "epaisseur" << "masse" << "position" << "vitesse" << "couleur");
+    mModel->setHorizontalHeaderLabels(QStringList() << "thickness" << "mass" << "position" << "speed" << "color");
 
     // Propriétés de la table.
     mTableView->setModel(mModel);

@@ -22,8 +22,8 @@
 EditWithPolygone::EditWithPolygone(EditPolygone* editPolygone) :
     mLayout(new QGridLayout(this)),
     mEditPolygone(editPolygone),
-    mButtonAdd(new QPushButton("ajouter")),
-    mButtonRemove(new QPushButton("supprimer")),
+    mButtonAdd(new QPushButton("add")),
+    mButtonRemove(new QPushButton("remove")),
     mModel(new QStandardItemModel)
 {
     mLayout->setMargin(0);

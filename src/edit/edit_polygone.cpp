@@ -27,7 +27,8 @@ EditPolygone::EditPolygone() :
     mLayout(new QGridLayout(this)),
     mTableView(new QTableView),
     mModel(new QStandardItemModel),
-    mCheckGrid(new QCheckBox("Aligner sur la grille")),
+    mCheckGrid(new QCheckBox("Align on grid")),
+    mHintLabel(new QLabel("Hint : press CTRL and click on grid to add points")),
     mDelegate(new DoubleDelegate)
 {
     // Création du modèle MVC.
@@ -46,7 +47,8 @@ EditPolygone::EditPolygone() :
 
     mLayout->setMargin(0);
     mLayout->addWidget(mCheckGrid, 0, 0);
-    mLayout->addWidget(mTableView, 1, 0);
+    mLayout->addWidget(mHintLabel, 1, 0);
+    mLayout->addWidget(mTableView, 2, 0);
 
     // Connexion des signaux et slots.
     QObject::connect(mModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(dataChanged(QStandardItem*)));
