@@ -54,7 +54,7 @@ public:
 private:
     // Mesure une valeur sur un mobile.
     double value(unsigned int valType, const Piston& piston);
-    double value(unsigned int valType, const Population& population, const Polygone& polygone, unsigned int& nbre);
+    double valuePopulation(unsigned int valType, State& state, const Polygone& polygone, unsigned int& nbre);
     double value(unsigned int valType, const Boule& boule);
     double profilValue(unsigned int valType, const Boule& boule);
 

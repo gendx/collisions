@@ -39,32 +39,13 @@ public:
     void create(unsigned int index, State& state);
 
     // Accesseurs.
-    inline std::set<Boule*>& boules();
-    inline const std::set<Boule*>& boules() const;
-
-    // Calcule des statistiques sur cette population.
-    double meanFreeRide() const;
-    double meanFreeTime() const;
-    double meanFromOrigin() const;
-    double squareFromOrigin() const;
-    double totalVitesse() const;
-    double totalVit2() const;
-    inline double meanVitesse() const;
-    inline double meanVit2() const;
-    inline double meanEnergy() const;
-    inline double meanPressure() const;
-    inline double totalEnergy() const;
-    //inline double totalPressure() const;
-    /*
-    QMap<int, double> profilPressure(double slice) const;
-    QMap<int, double> profilTemperature(double slice) const;//*/
     inline QColor color() const;
 
 private:
     bool invalid(const Coord<double>& pos, State& state);
 
     ConfigPopulation mConfig;
-    std::set<Boule*> mBoules;
+    //std::set<Boule*> mBoules;
 };
 
 // Constructeurs.
@@ -74,24 +55,6 @@ inline Population::Population(const ConfigPopulation& config) :
     mConfig(config) {}
 
 // Accesseurs.
-inline std::set<Boule*>& Population::boules()
-    {return mBoules;}
-inline const std::set<Boule*>& Population::boules() const
-    {return mBoules;}
-
-// Calcule des statistiques sur cette population.
-inline double Population::meanVitesse() const
-    {return this->totalVitesse() / mConfig.mTaille;}
-inline double Population::meanVit2() const
-    {return this->totalVit2() / mConfig.mTaille;}
-inline double Population::meanEnergy() const
-    {return this->meanVit2() * mConfig.mMasse;}
-inline double Population::meanPressure() const
-    {double freeRide = this->meanFreeRide(); return freeRide ? (this->meanEnergy() / (freeRide * freeRide)) : 0;}
-inline double Population::totalEnergy() const
-    {return this->totalVit2() * mConfig.mMasse;}/*
-inline double Population::totalPressure() const
-    {double freeRide = this->meanFreeRide(); if (freeRide) return this->totalEnergy() / freeRide; else return 0;}*/
 inline QColor Population::color() const
     {return mConfig.mColor;}
 

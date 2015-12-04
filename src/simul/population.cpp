@@ -51,7 +51,6 @@ void Population::create(unsigned int index, State& state)
                     state);
         state.boules.push_back(boule);
 
-        mBoules.insert(boule.get());
         boule->setPopulation(index, state);
         boule->updateCollisions(state);
     }
@@ -82,90 +81,10 @@ bool Population::invalid(const Coord<double>& pos, State& state)
          && (pos.y - piston->position().y) <= mConfig.mRayon + piston->epaisseur())
             return true;
 
-    // Vérifie les intersections avec les autres boules de cette population.
-    for (auto& boule : mBoules)
-        if ((boule->position() - pos).length() <= 2 * mConfig.mRayon)
+    // Vérifie les intersections avec les autres boules.
+    for (auto& boule : state.boules)
+        if ((boule->position() - pos).length() <= mConfig.mRayon + boule->rayon())
             return true;
 
-    // Vérifie les intersections avec les boules des autres populations.
-    for (auto& population : state.populations)
-        for (auto& boule : population.mBoules)
-            if ((boule->position() - pos).length() <= mConfig.mRayon + population.mConfig.mRayon)
-                return true;
-
     return false;
-}
-
-// Calcule le libre parcours moyen.
-double Population::meanFreeRide() const
-{
-    double result = 0;
-    unsigned int nbre = 0;
-    for (auto& boule : mBoules)
-    {
-        if (boule->validFree())
-        {
-            result += boule->freeRide().length();
-            ++nbre;
-        }
-    }
-
-    if (nbre > mBoules.size() * .9)
-        return result / nbre;
-    return std::numeric_limits<double>::quiet_NaN();
-}
-
-// Calcule le temps moyen de libre parcours.
-double Population::meanFreeTime() const
-{
-    double result = 0;
-    unsigned int nbre = 0;
-    for (auto& boule : mBoules)
-    {
-        if (boule->validFree())
-        {
-            result += boule->freeTime().time();
-            ++nbre;
-        }
-    }
-
-    if (nbre > mBoules.size() * .9)
-        return result / nbre;
-    return std::numeric_limits<double>::quiet_NaN();
-}
-
-// Calcule la distance moyenne parcourue depuis le début.
-double Population::meanFromOrigin() const
-{
-    double result = 0;
-    for (auto& boule : mBoules)
-        result += boule->fromOrigin().length();
-    return result / mBoules.size();
-}
-
-// Calcule la moyenne du carré de la distance parcourue depuis le début.
-double Population::squareFromOrigin() const
-{
-    double result = 0;
-    for (auto& boule : mBoules)
-        result += boule->fromOrigin().squareLength();
-    return result / mBoules.size();
-}
-
-// Calcule la somme des vitesses.
-double Population::totalVitesse() const
-{
-    double result = 0;
-    for (auto& boule : mBoules)
-        result += boule->vitesse().length();
-    return result;
-}
-
-// Calcule la somme des carrés des vitesses.
-double Population::totalVit2() const
-{
-    double result = 0;
-    for (auto& boule : mBoules)
-        result += boule->vitesse().squareLength();
-    return result;
 }

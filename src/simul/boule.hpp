@@ -43,6 +43,7 @@ public:
     inline Coord<double> fromOrigin() const;
     inline double rayon() const;
     inline Coord<int> area() const;
+    inline unsigned int population() const;
 
     // Calcule l'instant de la prochaine collision avec le mobile.
     Time collision(const Mobile* mobile) const;
@@ -100,5 +101,7 @@ inline double Boule::rayon() const
     {return mRayon;}
 inline Coord<int> Boule::area() const
     {return mArea;}
+inline unsigned int Boule::population() const
+    {return mPopulation;}
 
 #endif // BOULE_HPP

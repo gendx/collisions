@@ -44,21 +44,24 @@ void ConfigCible::addValue(unsigned int valType, const Polygone& polygone, State
         return;
 
     // Parcourt la population choisie.
-    for (auto& ptr : state.populations[mIndex].boules())
+    for (auto& ptr : state.boules)
     {
         const Boule& boule = *ptr;
-        // Mesure seulement les boules dans la zone choisie.
-        if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
+        if (boule.population() == mIndex)
         {
-            if (values.contains(std::floor(boule.position().y / slice)))
+            // Mesure seulement les boules dans la zone choisie.
+            if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
             {
-                values[std::floor(boule.position().y / slice)] += this->profilValue(valType, boule);
-                ++nbres[std::floor(boule.position().y / slice)];
-            }
-            else
-            {
-                values[std::floor(boule.position().y / slice)] = this->profilValue(valType, boule);
-                nbres[std::floor(boule.position().y / slice)] = 1;
+                if (values.contains(std::floor(boule.position().y / slice)))
+                {
+                    values[std::floor(boule.position().y / slice)] += this->profilValue(valType, boule);
+                    ++nbres[std::floor(boule.position().y / slice)];
+                }
+                else
+                {
+                    values[std::floor(boule.position().y / slice)] = this->profilValue(valType, boule);
+                    nbres[std::floor(boule.position().y / slice)] = 1;
+                }
             }
         }
     }
@@ -79,7 +82,7 @@ double ConfigCible::value(unsigned int valType, const Polygone& polygone, State&
     else if (mType == _population)
     {
         if (mIndex < state.populations.size())
-            return this->value(valType, state.populations[mIndex], polygone, nbre);
+            return this->valuePopulation(valType, state, polygone, nbre);
     }
 
     return std::numeric_limits<double>::quiet_NaN();
@@ -109,7 +112,7 @@ double ConfigCible::value(unsigned int valType, const Piston& piston)
 }
 
 // Mesure une valeur sur une population.
-double ConfigCible::value(unsigned int valType, const Population& population, const Polygone& polygone, unsigned int& nbre)
+double ConfigCible::valuePopulation(unsigned int valType, State& state, const Polygone& polygone, unsigned int& nbre)
 {
     if (valType == ConfigWidgetCourbe::none)
         return std::numeric_limits<double>::quiet_NaN();
@@ -117,14 +120,17 @@ double ConfigCible::value(unsigned int valType, const Population& population, co
     double valeur = 0;
 
     // Parcourt la population.
-    for (auto& ptr : population.boules())
+    for (auto& ptr : state.boules)
     {
         const Boule& boule = *ptr;
-        // Mesure seulement les boules dans la zone choisie.
-        if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
+        if (boule.population() == mIndex)
         {
-            valeur += this->value(valType, boule);
-            ++nbre;
+            // Mesure seulement les boules dans la zone choisie.
+            if (mPolygone.inside(boule.position()) && polygone.inside(boule.position()))
+            {
+                valeur += this->value(valType, boule);
+                ++nbre;
+            }
         }
     }
 

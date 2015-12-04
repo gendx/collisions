@@ -500,11 +500,7 @@ void Boule::swap(unsigned int population, State& state, bool eraseEvent)
         return;
 
     // Change la boule de population.
-    state.populations[mPopulation].boules().erase(this);
-
-    Population& pop = state.populations[population];
-    pop.boules().insert(this);
-    mColor = pop.color();
+    mColor = state.populations[population].color();
 
     // Met à jour les événements (mutations).
     if (eraseEvent && mEventIt != state.events.end())
