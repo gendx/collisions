@@ -276,7 +276,7 @@ void Simulateur::emitStatusText(unsigned int msec, unsigned int frames, unsigned
     mState.countEtudes.first = 0;
 
     // Envoie le texte.
-    emit statusText(QString::number(fps, 'g', 2) + " frames per second ; " + QString::number(cps) + " collisions per second ; " + QString::number(chocsTotal) + " collisions in total");
+    emit statusText(QString::number((unsigned int)fps) + " frames per second ; " + QString::number(cps) + " collisions per second ; " + QString::number(chocsTotal) + " collisions in total");
 }
 
 
