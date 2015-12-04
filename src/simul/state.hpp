@@ -49,8 +49,8 @@ public:
     // Configuration et objets de la simulation.
     const Configuration& config;
     std::vector<Population> populations;
-    std::vector<std::shared_ptr<Boule> > boules;
-    std::vector<std::shared_ptr<Piston> > pistons;
+    std::vector<std::unique_ptr<Boule> > boules;
+    std::vector<std::unique_ptr<Piston> > pistons;
     std::map<int, MapLigne> mapMobiles;
     Time now;
     double sizeArea;

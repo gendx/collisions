@@ -45,7 +45,6 @@ private:
     bool invalid(const Coord<double>& pos, State& state);
 
     ConfigPopulation mConfig;
-    //std::set<Boule*> mBoules;
 };
 
 // Constructeurs.

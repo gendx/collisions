@@ -58,7 +58,7 @@ void State::create()
     // Création des pistons.
     for (auto& piston : config.configPistons())
     {
-        pistons.push_back(std::make_shared<Piston>(piston, *this));
+        pistons.push_back(std::make_unique<Piston>(piston, *this));
         pistons.back()->updateCollisions(*this);
     }
 

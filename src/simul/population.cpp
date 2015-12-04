@@ -41,7 +41,7 @@ void Population::create(unsigned int index, State& state)
         while (this->invalid(pos, state));
 
         // Ajoute une boule.
-        std::shared_ptr<Boule> boule = std::make_shared<Boule>(
+        std::unique_ptr<Boule> boule = std::make_unique<Boule>(
                     pos,
                     Coord<double>(distribVitesse(Solveur::generateur),
                                   distribVitesse(Solveur::generateur)),
@@ -49,10 +49,10 @@ void Population::create(unsigned int index, State& state)
                     mConfig.mMasse,
                     mConfig.mRayon,
                     state);
-        state.boules.push_back(boule);
+        state.boules.push_back(std::move(boule));
 
-        boule->setPopulation(index, state);
-        boule->updateCollisions(state);
+        state.boules.back()->setPopulation(index, state);
+        state.boules.back()->updateCollisions(state);
     }
 }
 
