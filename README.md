@@ -7,9 +7,9 @@ Collisions is a real-time simulation program of colliding particles. [![Build St
 
 In order to build this software, you will need to install :
 * Qt4, available at [qt-project](http://qt-project.org/downloads). Qt5 was not tested yet, but it should be compatible.
-* A C++ compiler supporting the C++11 standard (for *shared_ptr* and *random* libraries). GCC 4.8 should be all right.
+* A C++ compiler supporting the C++14 standard (for *shared_ptr* and *random* libraries, and *make_unique* helper function).
 
-Building has been tested with [Travis CI](https://travis-ci.org).
+Building is tested with [Travis CI](https://travis-ci.org) on GCC 4.9 and Clang 3.5.
 
 
 ## Usage
@@ -25,7 +25,7 @@ There is an edit mode to modify these projects and a simulation mode to run them
 
 ## Performance
 
-An efficient algorithm has been designed to model collisions and is able to simulate one thousand particles at a rate of several thousands of collisions per second (CPU 1.66 GHz).
+An efficient algorithm has been designed to model collisions and is able to simulate 1,000 particles at a rate of 10,000 collisions per second (CPU 1.66 GHz).
 
 
 ## License
