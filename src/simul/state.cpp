@@ -36,6 +36,7 @@ void State::clear()
     toRefresh.clear();
     drawingsRefresh.clear();
     populations.clear();
+    boules.clear();
     pistons.clear();
     mapMobiles.clear();
     now = 0;

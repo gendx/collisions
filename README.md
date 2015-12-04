@@ -1,6 +1,6 @@
 # Collisions
 
-Collisions is a real-time simulation program of colliding particles. [![Build Status](https://travis-ci.org/gendx/collisions.png?branch=master)](https://travis-ci.org/gendx/collisions)
+Collisions is a real-time simulation program of colliding particles. [![Build Status](https://travis-ci.org/gendx/collisions.svg?branch=master)](https://travis-ci.org/gendx/collisions)
 
 
 ## Installation
@@ -28,9 +28,9 @@ There is an edit mode to modify these projects and a simulation mode to run them
 An efficient algorithm has been designed to model collisions and is able to simulate one thousand particles at a rate of several thousands of collisions per second (CPU 1.66 GHz).
 
 
-## Licence
+## License
 
-*Copyright (C) 2011 - 2014  G. Endignoux*
+*Copyright (C) 2011 - 2015  G. Endignoux*
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

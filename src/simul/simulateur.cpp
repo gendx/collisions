@@ -154,13 +154,10 @@ void Simulateur::draw(QPainter& painter, double width)
     }
 
     // Dessin des populations.
-    for (auto& population : mState.populations)
+    for (auto& boule : mState.boules)
     {
-        for (auto& boule : population.boules())
-        {
-            painter.setBrush(boule->color());
-            painter.drawEllipse(QRectF(boule->position().x - boule->rayon(), boule->position().y - boule->rayon(), 2 * boule->rayon(), 2 * boule->rayon()));
-        }
+        painter.setBrush(boule->color());
+        painter.drawEllipse(QRectF(boule->position().x - boule->rayon(), boule->position().y - boule->rayon(), 2 * boule->rayon(), 2 * boule->rayon()));
     }
 }
 
@@ -310,9 +307,8 @@ void Simulateur::avance(const Time& time)
     Time diff = time - mState.now;
 
     // Avance les populations de boules.
-    for (auto& population : mState.populations)
-        for (auto& boule : population.boules())
-            boule->avance(diff, mState.config.gravity());
+    for (auto& boule : mState.boules)
+        boule->avance(diff, mState.config.gravity());
 
     // Avance les populations de pistons.
     for (auto& piston : mState.pistons)
