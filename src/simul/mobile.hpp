@@ -23,6 +23,7 @@
 #include <QMultiMap>
 #include <map>
 #include <set>
+#include <unordered_set>
 #include <memory>
 
 #include "coord.hpp"
@@ -120,8 +121,8 @@ private:
     Time mTargetTime;
     std::set<std::multimap<Time, std::shared_ptr<Event> >::iterator> mNextCollisions;
     // Graphe des cibles.
-    std::set<Mobile*> mTargets;
-    std::set<Mobile*> mAttached;
+    std::unordered_set<Mobile*> mTargets;
+    std::unordered_set<Mobile*> mAttached;
     // Dernière(s) collision(s).
     Time mLastTime;
     std::list<std::shared_ptr<Collision> > mLastCollisions;
