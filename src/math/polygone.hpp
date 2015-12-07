@@ -47,6 +47,7 @@ public:
     double bottom() const;
 
     // Récupération des sommets et segments.
+    inline bool empty() const;
     inline unsigned int size() const;
     inline Segment segment(unsigned int i) const;
     inline Coord<double> point(unsigned int i) const;
@@ -84,6 +85,8 @@ inline void Polygone::clear()
 
 
 // Récupération des sommets et segments.
+inline bool Polygone::empty() const
+    {return mSommets.empty();}
 inline unsigned int Polygone::size() const
     {return mSommets.size();}
 inline Segment Polygone::segment(unsigned int i) const

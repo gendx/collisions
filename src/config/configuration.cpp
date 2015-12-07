@@ -24,7 +24,12 @@ bool Configuration::check() const
     // Il faut au moins une population non vide.
     unsigned int nbre = 0;
     for (auto& pop : mConfigPops)
+    {
         nbre += pop.mTaille;
+        // Si la population n'est pas vide il faut un polygone.
+        if (pop.mTaille && pop.mPolygone.empty())
+            return false;
+    }
     if (!nbre)
         return false;
 

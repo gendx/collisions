@@ -26,6 +26,9 @@
 // Génère une population de boules selon la configuration.
 void Population::create(unsigned int index, State& state)
 {
+    if (!mConfig.mTaille)
+        return;
+
     // Distributions aléatoires en position (uniforme) et en vitesse (normale sur chaque axe).
     std::uniform_real_distribution<> distribX(mConfig.mPolygone.left(), mConfig.mPolygone.right());
     std::uniform_real_distribution<> distribY(mConfig.mPolygone.top(), mConfig.mPolygone.bottom());
