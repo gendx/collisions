@@ -1,4 +1,4 @@
 #!/bin/sh
-which clang++
+echo `which clang++`
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/clang++ 91
 
