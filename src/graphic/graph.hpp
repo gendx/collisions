@@ -43,7 +43,7 @@ public:
     void setPolygones(QList<DrawPolygone> polygones);
 
     // Fonctions de dessin.
-    void initPainter(QPainter& painter) const;
+    void myInitPainter(QPainter& painter) const;
     void reinitBackground(bool force/* = true*/);
 
     // Change le mode de travail.

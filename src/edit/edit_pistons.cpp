@@ -42,7 +42,11 @@ EditPistons::EditPistons(EditPolygone* editPolygone) :
     mTableView->setItemDelegateForColumn(3, mDoubleDelegate);
     mTableView->setItemDelegateForColumn(4, mColorDelegate);
     // Divers.
+#if QT_VERSION >= 0x050000
+    mTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
     mTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
     mTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     mTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -122,7 +126,7 @@ void EditPistons::add()
 
     // Ajout.
     mModel->appendRow(QList<QStandardItem*>() << new QStandardItem(QString::number(10)) << new QStandardItem(QString::number(1)) << new QStandardItem(QString::number(0)) << new QStandardItem(QString::number(0)) << new QStandardItem("black"));
-    mModel->setData(mModel->index(mIndex, 4, QModelIndex()), Qt::black, Qt::DecorationRole);
+    mModel->setData(mModel->index(mIndex, 4, QModelIndex()), QColor(Qt::black), Qt::DecorationRole);
     mModel->setData(mModel->index(mIndex, 4, QModelIndex()), QColor(Qt::black).name(), Qt::UserRole);
 
     // Sélection.

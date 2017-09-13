@@ -99,7 +99,7 @@ void Graph::hoverEvent(Coord<double> pt)
 }
 
 // Mise à l'échelle du QPainter.
-void Graph::initPainter(QPainter& painter) const
+void Graph::myInitPainter(QPainter& painter) const
 {
     painter.translate(mZone->width() / 2, mZone->height() / 2);
     painter.scale(mZone->mZoom, mZone->mZoom);
@@ -116,7 +116,7 @@ void Graph::reinitBackground(bool force)
     mBackground = QPixmap(mZone->size());
 
     QPainter painter(&mBackground);
-    this->initPainter(painter);
+    this->myInitPainter(painter);
     painter.setRenderHint(QPainter::Antialiasing);
 
     // En mode édition.

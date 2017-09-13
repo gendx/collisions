@@ -18,6 +18,8 @@
 TEMPLATE = app
 INCLUDEPATH += . config/ edit/ graphic/ math/ simul/
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 # Input
 HEADERS += \
     config/config_cible.hpp \
@@ -123,5 +125,6 @@ SOURCES += \
 RESOURCES += \
     collisions.qrc
 
+greaterThan(QT_MAJOR_VERSION, 4): CONFIG += c++14
 QMAKE_CXXFLAGS += --std=c++14
 

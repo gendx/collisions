@@ -18,6 +18,8 @@
 
 #include "config_piston.hpp"
 
+#include <QDataStream>
+
 // Ecriture d'un fichier de configuration.
 QDataStream& operator<<(QDataStream& stream, const ConfigPiston& config)
 {

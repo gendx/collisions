@@ -21,6 +21,7 @@
 
 #include <QSet>
 #include <QMap>
+#include <QObject>
 
 class Document;
 

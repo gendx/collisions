@@ -40,7 +40,11 @@ EditPolygone::EditPolygone() :
     // Delegate.
     mTableView->setItemDelegate(mDelegate);
     // Divers.
+#if QT_VERSION >= 0x050000
+    mTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#else
     mTableView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
     mTableView->setSelectionBehavior(QAbstractItemView::SelectColumns);
 
     mCheckGrid->setChecked(true);

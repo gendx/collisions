@@ -283,7 +283,7 @@ void Document::draw()
     mGraph->reinitBackground(false);
     QPixmap pixmap(mGraph->getBackground());
     QPainter painter(&pixmap);
-    mGraph->initPainter(painter);
+    mGraph->myInitPainter(painter);
 
     // Affichage selon le mode.
     if (mSimulMode)

@@ -59,7 +59,11 @@ EditTransformations::EditTransformations() :
     mReactionsView->setItemDelegateForColumn(3, mSpinboxDelegate);
     mReactionsView->setItemDelegateForColumn(4, mSpinboxDelegate);
     mReactionsView->setItemDelegateForColumn(5, mSpinboxDelegate);
+#if QT_VERSION >= 0x050000
+    mReactionsView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
     mReactionsView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
     mReactionsView->setSelectionBehavior(QAbstractItemView::SelectRows);
     mReactionsView->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -73,7 +77,11 @@ EditTransformations::EditTransformations() :
     mMutationsView->setItemDelegateForColumn(1, mDoubleDelegate);
     mMutationsView->setItemDelegateForColumn(2, mSpinboxDelegate);
     mMutationsView->setItemDelegateForColumn(3, mSpinboxDelegate);
+#if QT_VERSION >= 0x050000
+    mMutationsView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
     mMutationsView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
     mMutationsView->setSelectionBehavior(QAbstractItemView::SelectRows);
     mMutationsView->setSelectionMode(QAbstractItemView::SingleSelection);
 
